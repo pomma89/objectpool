@@ -10,6 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.htm = LICENSE.htm
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6707C111-57B0-462E-A450-BD4DE8AA328C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPackager\NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +28,14 @@ Global
 		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
