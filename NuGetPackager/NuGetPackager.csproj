@@ -54,14 +54,9 @@
     <None Include="NuGet.exe" />
     <None Include="NuGet.config" />
     <None Include="Package.nuspec" />
-    <None Include="tools\init.ps1" />
-    <None Include="tools\install.ps1" />
-    <None Include="tools\uninstall.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="content\" />
-    <Folder Include="lib\" />
-    <Folder Include="src\" />
+    <Folder Include="lib\net40\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.htm" />
