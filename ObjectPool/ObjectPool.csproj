@@ -47,6 +47,7 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="ObjectPool.cs" />
+    <Compile Include="ParameterizedObjectPool.cs" />
     <Compile Include="PooledObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

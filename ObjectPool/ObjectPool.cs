@@ -16,11 +16,35 @@ using Thrower;
 
 namespace CodeProject.ObjectPool
 {
+    public abstract class ObjectPool
+    {
+        internal ObjectPool() {}
+
+        #region Validation
+
+        [Conditional(RaiseBase.UseThrowerDefine)]
+        protected static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
+        {
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize < 0, ErrorMessages.NegativeMinimumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize < 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize > maximumPoolSize, ErrorMessages.WrongCacheBounds);
+        }
+
+        #endregion
+
+        #region Consts
+
+        protected const int DefaultPoolMinimumSize = 5;
+        protected const int DefaultPoolMaximumSize = 100;
+
+        #endregion
+    }
+
     /// <summary>
     /// Generic object pool
     /// </summary>
     /// <typeparam name="T">The type of the object that which will be managed by the pool. The pooled object have to be a sub-class of PooledObject.</typeparam>
-    public sealed class ObjectPool<T> where T : PooledObject
+    public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
     {
         // Indication flag that states whether Adjusting operating is in progress.
         // The type is Int, altought it looks like it should be bool - this was done for Interlocked CAS operation (CompareExchange)
@@ -32,6 +56,15 @@ namespace CodeProject.ObjectPool
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
+
+        /// <summary>
+        ///   Gets or sets whether the pool should record data about how it operates.
+        /// </summary>
+        public bool DiagnosticsEnabled
+        {
+            get { return Diagnostics.Enabled; }
+            set { Diagnostics.Enabled = value; }
+        }
 
         /// <summary>
         /// Gets the Diagnostics class for the current Object Pool.
@@ -153,14 +186,6 @@ namespace CodeProject.ObjectPool
         #endregion
 
         #region Private Methods
-
-        [Conditional(RaiseBase.UseThrowerDefine)]
-        private static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
-        {
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize < 0, ErrorMessages.NegativeMinimumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize < 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize > maximumPoolSize, ErrorMessages.WrongCacheBounds);
-        }
 
         private void AdjustPoolSizeToBounds()
         {
@@ -315,17 +340,32 @@ namespace CodeProject.ObjectPool
 
         public sealed class ObjectPoolDiagnostics
         {
+            #region C'tor and Initialization code
+
+            public ObjectPoolDiagnostics()
+            {
+                // By default, diagnostics are disabled.
+                Enabled = false;
+            }
+
+            #endregion
+
             #region Public Properties and backing fields
 
-            internal int _ObjectResetFailedCount;
-            internal int _PoolObjectHitCount;
-            internal int _PoolObjectMissCount;
-            internal int _PoolOverflowCount;
+            private int _ObjectResetFailedCount;
+            private int _PoolObjectHitCount;
+            private int _PoolObjectMissCount;
+            private int _PoolOverflowCount;
 
-            internal int _ReturnedToPoolByRessurectionCount;
-            internal int _ReturnedToPoolCount;
-            internal int _TotalInstancesCreated;
-            internal int _TotalInstancesDestroyed;
+            private int _ReturnedToPoolByRessurectionCount;
+            private int _ReturnedToPoolCount;
+            private int _TotalInstancesCreated;
+            private int _TotalInstancesDestroyed;
+
+            /// <summary>
+            ///   Gets or sets whether this object can record data about how the Pool operates.
+            /// </summary>
+            public bool Enabled { get; set; }
 
             /// <summary>
             /// gets the total count of live instances, both in the pool and in use.
@@ -405,53 +445,62 @@ namespace CodeProject.ObjectPool
 
             internal void IncrementObjectsCreatedCount()
             {
-                Interlocked.Increment(ref _TotalInstancesCreated);
+                if (Enabled) {
+                    Interlocked.Increment(ref _TotalInstancesCreated);
+                }
             }
 
             internal void IncrementObjectsDestroyedCount()
             {
-                Interlocked.Increment(ref _TotalInstancesDestroyed);
+                if (Enabled) {
+                    Interlocked.Increment(ref _TotalInstancesDestroyed);
+                }
             }
 
             internal void IncrementPoolObjectHitCount()
             {
-                Interlocked.Increment(ref _PoolObjectHitCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _PoolObjectHitCount);
+                }
             }
 
             internal void IncrementPoolObjectMissCount()
             {
-                Interlocked.Increment(ref _PoolObjectMissCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _PoolObjectMissCount);
+                }
             }
 
             internal void IncrementPoolOverflowCount()
             {
-                Interlocked.Increment(ref _PoolOverflowCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _PoolOverflowCount);
+                }
             }
 
             internal void IncrementResetStateFailedCount()
             {
-                Interlocked.Increment(ref _ObjectResetFailedCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _ObjectResetFailedCount);
+                }
             }
 
             internal void IncrementObjectRessurectionCount()
             {
-                Interlocked.Increment(ref _ReturnedToPoolByRessurectionCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _ReturnedToPoolByRessurectionCount);
+                }
             }
 
             internal void IncrementReturnedToPoolCount()
             {
-                Interlocked.Increment(ref _ReturnedToPoolCount);
+                if (Enabled) {
+                    Interlocked.Increment(ref _ReturnedToPoolCount);
+                }
             }
 
             #endregion
         }
-
-        #endregion
-
-        #region Consts
-
-        private const int DefaultPoolMinimumSize = 5;
-        private const int DefaultPoolMaximumSize = 100;
 
         #endregion
     }
