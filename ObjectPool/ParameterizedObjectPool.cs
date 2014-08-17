@@ -54,7 +54,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         /// Gets the Factory method that will be used for creating new objects. 
         /// </summary>
-        public Func<TValue> FactoryMethod { get; private set; }
+        public Func<TKey, TValue> FactoryMethod { get; private set; }
 
         #endregion
         
@@ -82,7 +82,7 @@ namespace CodeProject.ObjectPool
         /// Initializes a new pool with specified factory method.
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ParameterizedObjectPool(Func<TValue> factoryMethod)
+        public ParameterizedObjectPool(Func<TKey, TValue> factoryMethod)
         {
             InitializePool(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod);
         }
@@ -93,12 +93,12 @@ namespace CodeProject.ObjectPool
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize, Func<TValue> factoryMethod)
+        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
             InitializePool(minimumPoolSize, maximumPoolSize, factoryMethod);
         }
 
-        private void InitializePool(int minimumPoolSize, int maximumPoolSize, Func<TValue> factoryMethod)
+        private void InitializePool(int minimumPoolSize, int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
             // Validating pool limits, exception is thrown if invalid
             ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
@@ -116,7 +116,8 @@ namespace CodeProject.ObjectPool
             ObjectPool<TValue> pool;
             if (!_pools.TryGetValue(key, out pool)) {
                 // Initialize the new pool
-                pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, FactoryMethod);
+                var factory = FactoryMethod;
+                pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
                 if (!_pools.TryAdd(key, pool)) {
                     // Someone added the pool in the meantime!
                     _pools.TryGetValue(key, out pool);
@@ -125,5 +126,15 @@ namespace CodeProject.ObjectPool
             Debug.Assert(pool != null);
             return pool.GetObject();
         }
+
+        private Func<TValue> PrepareFactoryMethod(TKey key)
+        {
+            var factory = FactoryMethod;
+            if (factory == null) {
+                // Use the default parameterless constructor.
+                return null;
+            }
+            return () => factory(key);
+        } 
     }
 }
