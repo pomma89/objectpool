@@ -2,4 +2,4 @@ A generic, concurrent and flexible Object Pool for the .NET Framework, completel
 
 Source code has been modified a bit, in order to introduce a Parameterized Object Pool, already drafted in the comments of the article.
 
-Modified source code is freely available at the project URL of this package.
+Modified source code is freely available at this repository.
