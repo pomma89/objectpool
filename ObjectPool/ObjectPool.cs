@@ -41,21 +41,26 @@ namespace CodeProject.ObjectPool
     }
 
     /// <summary>
-    /// Generic object pool
+    ///   Generic object pool.
     /// </summary>
-    /// <typeparam name="T">The type of the object that which will be managed by the pool. The pooled object have to be a sub-class of PooledObject.</typeparam>
+    /// <typeparam name="T">
+    ///   The type of the object that which will be managed by the pool. The pooled object have to be a sub-class of PooledObject.
+    /// </typeparam>
     public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
     {
-        // Indication flag that states whether Adjusting operating is in progress.
-        // The type is Int, altought it looks like it should be bool - this was done for Interlocked CAS operation (CompareExchange)
+        /// <summary>
+        ///   Indication flag that states whether Adjusting operating is in progress.
+        ///   The type is Int, altought it looks like it should be bool - this was done for Interlocked CAS operation (CompareExchange).
+        /// </summary>
         private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
 
-        private Action<PooledObject, bool> _returnToPoolAction;
-
-        #region Public Properties
+        private readonly ConcurrentQueue<T> _pooledObjects;
+        private readonly Action<PooledObject, bool> _returnToPoolAction;
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
+
+        #region Public Properties
 
         /// <summary>
         ///   Gets or sets whether the pool should record data about how it operates.
@@ -67,27 +72,27 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        /// Gets the Diagnostics class for the current Object Pool.
+        ///   Gets the Diagnostics class for the current Object Pool.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics { get; private set; }
 
         /// <summary>
-        /// Gets the count of the objects currently in the pool.
+        ///   Gets the count of the objects currently in the pool.
         /// </summary>
         public int ObjectsInPoolCount
         {
-            get { return PooledObjects.Count; }
+            get { return _pooledObjects.Count; }
         }
 
         /// <summary>
-        /// Gets or sets the minimum number of objects in the pool.
+        ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
         public int MinimumPoolSize
         {
             get { return _minimumPoolSize; }
             set
             {
-                // Validating pool limits, exception is thrown if invalid
+                // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(value, _maximumPoolSize);
 
                 _minimumPoolSize = value;
@@ -97,14 +102,14 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        /// Gets or sets the maximum number of objects that could be available at the same time in the pool.
+        ///   Gets or sets the maximum number of objects that could be available at the same time in the pool.
         /// </summary>
         public int MaximumPoolSize
         {
             get { return _maximumPoolSize; }
             set
             {
-                // Validating pool limits, exception is thrown if invalid
+                // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(_minimumPoolSize, value);
 
                 _maximumPoolSize = value;
@@ -114,7 +119,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        /// Gets the Factory method that will be used for creating new objects. 
+        ///   Gets the Factory method that will be used for creating new objects. 
         /// </summary>
         public Func<T> FactoryMethod { get; private set; }
 
@@ -125,29 +130,20 @@ namespace CodeProject.ObjectPool
         /// <summary>
         /// Initializes a new pool with default settings.
         /// </summary>
-        public ObjectPool()
-        {
-            InitializePool(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null);
-        }
+        public ObjectPool() : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null) {}
 
         /// <summary>
         /// Initializes a new pool with specified minimum pool size and maximum pool size
         /// </summary>
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        public ObjectPool(int minimumPoolSize, int maximumPoolSize)
-        {
-            InitializePool(minimumPoolSize, maximumPoolSize, null);
-        }
+        public ObjectPool(int minimumPoolSize, int maximumPoolSize) : this(minimumPoolSize, maximumPoolSize, null) {}
 
         /// <summary>
         /// Initializes a new pool with specified factory method.
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ObjectPool(Func<T> factoryMethod)
-        {
-            InitializePool(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod);
-        }
+        public ObjectPool(Func<T> factoryMethod) : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod) {}
 
         /// <summary>
         /// Initializes a new pool with specified factory method and minimum and maximum size.
@@ -156,11 +152,6 @@ namespace CodeProject.ObjectPool
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
-        {
-            InitializePool(minimumPoolSize, maximumPoolSize, factoryMethod);
-        }
-
-        private void InitializePool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
         {
             // Validating pool limits, exception is thrown if invalid
             ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
@@ -171,7 +162,7 @@ namespace CodeProject.ObjectPool
             _minimumPoolSize = minimumPoolSize;
 
             // Initializing the internal pool data structure
-            PooledObjects = new ConcurrentQueue<T>();
+            _pooledObjects = new ConcurrentQueue<T>();
 
             // Creating a new instnce for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
@@ -198,54 +189,51 @@ namespace CodeProject.ObjectPool
 
             // Adjusting...
             while (ObjectsInPoolCount < MinimumPoolSize) {
-                PooledObjects.Enqueue(CreatePooledObject());
+                _pooledObjects.Enqueue(CreatePooledObject());
             }
 
             while (ObjectsInPoolCount > MaximumPoolSize) {
                 T dequeuedObjectToDestroy;
-                if (PooledObjects.TryDequeue(out dequeuedObjectToDestroy)) {
-                    // Diagnostics update
+                if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy)) {
+                    // Diagnostics update.
                     Diagnostics.IncrementPoolOverflowCount();
 
                     DestroyPooledObject(dequeuedObjectToDestroy);
                 }
             }
 
-            // Finished adjusting, allowing additional callers to enter when needed
+            // Finished adjusting, allowing additional callers to enter when needed.
             _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
         private T CreatePooledObject()
         {
-            T newObject;
-            if (FactoryMethod != null) {
-                newObject = FactoryMethod();
-            } else {
-                // Throws an exception if the type doesn't have default ctor - on purpose! I've could've add a generic constraint with new (), but I didn't want to limit the user and force a parameterless c'tor
-                newObject = (T) Activator.CreateInstance(typeof(T));
-            }
+            // Throws an exception if the type doesn't have default ctor - on purpose! 
+            // I've could've add a generic constraint with new (), but I didn't want to limit the user and force a parameterless c'tor.
+            var safeFactory = FactoryMethod;
+            var newObject = (safeFactory != null) ? safeFactory() : Activator.CreateInstance<T>();
 
-            // Diagnostics update
+            // Diagnostics update.
             Diagnostics.IncrementObjectsCreatedCount();
 
-            // Setting the 'return to pool' action in the newly created pooled object
+            // Setting the 'return to pool' action in the newly created pooled object.
             newObject.ReturnToPool = _returnToPoolAction;
             return newObject;
         }
 
         private void DestroyPooledObject(PooledObject objectToDestroy)
         {
-            // Making sure that the object is only disposed once (in case of application shutting down and we don't control the order of the finalization)
+            // Making sure that the object is only disposed once (in case of application shutting down and we don't control the order of the finalization).
             if (!objectToDestroy.Disposed) {
-                // Deterministically release object resources, nevermind the result, we are destroying the object
+                // Deterministically release object resources, nevermind the result, we are destroying the object.
                 objectToDestroy.ReleaseResources();
                 objectToDestroy.Disposed = true;
 
-                // Diagnostics update
+                // Diagnostics update.
                 Diagnostics.IncrementObjectsDestroyedCount();
             }
 
-            // The object is being destroyed, resources have been already released deterministically, so we di no need the finalizer to fire
+            // The object is being destroyed, resources have been already released deterministically, so we di no need the finalizer to fire.
             GC.SuppressFinalize(objectToDestroy);
         }
 
@@ -254,28 +242,28 @@ namespace CodeProject.ObjectPool
         #region Pool Operations
 
         /// <summary>
-        /// Get a monitored object from the pool. 
+        ///   Gets a monitored object from the pool. 
         /// </summary>
         /// <returns></returns>
         public T GetObject()
         {
             T dequeuedObject;
 
-            if (PooledObjects.TryDequeue(out dequeuedObject)) {
-                // Invokes AdjustPoolSize asynchronously
+            if (_pooledObjects.TryDequeue(out dequeuedObject)) {
+                // Invokes AdjustPoolSize asynchronously.
                 ThreadPool.QueueUserWorkItem(o => AdjustPoolSizeToBounds());
 
-                // Diagnostics update
+                // Diagnostics update.
                 Diagnostics.IncrementPoolObjectHitCount();
 
                 return dequeuedObject;
             }
 
-            // This should not happen normally, but could be happening when there is stress on the pool
-            // No available objects in pool, create a new one and return it to the caller
+            // This should not happen normally, but could be happening when there is stress on the pool.
+            // No available objects in pool, create a new one and return it to the caller.
             Debug.Print("Object pool failed to return a pooled object. pool is empty. consider increasing the number of minimum pooled objects.");
 
-            // Diagnostics update
+            // Diagnostics update.
             Diagnostics.IncrementPoolObjectMissCount();
 
             return CreatePooledObject();
@@ -283,36 +271,37 @@ namespace CodeProject.ObjectPool
 
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
-            var returnedObject = (T) objectToReturnToPool;
-
-            // Diagnostics update
+            Debug.Assert(objectToReturnToPool is T);
+            var returnedObject = objectToReturnToPool as T;
+            
+            // Diagnostics update.
             if (reRegisterForFinalization) {
                 Diagnostics.IncrementObjectRessurectionCount();
             }
 
-            // Checking that the pool is not full
+            // Checking that the pool is not full.
             if (ObjectsInPoolCount < MaximumPoolSize) {
-                // Reset the object state (if implemented) before returning it to the pool. If reseting the object have failed, destroy the object
+                // Reset the object state (if implemented) before returning it to the pool. If reseting the object have failed, destroy the object.
                 if (!returnedObject.ResetState()) {
-                    // Diagnostics update
+                    // Diagnostics update.
                     Diagnostics.IncrementResetStateFailedCount();
 
                     DestroyPooledObject(returnedObject);
                     return;
                 }
 
-                // Re-registering for finalization - in case of resurrection (called from Finalize method)
+                // Re-registering for finalization - in case of resurrection (called from Finalize method).
                 if (reRegisterForFinalization) {
                     GC.ReRegisterForFinalize(returnedObject);
                 }
 
-                // Diagnostics update
+                // Diagnostics update.
                 Diagnostics.IncrementReturnedToPoolCount();
 
-                // Adding the object back to the pool 
-                PooledObjects.Enqueue(returnedObject);
+                // Adding the object back to the pool.
+                _pooledObjects.Enqueue(returnedObject);
             } else {
-                // Diagnostics update
+                // Diagnostics update.
                 Diagnostics.IncrementPoolOverflowCount();
 
                 // The Pool's upper limit has exceeded, there is no need to add this object back into the pool and we can destroy it.
@@ -326,15 +315,13 @@ namespace CodeProject.ObjectPool
 
         ~ObjectPool()
         {
-            // The pool is going down, releasing the resources for all objects in pool
-            foreach (var item in PooledObjects) {
+            // The pool is going down, releasing the resources for all objects in pool.
+            foreach (var item in _pooledObjects) {
                 DestroyPooledObject(item);
             }
         }
 
         #endregion
-
-        private ConcurrentQueue<T> PooledObjects { get; set; }
 
         #region Nested type: ObjectPoolDiagnostics
 
@@ -342,6 +329,9 @@ namespace CodeProject.ObjectPool
         {
             #region C'tor and Initialization code
 
+            /// <summary>
+            ///   Creates a new diagnostics object, ready to record Object Pool main events.
+            /// </summary>
             public ObjectPoolDiagnostics()
             {
                 // By default, diagnostics are disabled.
@@ -368,7 +358,7 @@ namespace CodeProject.ObjectPool
             public bool Enabled { get; set; }
 
             /// <summary>
-            /// gets the total count of live instances, both in the pool and in use.
+            ///   Gets the total count of live instances, both in the pool and in use.
             /// </summary>
             public int TotalLiveInstancesCount
             {
@@ -376,7 +366,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the count of object reset failures occured while the pool tried to re-add the object into the pool.
+            ///   Gets the count of object reset failures occured while the pool tried to re-add the object into the pool.
             /// </summary>
             public int ObjectResetFailedCount
             {
@@ -384,7 +374,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total count of object that has been picked up by the GC, and returned to pool. 
+            ///   Gets the total count of object that has been picked up by the GC, and returned to pool. 
             /// </summary>
             public int ReturnedToPoolByRessurectionCount
             {
@@ -392,7 +382,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total count of successful accesses. The pool had a spare object to provide to the user without creating it on demand.
+            ///   Gets the total count of successful accesses. The pool had a spare object to provide to the user without creating it on demand.
             /// </summary>
             public int PoolObjectHitCount
             {
@@ -400,7 +390,8 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total count of unsuccessful accesses. The pool had to create an object in order to satisfy the user request. If the number is high, consider increasing the object minimum limit.
+            ///   Gets the total count of unsuccessful accesses. The pool had to create an object in order to satisfy the user request. 
+            ///   If the number is high, consider increasing the object minimum limit.
             /// </summary>
             public int PoolObjectMissCount
             {
@@ -408,7 +399,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total number of pooled objected created
+            ///   Gets the total number of pooled objected created.
             /// </summary>
             public int TotalInstancesCreated
             {
@@ -416,7 +407,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total number of objects destroyes, both in case of an pool overflow, and state corruption.
+            ///   Gets the total number of objects destroyes, both in case of an pool overflow, and state corruption.
             /// </summary>
             public int TotalInstancesDestroyed
             {
@@ -424,7 +415,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the number of objects been destroyed because the pool was full at the time of returning the object to the pool.
+            ///   Gets the number of objects been destroyed because the pool was full at the time of returning the object to the pool.
             /// </summary>
             public int PoolOverflowCount
             {
@@ -432,7 +423,7 @@ namespace CodeProject.ObjectPool
             }
 
             /// <summary>
-            /// gets the total count of objects that been successfully returned to the pool
+            ///   Gets the total count of objects that been successfully returned to the pool.
             /// </summary>
             public int ReturnedToPoolCount
             {
