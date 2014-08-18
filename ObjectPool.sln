@@ -16,6 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPacka
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectLogo", "ProjectLogo", "{46B475AA-C638-49F7-A102-666505D5A5F1}"
 	ProjectSection(SolutionItems) = preProject
+		ProjectLogo\logo-128.png = ProjectLogo\logo-128.png
+		ProjectLogo\logo-32.png = ProjectLogo\logo-32.png
+		ProjectLogo\logo-64.png = ProjectLogo\logo-64.png
 		ProjectLogo\logo-original.gif = ProjectLogo\logo-original.gif
 	EndProjectSection
 EndProject
