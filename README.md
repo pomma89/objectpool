@@ -4,4 +4,4 @@ Source code has been modified a bit, in order to introduce a Parameterized Objec
 
 Modified source code is freely available at this repository.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/xaon6fgwal0vjbhl)](https://ci.appveyor.com/project/pomma89/objectpool)
+Build status: [![Build status](https://ci.appveyor.com/api/projects/status/xaon6fgwal0vjbhl)](https://ci.appveyor.com/project/pomma89/objectpool)
