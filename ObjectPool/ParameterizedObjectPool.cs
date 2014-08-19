@@ -14,6 +14,12 @@ using System.Diagnostics;
 
 namespace CodeProject.ObjectPool
 {
+    /// <summary>
+    ///   A parameterized version of the ObjectPool class.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
+    /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
+    [Serializable]
     public sealed class ParameterizedObjectPool<TKey, TValue> : ObjectPool where TValue : PooledObject
     {
         private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();

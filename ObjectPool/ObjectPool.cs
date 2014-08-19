@@ -16,6 +16,10 @@ using Thrower;
 
 namespace CodeProject.ObjectPool
 {
+    /// <summary>
+    ///   Base class for ObjectPools.
+    /// </summary>
+    [Serializable]
     public abstract class ObjectPool
     {
         internal ObjectPool() {}
@@ -46,6 +50,7 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="T">
     ///   The type of the object that which will be managed by the pool. The pooled object have to be a sub-class of PooledObject.
     /// </typeparam>
+    [Serializable]
     public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
     {
         /// <summary>

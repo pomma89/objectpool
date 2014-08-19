@@ -15,8 +15,9 @@ using Thrower;
 namespace CodeProject.ObjectPool
 {
     /// <summary>
-    /// PooledObject base calss
+    ///   PooledObject base class.
     /// </summary>
+    [Serializable]
     public abstract class PooledObject : IDisposable
     {
         #region Internal Properties
@@ -119,6 +120,10 @@ namespace CodeProject.ObjectPool
         #endregion
     }
 
+    /// <summary>
+    ///   PooledObject wrapper, for classes which cannot inherit from that class.
+    /// </summary>
+    [Serializable]
     public sealed class PooledObjectWrapper<T> : PooledObject where T : class
     {
         private readonly T _internalResource;
