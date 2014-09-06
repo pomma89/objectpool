@@ -11,8 +11,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Threading;
-using Thrower;
 
 namespace CodeProject.ObjectPool
 {
@@ -26,12 +26,11 @@ namespace CodeProject.ObjectPool
 
         #region Validation
 
-        [Conditional(RaiseBase.UseThrowerDefine)]
         protected static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
         {
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize < 0, ErrorMessages.NegativeMinimumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize < 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize > maximumPoolSize, ErrorMessages.WrongCacheBounds);
+            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize >= 0, ErrorMessages.NegativeMinimumPoolSize);
+            Contract.Requires<ArgumentOutOfRangeException>(maximumPoolSize >= 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
         }
 
         #endregion

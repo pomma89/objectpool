@@ -9,8 +9,8 @@
  */
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Threading;
-using Thrower;
 
 namespace CodeProject.ObjectPool
 {
@@ -130,7 +130,7 @@ namespace CodeProject.ObjectPool
 
         public PooledObjectWrapper(T resource)
         {
-            Raise<ArgumentNullException>.IfIsNull(resource, ErrorMessages.NullResource);
+            Contract.Requires<ArgumentNullException>(resource != null, ErrorMessages.NullResource);
             // Setting the internal resource
             _internalResource = resource;
         }
