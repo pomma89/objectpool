@@ -29,4 +29,21 @@ assembly_info:
   assembly_file_version: "{version}"
   assembly_informational_version: "{version}"
 
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: Any CPU
+
+build:
+  project: ObjectPool.sln      # path to Visual Studio solution or project
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Debug
+  
+#---------------------------------#
+#          web settings           #
+#---------------------------------#
+
 # crontab: 0 21 * * *
