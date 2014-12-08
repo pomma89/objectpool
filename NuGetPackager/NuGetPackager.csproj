@@ -58,6 +58,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="lib\net40\" />
     <Folder Include="lib\portable-net45+win8+wp81\" />
   </ItemGroup>
   <ItemGroup>

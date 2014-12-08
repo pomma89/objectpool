@@ -16,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6707C111-57B0-462E-A450-BD4DE8AA328C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPackager\NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB805911-63DD-4E2E-A03C-963DA1C72738} = {BB805911-63DD-4E2E-A03C-963DA1C72738}
+		{B5106212-8593-4599-B966-113DCB9F8F35} = {B5106212-8593-4599-B966-113DCB9F8F35}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{46B475AA-C638-49F7-A102-666505D5A5F1}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F24E7E
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NET40", "ObjectPool.NET40\ObjectPool.NET40.csproj", "{BB805911-63DD-4E2E-A03C-963DA1C72738}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +58,10 @@ Global
 		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

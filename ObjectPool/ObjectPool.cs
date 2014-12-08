@@ -294,7 +294,7 @@ namespace CodeProject.ObjectPool
             if (_pooledObjects.TryDequeue(out dequeuedObject))
             {
                 // Invokes AdjustPoolSize asynchronously.
-                Task.Run((Action) AdjustPoolSizeToBounds);
+                Task.Factory.StartNew(AdjustPoolSizeToBounds);
 
                 // Diagnostics update.
                 Diagnostics.IncrementPoolObjectHitCount();
