@@ -109,7 +109,7 @@ namespace CodeProject.ObjectPool
         public void Dispose()
         {
             // Returning to pool
-            Task.Run(() => HandleReAddingToPool(false));
+            Task.Factory.StartNew(() => HandleReAddingToPool(false));
         }
 
         private void HandleReAddingToPool(bool reRegisterForFinalization)
@@ -209,6 +209,8 @@ namespace CodeProject.ObjectPool
 
 #region Hacks for Portable Library
 
+#if PORTABLE
+
 namespace System
 {
     /// <summary>
@@ -221,5 +223,7 @@ namespace System
         // Empty
     }
 }
+
+#endif
 
 #endregion Hacks for Portable Library
