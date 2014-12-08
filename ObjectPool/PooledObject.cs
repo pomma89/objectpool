@@ -39,9 +39,9 @@ namespace CodeProject.ObjectPool
         #region Internal Methods - resource and state management
 
         /// <summary>
-        ///   Releases the object resources This method will be called by the pool manager when
+        ///   Releases the object resources. This method will be called by the pool manager when
         ///   there is no need for this object anymore (decreasing pooled objects count, pool is
-        ///   being destroyed)
+        ///   being destroyed).
         /// </summary>
         /// <returns></returns>
         internal bool ReleaseResources()
@@ -61,8 +61,8 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Reset the object state This method will be called by the pool manager just before the
-        ///   object is being returned to the pool
+        ///   Reset the object state. This method will be called by the pool manager just before the
+        ///   object is being returned to the pool.
         /// </summary>
         /// <returns></returns>
         internal bool ResetState()
@@ -103,6 +103,9 @@ namespace CodeProject.ObjectPool
 
         #region Returning object to pool - Dispose and Finalizer
 
+        /// <summary>
+        ///   See <see cref="IDisposable"/> docs.
+        /// </summary>
         public void Dispose()
         {
             // Returning to pool
@@ -129,6 +132,9 @@ namespace CodeProject.ObjectPool
             }
         }
 
+        /// <summary>
+        ///   PooledObject destructor.
+        /// </summary>
         ~PooledObject()
         {
             // Resurrecting the object
@@ -146,6 +152,10 @@ namespace CodeProject.ObjectPool
     {
         private readonly T _internalResource;
 
+        /// <summary>
+        ///   Wraps a given resource so that it can be put in the pool.
+        /// </summary>
+        /// <param name="resource">The resource to be wrapped.</param>
         public PooledObjectWrapper(T resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null, ErrorMessages.NullResource);
@@ -153,8 +163,14 @@ namespace CodeProject.ObjectPool
             _internalResource = resource;
         }
 
+        /// <summary>
+        ///   Triggered by the pool manager when there is no need for this object anymore.
+        /// </summary>
         public Action<T> WrapperReleaseResourcesAction { get; set; }
 
+        /// <summary>
+        ///   Triggered by the pool manager just before the object is being returned to the pool.
+        /// </summary>
         public Action<T> WrapperResetStateAction { get; set; }
 
         /// <summary>
@@ -165,6 +181,9 @@ namespace CodeProject.ObjectPool
             get { return _internalResource; }
         }
 
+        /// <summary>
+        ///   Triggers <see cref="WrapperReleaseResourcesAction"/>, if any.
+        /// </summary>
         protected override void OnReleaseResources()
         {
             var safeAction = WrapperReleaseResourcesAction;
@@ -174,6 +193,9 @@ namespace CodeProject.ObjectPool
             }
         }
 
+        /// <summary>
+        ///   Triggers <see cref="WrapperResetStateAction"/>, if any.
+        /// </summary>
         protected override void OnResetState()
         {
             var safeAction = WrapperResetStateAction;

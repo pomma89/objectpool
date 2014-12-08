@@ -112,6 +112,11 @@ namespace CodeProject.ObjectPool
 
         #endregion C'tor and Initialization code
 
+        /// <summary>
+        ///   Gets an object linked to given key.
+        /// </summary>
+        /// <param name="key">The key linked to the object.</param>
+        /// <returns>The objects linked to given key.</returns>
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
