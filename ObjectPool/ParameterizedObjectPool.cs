@@ -1,11 +1,11 @@
-﻿/* 
+﻿/*
  * Generic Object Pool Implementation
- *  
+ *
  * Implemented by Ofir Makmal, 28/1/2013
  *
  * My Blog: Blogs.microsoft.co.il/blogs/OfirMakmal
  * Email:   Ofir.Makmal@gmail.com
- * 
+ *
  */
 
 using System;
@@ -58,31 +58,40 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Gets the Factory method that will be used for creating new objects. 
+        ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
         public Func<TKey, TValue> FactoryMethod { get; private set; }
 
-        #endregion
-        
+        #endregion Public Properties
+
         #region C'tor and Initialization code
 
         /// <summary>
         ///   Initializes a new pool with default settings.
         /// </summary>
-        public ParameterizedObjectPool() : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null) {}
+        public ParameterizedObjectPool()
+            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null)
+        {
+        }
 
         /// <summary>
         ///   Initializes a new pool with specified minimum pool size and maximum pool size
         /// </summary>
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize) : this(minimumPoolSize, maximumPoolSize, null) {}
+        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize)
+            : this(minimumPoolSize, maximumPoolSize, null)
+        {
+        }
 
         /// <summary>
         ///   Initializes a new pool with specified factory method.
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ParameterizedObjectPool(Func<TKey, TValue> factoryMethod) : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod) {}
+        public ParameterizedObjectPool(Func<TKey, TValue> factoryMethod)
+            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod)
+        {
+        }
 
         /// <summary>
         ///   Initializes a new pool with specified factory method and minimum and maximum size.
@@ -101,31 +110,41 @@ namespace CodeProject.ObjectPool
             _minimumPoolSize = minimumPoolSize;
         }
 
-        #endregion
+        #endregion C'tor and Initialization code
 
+        /// <summary>
+        ///   Gets an object linked to given key.
+        /// </summary>
+        /// <param name="key">The key linked to the object.</param>
+        /// <returns>The objects linked to given key.</returns>
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
-            if (!_pools.TryGetValue(key, out pool)) {
-                // Initialize the new pool
+            
+            if (!_pools.TryGetValue(key, out pool))
+            {
+                // Initialize the new pool.
                 pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
-                if (!_pools.TryAdd(key, pool)) {
+                if (!_pools.TryAdd(key, pool))
+                {
                     // Someone added the pool in the meantime!
                     _pools.TryGetValue(key, out pool);
                 }
             }
-            Debug.Assert(pool != null);
+            
+            Debug.Assert(pool != null);            
             return pool.GetObject();
         }
 
         private Func<TValue> PrepareFactoryMethod(TKey key)
         {
             var factory = FactoryMethod;
-            if (factory == null) {
+            if (factory == null)
+            {
                 // Use the default parameterless constructor.
                 return null;
             }
             return () => factory(key);
-        } 
+        }
     }
 }
