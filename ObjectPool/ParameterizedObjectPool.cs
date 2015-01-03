@@ -9,8 +9,8 @@
  */
 
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
+using PommaLabs.GRAMPA.Collections;
 
 namespace CodeProject.ObjectPool
 {
@@ -44,7 +44,8 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Gets or sets the maximum number of objects that could be available at the same time in the pool.
+        ///   Gets or sets the maximum number of objects that could be available at the same time in
+        ///   the pool.
         /// </summary>
         public int MaximumPoolSize
         {
@@ -120,7 +121,7 @@ namespace CodeProject.ObjectPool
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
-            
+
             if (!_pools.TryGetValue(key, out pool))
             {
                 // Initialize the new pool.
@@ -131,8 +132,8 @@ namespace CodeProject.ObjectPool
                     _pools.TryGetValue(key, out pool);
                 }
             }
-            
-            Debug.Assert(pool != null);            
+
+            Debug.Assert(pool != null);
             return pool.GetObject();
         }
 

@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\net40\" />
-    <Folder Include="lib\portable-net45+win8+wp81\" />
+    <Folder Include="lib\portable-net45+win8+wp8+wpa81\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.htm" />

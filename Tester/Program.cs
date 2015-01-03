@@ -6,25 +6,25 @@ namespace ObjectPoolTester
     {
         private static void Main(string[] args)
         {
-            // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory method to create and instance of ExpensiveResource
+            // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
+            // method to create and instance of ExpensiveResource
             var pool = new ObjectPool<ExpensiveResource>(5, 25, () => new ExpensiveResource( /* resource specific initialization */));
 
-            using (var resource = pool.GetObject()) {
-                // Using the resource
-                // ...
+            using (var resource = pool.GetObject())
+            {
+                // Using the resource ...
             } // Exiting the using scope will return the object back to the pool
 
-
             // Creating a pool with wrapper object for managing external resources
-            var newPool =
-                new ObjectPool<PooledObjectWrapper<ExternalExpensiveResource>>(
-                    () =>
-                        new PooledObjectWrapper<ExternalExpensiveResource>(CreateNewResource()) {
-                            WrapperReleaseResourcesAction = r => ExternalResourceReleaseResource(r),
-                            WrapperResetStateAction = r => ExternalResourceResetState(r)
-                        });
+            var newPool = new ObjectPool<PooledObjectWrapper<ExternalExpensiveResource>>(() =>
+                new PooledObjectWrapper<ExternalExpensiveResource>(CreateNewResource())
+                {
+                    WrapperReleaseResourcesAction = r => ExternalResourceReleaseResource(r),
+                    WrapperResetStateAction = r => ExternalResourceResetState(r)
+                });
 
-            using (var wrapper = newPool.GetObject()) {
+            using (var wrapper = newPool.GetObject())
+            {
                 // wrapper.InternalResource.DoStuff()
             }
         }
@@ -58,5 +58,5 @@ namespace ObjectPoolTester
         }
     }
 
-    public class ExternalExpensiveResource {}
+    public class ExternalExpensiveResource { }
 }
