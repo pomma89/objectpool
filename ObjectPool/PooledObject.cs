@@ -206,24 +206,3 @@ namespace CodeProject.ObjectPool
         }
     }
 }
-
-#region Hacks for Portable Library
-
-#if PORTABLE
-
-namespace System
-{
-    /// <summary>
-    ///   Attribute marker to allow definition of serializable objects, despite we are working with
-    ///   a portable class library.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    internal sealed class SerializableAttribute : Attribute
-    {
-        // Empty
-    }
-}
-
-#endif
-
-#endregion Hacks for Portable Library
