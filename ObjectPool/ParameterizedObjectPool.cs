@@ -126,10 +126,11 @@ namespace CodeProject.ObjectPool
             {
                 // Initialize the new pool.
                 pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
-                if (!_pools.TryAdd(key, pool))
+                ObjectPool<TValue> foundPool;
+                if (!_pools.TryAdd(key, pool, out foundPool))
                 {
                     // Someone added the pool in the meantime!
-                    _pools.TryGetValue(key, out pool);
+                    pool = foundPool;
                 }
             }
 
