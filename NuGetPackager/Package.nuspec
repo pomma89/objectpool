@@ -27,7 +27,7 @@ A generic, concurrent and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="PommaLabs.GRAMPA" version="1.5.0" />
+            <dependency id="PommaLabs.GRAMPA" version="1.5.1" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
