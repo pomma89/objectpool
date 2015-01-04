@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security;
 
 // General Information about an assembly is controlled through the following set of attributes.
@@ -28,3 +29,6 @@ using System.Security;
 
 // Specifies that an assembly cannot cause an elevation of privilege.
 [assembly: SecurityTransparent]
+
+// To allow simpler unit testing.
+[assembly: InternalsVisibleTo("UnitTests")]

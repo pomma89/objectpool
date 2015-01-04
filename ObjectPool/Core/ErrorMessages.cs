@@ -8,18 +8,12 @@
  *
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodeProject.ObjectPool
+namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
     ///   Static class containing all error messages used by ObjectPool.
     /// </summary>
-    public static class ErrorMessages
+    internal static class ErrorMessages
     {
         /// <summary>
         ///   An error message.

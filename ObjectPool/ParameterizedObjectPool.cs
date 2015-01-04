@@ -10,7 +10,7 @@
 
 using System;
 using System.Diagnostics;
-using PommaLabs.GRAMPA.Collections;
+using PommaLabs.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -34,7 +34,10 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public int MinimumPoolSize
         {
-            get { return _minimumPoolSize; }
+            get
+            {
+                return _minimumPoolSize;
+            }
             set
             {
                 // Validating pool limits, exception is thrown if invalid
@@ -49,7 +52,10 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public int MaximumPoolSize
         {
-            get { return _maximumPoolSize; }
+            get
+            {
+                return _maximumPoolSize;
+            }
             set
             {
                 // Validating pool limits, exception is thrown if invalid
