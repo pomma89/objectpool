@@ -13,7 +13,8 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
-using PommaLabs.GRAMPA.Collections;
+using CodeProject.ObjectPool.Core;
+using PommaLabs.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -110,7 +111,10 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public int MinimumPoolSize
         {
-            get { return _minimumPoolSize; }
+            get
+            {
+                return _minimumPoolSize;
+            }
             set
             {
                 // Validating pool limits, exception is thrown if invalid.
@@ -128,7 +132,10 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public int MaximumPoolSize
         {
-            get { return _maximumPoolSize; }
+            get
+            {
+                return _maximumPoolSize;
+            }
             set
             {
                 // Validating pool limits, exception is thrown if invalid.
@@ -406,7 +413,7 @@ namespace CodeProject.ObjectPool
             private long _poolOverflowCount;
 
             private long _returnedToPoolByRessurectionCount;
-            private long _ReturnedToPoolCount;
+            private long _returnedToPoolCount;
             private long _totalInstancesCreated;
             private long _totalInstancesDestroyed;
 
@@ -490,7 +497,7 @@ namespace CodeProject.ObjectPool
             /// </summary>
             public long ReturnedToPoolCount
             {
-                get { return _ReturnedToPoolCount; }
+                get { return _returnedToPoolCount; }
             }
 
             #endregion Public Properties and backing fields
@@ -557,7 +564,7 @@ namespace CodeProject.ObjectPool
             {
                 if (Enabled)
                 {
-                    Interlocked.Increment(ref _ReturnedToPoolCount);
+                    Interlocked.Increment(ref _returnedToPoolCount);
                 }
             }
 
