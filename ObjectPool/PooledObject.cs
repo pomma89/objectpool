@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
