@@ -58,7 +58,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lib\net40\" />
+    <Folder Include="lib\net40-client\" />
     <Folder Include="lib\portable-net45+win8+wp8+wpa81\" />
   </ItemGroup>
   <ItemGroup>
