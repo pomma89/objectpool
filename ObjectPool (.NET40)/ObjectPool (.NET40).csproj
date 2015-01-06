@@ -14,6 +14,7 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -152,8 +153,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "CodeProject.ObjectPool.dll" "$(SolutionDir)NuGetPackager/lib/net40"
-copy "CodeProject.ObjectPool.xml" "$(SolutionDir)NuGetPackager/lib/net40"</PostBuildEvent>
+    <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager/lib/net40-client" mkdir "$(SolutionDir)NuGet Packager/lib/net40-client"
+copy "CodeProject.ObjectPool.dll" "$(SolutionDir)NuGet Packager/lib/net40-client"
+copy "CodeProject.ObjectPool.xml" "$(SolutionDir)NuGet Packager/lib/net40-client"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
