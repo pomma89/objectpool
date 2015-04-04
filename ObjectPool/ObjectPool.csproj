@@ -181,6 +181,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager/lib/portable-net45+win8+wp8+wpa81" mkdir "$(SolutionDir)NuGet Packager/lib/portable-net45+win8+wp8+wpa81"
 copy "CodeProject.ObjectPool.dll" "$(SolutionDir)NuGet Packager/lib/portable-net45+win8+wp8+wpa81"
+copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)NuGet Packager/lib/portable-net45+win8+wp8+wpa81"
 copy "CodeProject.ObjectPool.xml" "$(SolutionDir)NuGet Packager/lib/portable-net45+win8+wp8+wpa81"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
