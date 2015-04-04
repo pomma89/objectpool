@@ -34,7 +34,7 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="T">The type of the object inheriting this class.</typeparam>
     [Serializable]
-    internal abstract class EquatableObject<T> : FormattableObject, IEquatable<T>
+    public abstract class EquatableObject<T> : FormattableObject, IEquatable<T>
         where T : EquatableObject<T>
     {
         /// <summary>
@@ -151,7 +151,7 @@ namespace CodeProject.ObjectPool
     ///   objects may be properly serialized as references by XML serializers.
     /// </remarks>
     [Serializable, DataContract(IsReference = true)]
-    internal abstract class EquatableReferenceObject<T> : FormattableReferenceObject, IEquatable<T>
+    public abstract class EquatableReferenceObject<T> : FormattableReferenceObject, IEquatable<T>
         where T : EquatableReferenceObject<T>
     {
         /// <summary>

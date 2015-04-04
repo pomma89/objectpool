@@ -34,7 +34,7 @@ namespace CodeProject.ObjectPool
     ///   same boilerplate code over and over again.
     /// </summary>
     [Serializable]
-    internal abstract class FormattableObject
+    public abstract class FormattableObject
     {
         #region Abstract Methods
 
@@ -80,7 +80,7 @@ namespace CodeProject.ObjectPool
     ///   objects may be properly serialized as references by XML serializers.
     /// </remarks>
     [Serializable, DataContract(IsReference = true)]
-    internal abstract class FormattableReferenceObject
+    public abstract class FormattableReferenceObject
     {
         #region Abstract Methods
 

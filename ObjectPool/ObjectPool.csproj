@@ -142,7 +142,6 @@
     <Compile Include="GRAMPA\EquatableObject.cs" />
     <Compile Include="GRAMPA\Extensions\BooleanExtensions.cs" />
     <Compile Include="GRAMPA\Extensions\DataTableExtensions.cs" />
-    <Compile Include="GRAMPA\Extensions\DateTimeExtensions.cs" />
     <Compile Include="GRAMPA\Extensions\DecimalExtensions.cs" />
     <Compile Include="GRAMPA\Extensions\DelegateExtensions.cs" />
     <Compile Include="GRAMPA\Extensions\DoubleExtensions.cs" />

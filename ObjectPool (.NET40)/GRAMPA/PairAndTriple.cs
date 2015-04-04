@@ -243,7 +243,7 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="T1">The type of the key.</typeparam>
     /// <typeparam name="T2">The type of the value.</typeparam>
     [Serializable, JsonObject(MemberSerialization.OptIn)]
-    internal sealed class GKeyValuePair<T1, T2> : EquatableObject<GKeyValuePair<T1, T2>>, IList<object>
+    public sealed class GKeyValuePair<T1, T2> : EquatableObject<GKeyValuePair<T1, T2>>, IList<object>
     {
         /// <summary>
         ///   Gets or sets the key.
