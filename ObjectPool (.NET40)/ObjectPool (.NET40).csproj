@@ -15,6 +15,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <NuGetPackageImportStamp>2acb358d</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -122,16 +123,27 @@
     <DocumentationFile>bin\Release\CodeProject.ObjectPool.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PommaLabs.GRAMPA, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\PommaLabs.GRAMPA.2.1.0\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ObjectPool\Core\ErrorMessages.cs">
@@ -146,6 +158,51 @@
     <Compile Include="..\ObjectPool\PooledObject.cs">
       <Link>PooledObject.cs</Link>
     </Compile>
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentDictionary.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentDoublyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentHashLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentQueue.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentSinglyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentThinLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Contracts\LinkedListsContracts.cs" />
+    <Compile Include="GRAMPA\Collections\Core\LinkedListsBases.cs" />
+    <Compile Include="GRAMPA\Collections\Core\LinkedListsNodes.cs" />
+    <Compile Include="GRAMPA\Collections\DoublyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\HashLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedListsInterfaces.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedQueue.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedStack.cs" />
+    <Compile Include="GRAMPA\Collections\ReadOnly\ReadOnlyDictionary.cs" />
+    <Compile Include="GRAMPA\Collections\ReadOnly\ReadOnlyList.cs" />
+    <Compile Include="GRAMPA\Collections\SinglyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\ThinLinkedList.cs" />
+    <Compile Include="GRAMPA\Constants.cs" />
+    <Compile Include="GRAMPA\Core\ErrorMessages.cs" />
+    <Compile Include="GRAMPA\Diagnostics\Raise.cs" />
+    <Compile Include="GRAMPA\Environment.cs" />
+    <Compile Include="GRAMPA\EquatableObject.cs" />
+    <Compile Include="GRAMPA\Extensions\BooleanExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DataTableExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DecimalExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DelegateExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DoubleExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\EventExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\IntegerExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\ObjectExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\StringExtensions.cs" />
+    <Compile Include="GRAMPA\FormattableObject.cs" />
+    <Compile Include="GRAMPA\PairAndTriple.cs" />
+    <Compile Include="GRAMPA\Portability\SerializableAttribute.cs" />
+    <Compile Include="GRAMPA\Portability\TypeInfo.cs" />
+    <Compile Include="GRAMPA\Reflection\ServiceLocator.cs" />
+    <Compile Include="GRAMPA\Testing\RandomDataTableGenerator.cs" />
+    <Compile Include="GRAMPA\Text\DiffMatchPatch.cs" />
+    <Compile Include="GRAMPA\Text\FastReplacer.cs" />
+    <Compile Include="GRAMPA\Threading\ConcurrentWorkQueue.cs" />
+    <Compile Include="GRAMPA\Tuples.cs" />
+    <Compile Include="GRAMPA\XML\DynamicXml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -163,7 +220,9 @@ copy "CodeProject.ObjectPool.xml" "$(SolutionDir)NuGet Packager/lib/net40-client
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

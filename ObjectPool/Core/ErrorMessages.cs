@@ -13,7 +13,7 @@ namespace CodeProject.ObjectPool.Core
     /// <summary>
     ///   Static class containing all error messages used by ObjectPool.
     /// </summary>
-    internal static class ErrorMessages
+    internal static partial class ErrorMessages
     {
         /// <summary>
         ///   An error message.
