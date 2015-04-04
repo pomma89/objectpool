@@ -8,17 +8,17 @@
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-            A generic, concurrent and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T).
+A generic, concurrent and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T).
 
-            Source code has been modified a bit, in order to introduce a Parameterized Object Pool, already drafted in the comments of the article.
+Source code has been modified a bit, in order to introduce a Parameterized Object Pool, already drafted in the comments of the article.
 
-            Modified source code is freely available at the project URL of this package.
+Modified source code is freely available at the project URL of this package.
         </description>
         <releaseNotes>
-            * Now a portable library, targeting .NET 4.5, Windows 8 and Windows Phone 8/8.1. There is also a .NET 4.0 (client) DLL.
+* The project is now dependency-free.
         </releaseNotes>
         <summary>
-            A generic, concurrent and flexible Object Pool for the .NET Framework.
+A generic, concurrent and flexible Object Pool for the .NET Framework.
         </summary>
         <language>en-US</language>
         <projectUrl>https://bitbucket.org/pomma89/objectpool</projectUrl>
@@ -26,9 +26,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
-        <dependencies>
-            <dependency id="PommaLabs.GRAMPA" version="2.1.2" />
-        </dependencies>
+        <dependencies></dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
         <tags>codeproject object pool concurrent generic threadsafe portable</tags>

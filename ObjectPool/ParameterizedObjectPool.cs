@@ -10,7 +10,7 @@
 
 using System;
 using System.Diagnostics;
-using PommaLabs.Collections.Concurrent;
+using CodeProject.ObjectPool.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
