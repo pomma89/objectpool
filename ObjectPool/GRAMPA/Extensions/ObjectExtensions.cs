@@ -36,7 +36,7 @@ namespace CodeProject.ObjectPool.Extensions
     /// <summary>
     ///   TODO
     /// </summary>
-    public static partial class ObjectExtensions
+    internal static partial class ObjectExtensions
     {
         /// <summary>
         ///   Converts the specified object using the "as" operator.
@@ -86,7 +86,7 @@ namespace CodeProject.ObjectPool.Extensions
     /// <summary>
     ///   TODO
     /// </summary>
-    public static partial class ObjectExtensions
+    internal static partial class ObjectExtensions
     {
 #region Hashing
 
