@@ -32,7 +32,7 @@ namespace CodeProject.ObjectPool.Collections
     /// </summary>
     /// <typeparam name="T">The type of the items of the list.</typeparam>
     [ContractClass(typeof(ThinLinkedListContract<>))]
-    public interface IThinLinkedList<T> : ICollection<T>
+    internal interface IThinLinkedList<T> : ICollection<T>
     {
         /// <summary>
         ///   The equality comparer used to determine whether two items are equal.
@@ -64,7 +64,7 @@ namespace CodeProject.ObjectPool.Collections
     ///   </summary>
     /// <typeparam name="T">The type of the items of the list.</typeparam>
     [ContractClass(typeof(LinkedListContract<>))]
-    public interface ILinkedList<T> : IThinLinkedList<T>
+    internal interface ILinkedList<T> : IThinLinkedList<T>
     {
         /// <summary>
         ///   The last item of the list.
@@ -96,7 +96,7 @@ namespace CodeProject.ObjectPool.Collections
     ///   </summary>
     /// <typeparam name="T">The type of the items of the list.</typeparam>
     [ContractClass(typeof(DoublyLinkedListContract<>))]
-    public interface IDoublyLinkedList<T> : ILinkedList<T>
+    internal interface IDoublyLinkedList<T> : ILinkedList<T>
     {
         /// <summary>
         ///   Appends given list to this list; after this operation, <paramref name="list"/> is
@@ -134,7 +134,7 @@ namespace CodeProject.ObjectPool.Collections
     ///   </summary>
     /// <typeparam name="T">The type of the items of the list.</typeparam>
     [ContractClass(typeof(HashLinkedListContract<>))]
-    public interface IHashLinkedList<T> : ICollection<T>
+    internal interface IHashLinkedList<T> : ICollection<T>
     {
         /// <summary>
         ///   The equality comparer used to determine whether two items are equal.
@@ -250,7 +250,7 @@ namespace CodeProject.ObjectPool.Collections
     ///   </summary>
     /// <typeparam name="T">The type of the items of the queue.</typeparam>
     [ContractClass(typeof(LinkedQueueContract<>))]
-    public interface ILinkedQueue<T> : IEnumerable<T>
+    internal interface ILinkedQueue<T> : IEnumerable<T>
     {
         /// <summary>
         ///   The number of items contained in the queue.
@@ -282,7 +282,7 @@ namespace CodeProject.ObjectPool.Collections
     ///   </summary>
     /// <typeparam name="T">The type of the items of the stack.</typeparam>
     [ContractClass(typeof(LinkedStackContract<>))]
-    public interface ILinkedStack<T> : IEnumerable<T>
+    internal interface ILinkedStack<T> : IEnumerable<T>
     {
         /// <summary>
         ///   The number of items contained in the stack.
