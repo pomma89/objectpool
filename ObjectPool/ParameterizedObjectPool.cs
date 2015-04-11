@@ -10,7 +10,7 @@
 
 using System;
 using System.Diagnostics;
-using CodeProject.ObjectPool.Collections.Concurrent;
+using CodeProject.ObjectPool.Utilities.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
