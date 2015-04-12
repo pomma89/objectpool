@@ -20,8 +20,8 @@ using System.Security;
 // 
 // You can specify all the values or you can default the Build and Revision Numbers by using the '*'
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.4")]
-[assembly: AssemblyFileVersion("1.3.4")]
+[assembly: AssemblyVersion("1.3.5")]
+[assembly: AssemblyFileVersion("1.3.5")]
 
 // Common Language Specification (CLS) compliance generally refers to the claim that CLS rules and
 // restrictions are being followed.
