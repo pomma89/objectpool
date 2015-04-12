@@ -1,6 +1,6 @@
 namespace CodeProject.ObjectPool.Utilities
 {
-    public static class Option
+    internal static class Option
     {
         public static Option<T> None<T>() where T : class
         {
@@ -13,7 +13,7 @@ namespace CodeProject.ObjectPool.Utilities
         }
     }
 
-    public struct Option<T> : System.IEquatable<Option<T>> where T : class
+    internal struct Option<T> : System.IEquatable<Option<T>> where T : class
     {
         private readonly T _value;
 
