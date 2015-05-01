@@ -218,7 +218,7 @@ namespace CodeProject.ObjectPool
 
         #region Private Methods
 
-        private void AdjustPoolSizeToBounds()
+        internal void AdjustPoolSizeToBounds()
         {
             // If there is an Adjusting operation in progress, skip and return.
             if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
