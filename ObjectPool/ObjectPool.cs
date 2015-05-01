@@ -127,9 +127,7 @@ namespace CodeProject.ObjectPool
             {
                 // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(value, _maximumPoolSize);
-
                 _minimumPoolSize = value;
-
                 AdjustPoolSizeToBounds();
             }
         }
@@ -150,9 +148,7 @@ namespace CodeProject.ObjectPool
             {
                 // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(_minimumPoolSize, value);
-
                 _maximumPoolSize = value;
-
                 AdjustPoolSizeToBounds();
             }
         }
@@ -247,6 +243,7 @@ namespace CodeProject.ObjectPool
             // interferences :)
 
             // Adjusting...
+
             while (ObjectsInPoolCount < MinimumPoolSize)
             {
                 _pooledObjects = QueueModule.conj(CreatePooledObject(), _pooledObjects);
@@ -254,21 +251,33 @@ namespace CodeProject.ObjectPool
 
             while (ObjectsInPoolCount > MaximumPoolSize)
             {
-                var dequeuedObjectToDestroy = _pooledObjects.TryUncons;
+                var dequeuedObjectToDestroy = SafelyDequeueFromPool();
                 if (dequeuedObjectToDestroy != null)
                 {
-                    // Updates the queue, assigning the tail to the main queue.
-                    _pooledObjects = dequeuedObjectToDestroy.Value.Item2;
-
                     // Diagnostics update.
                     Diagnostics.IncrementPoolOverflowCount();
 
-                    DestroyPooledObject(dequeuedObjectToDestroy.Value.Item1);
+                    DestroyPooledObject(dequeuedObjectToDestroy);
                 }
             }
 
             // Finished adjusting, allowing additional callers to enter when needed.
             _adjustPoolSizeIsInProgressCasFlag = 0;
+        }
+
+        private T SafelyDequeueFromPool()
+        {
+            lock (_pooledObjects)
+            {
+                var dequeuedObject = _pooledObjects.TryUncons;
+                if (dequeuedObject == null)
+                {
+                    return null;
+                }
+                // Updates the queue, assigning the tail to the main queue.
+                _pooledObjects = dequeuedObject.Value.Item2;
+                return dequeuedObject.Value.Item1;
+            }
         }
 
         private T CreatePooledObject()
@@ -317,19 +326,16 @@ namespace CodeProject.ObjectPool
         /// <returns></returns>
         public T GetObject()
         {
-            var dequeuedObject = _pooledObjects.TryUncons;
+            var dequeuedObject = SafelyDequeueFromPool();
             if (dequeuedObject != null)
             {
-                // Updates the queue, assigning the tail to the main queue.
-                _pooledObjects = dequeuedObject.Value.Item2;
-
                 // Invokes AdjustPoolSize asynchronously.
                 Task.Factory.StartNew(AdjustPoolSizeToBounds);
 
                 // Diagnostics update.
                 Diagnostics.IncrementPoolObjectHitCount();
 
-                return dequeuedObject.Value.Item1;
+                return dequeuedObject;
             }
 
             // This should not happen normally, but could be happening when there is stress on the
