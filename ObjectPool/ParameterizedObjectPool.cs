@@ -10,6 +10,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
@@ -32,6 +33,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
+        [Pure]
         public int MinimumPoolSize
         {
             get
@@ -50,6 +52,7 @@ namespace CodeProject.ObjectPool
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
+        [Pure]
         public int MaximumPoolSize
         {
             get
@@ -67,6 +70,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
+        [Pure]
         public Func<TKey, TValue> FactoryMethod { get; private set; }
 
         #endregion Public Properties
