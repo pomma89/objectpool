@@ -14,14 +14,13 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
-using CodeProject.ObjectPool.Utilities.Collections.Concurrent;
+using FSharpx.Collections;
 
 namespace CodeProject.ObjectPool
 {
     /// <summary>
     ///   Base class for Object Pools.
     /// </summary>
-    [Serializable]
     public abstract class ObjectPool
     {
         internal ObjectPool()
@@ -66,7 +65,6 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to
     ///   be a sub-class of PooledObject.
     /// </typeparam>
-    [Serializable]
     public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
     {
         /// <summary>
@@ -76,8 +74,15 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
 
-        private readonly ConcurrentQueue<T> _pooledObjects;
+        /// <summary>
+        ///   The action performed when an object returns to the pool.
+        /// </summary>
         private readonly Action<PooledObject, bool> _returnToPoolAction;
+
+        /// <summary>
+        ///   The immutable queue containing pooled objects.
+        /// </summary>
+        private Queue<T> _pooledObjects = QueueModule.empty<T>();
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
@@ -103,7 +108,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public int ObjectsInPoolCount
         {
-            get { return _pooledObjects.Count; }
+            get { return _pooledObjects.Length; }
         }
 
         /// <summary>
@@ -199,9 +204,6 @@ namespace CodeProject.ObjectPool
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
 
-            // Initializing the internal pool data structure
-            _pooledObjects = new ConcurrentQueue<T>();
-
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
 
@@ -231,18 +233,21 @@ namespace CodeProject.ObjectPool
             // Adjusting...
             while (ObjectsInPoolCount < MinimumPoolSize)
             {
-                _pooledObjects.Enqueue(CreatePooledObject());
+                _pooledObjects = QueueModule.conj(CreatePooledObject(), _pooledObjects);
             }
 
             while (ObjectsInPoolCount > MaximumPoolSize)
             {
-                T dequeuedObjectToDestroy;
-                if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
+                var dequeuedObjectToDestroy = _pooledObjects.TryUncons;
+                if (dequeuedObjectToDestroy != null)
                 {
+                    // Updates the queue, assigning the tail to the main queue.
+                    _pooledObjects = dequeuedObjectToDestroy.Value.Item2;
+
                     // Diagnostics update.
                     Diagnostics.IncrementPoolOverflowCount();
 
-                    DestroyPooledObject(dequeuedObjectToDestroy);
+                    DestroyPooledObject(dequeuedObjectToDestroy.Value.Item1);
                 }
             }
 
@@ -296,17 +301,19 @@ namespace CodeProject.ObjectPool
         /// <returns></returns>
         public T GetObject()
         {
-            T dequeuedObject;
-
-            if (_pooledObjects.TryDequeue(out dequeuedObject))
+            var dequeuedObject = _pooledObjects.TryUncons;
+            if (dequeuedObject != null)
             {
+                // Updates the queue, assigning the tail to the main queue.
+                _pooledObjects = dequeuedObject.Value.Item2;
+
                 // Invokes AdjustPoolSize asynchronously.
                 Task.Factory.StartNew(AdjustPoolSizeToBounds);
 
                 // Diagnostics update.
                 Diagnostics.IncrementPoolObjectHitCount();
 
-                return dequeuedObject;
+                return dequeuedObject.Value.Item1;
             }
 
             // This should not happen normally, but could be happening when there is stress on the
@@ -354,7 +361,7 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementReturnedToPoolCount();
 
                 // Adding the object back to the pool.
-                _pooledObjects.Enqueue(returnedObject);
+                _pooledObjects = QueueModule.conj(returnedObject, _pooledObjects);
             }
             else
             {
