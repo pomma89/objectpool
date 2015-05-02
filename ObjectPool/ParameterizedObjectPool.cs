@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Common.Collections.Concurrent;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
@@ -23,6 +24,7 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : ObjectPool where TValue : PooledObject
     {
+        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
         private FSharpMap<TKey, ObjectPool<TValue>> _pools = MapModule.Empty<TKey, ObjectPool<TValue>>();
 
         private int _minimumPoolSize;

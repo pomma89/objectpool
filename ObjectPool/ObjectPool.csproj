@@ -123,16 +123,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=3.259.3.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FSharp.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharpx.Collections, Version=1.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FSharpx.Collections.1.10.1\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FSharpx.Collections.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
