@@ -16,10 +16,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following set of attributes.
 // Change these attribute values to modify the information associated with an assembly.
 [assembly: AssemblyTitle("CodeProject.ObjectPool")]
-[assembly: AssemblyDescription("An implementation of a Generic Object Pool.")]
+[assembly: AssemblyDescription("A generic, concurrent, portable and flexible Object Pool for the .NET Framework.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ofir Makmal")]
-[assembly: AssemblyProduct("Generic Object Pool")]
+[assembly: AssemblyProduct("CodeProject")]
 [assembly: AssemblyCopyright("Copyright © Ofir Makmal 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

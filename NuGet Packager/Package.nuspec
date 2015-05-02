@@ -4,24 +4,27 @@
     <metadata>
         <id>CodeProject.ObjectPool</id>
         <version>1.4.2</version>
-        <title>CodeProject.ObjectPool</title>
+        <title>Generic, concurrent and flexible Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-A generic, concurrent and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T).
+A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T).
+Library is production ready and it is successfully working in real life systems.
 
-Source code has been modified a bit, in order to introduce a Parameterized Object Pool, already drafted in the comments of the article.
+Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. 
+Moreover, a few unit tests have been added, in order to improve code reliability, and a lot of other small changes have also been applied. 
+Of course, all modified source code is freely available at the project URL of this package.
 
-Modified source code is freely available at the project URL of this package.
+Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
 * Cleaned up the core library.
         </releaseNotes>
         <summary>
-A generic, concurrent and flexible Object Pool for the .NET Framework.
+A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/objectpool</projectUrl>
+        <projectUrl>https://bitbucket.org/pomma89/objectpool/overview</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
