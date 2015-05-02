@@ -1,0 +1,78 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool", "ObjectPool\ObjectPool.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		LICENSE.htm = LICENSE.htm
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests", "Unit Tests\Unit Tests.csproj", "{6707C111-57B0-462E-A450-BD4DE8AA328C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager", "NuGet Packager\NuGet Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB805911-63DD-4E2E-A03C-963DA1C72738} = {BB805911-63DD-4E2E-A03C-963DA1C72738}
+		{B5106212-8593-4599-B966-113DCB9F8F35} = {B5106212-8593-4599-B966-113DCB9F8F35}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{46B475AA-C638-49F7-A102-666505D5A5F1}"
+	ProjectSection(SolutionItems) = preProject
+		Project Logo\logo-128.png = Project Logo\logo-128.png
+		Project Logo\logo-32.png = Project Logo\logo-32.png
+		Project Logo\logo-64.png = Project Logo\logo-64.png
+		Project Logo\logo-original.gif = Project Logo\logo-original.gif
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F24E7E68-8CB4-454E-82E7-62AFB1CAF214}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool (.NET40)", "ObjectPool (.NET40)\ObjectPool (.NET40).csproj", "{BB805911-63DD-4E2E-A03C-963DA1C72738}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Publish|Any CPU = Publish|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5106212-8593-4599-B966-113DCB9F8F35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6707C111-57B0-462E-A450-BD4DE8AA328C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB805911-63DD-4E2E-A03C-963DA1C72738}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
