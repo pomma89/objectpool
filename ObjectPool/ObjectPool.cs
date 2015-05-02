@@ -14,14 +14,13 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
-using CodeProject.ObjectPool.Utilities.Collections.Concurrent;
+using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
     /// <summary>
     ///   Base class for Object Pools.
     /// </summary>
-    [Serializable]
     public abstract class ObjectPool
     {
         internal ObjectPool()
@@ -66,7 +65,6 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to
     ///   be a sub-class of PooledObject.
     /// </typeparam>
-    [Serializable]
     public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
     {
         /// <summary>
@@ -76,8 +74,15 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
 
-        private readonly ConcurrentQueue<T> _pooledObjects;
+        /// <summary>
+        ///   The action performed when an object returns to the pool.
+        /// </summary>
         private readonly Action<PooledObject, bool> _returnToPoolAction;
+
+        /// <summary>
+        ///   The concurrent queue containing pooled objects.
+        /// </summary>
+        private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
@@ -101,6 +106,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
+        [Pure]
         public int ObjectsInPoolCount
         {
             get { return _pooledObjects.Count; }
@@ -109,19 +115,19 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
+        [Pure]
         public int MinimumPoolSize
         {
             get
             {
+                Contract.Ensures(Contract.Result<int>() >= 0);
                 return _minimumPoolSize;
             }
             set
             {
                 // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(value, _maximumPoolSize);
-
                 _minimumPoolSize = value;
-
                 AdjustPoolSizeToBounds();
             }
         }
@@ -130,19 +136,19 @@ namespace CodeProject.ObjectPool
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
+        [Pure]
         public int MaximumPoolSize
         {
             get
             {
+                Contract.Ensures(Contract.Result<int>() >= 1 && Contract.Result<int>() >= MinimumPoolSize);
                 return _maximumPoolSize;
             }
             set
             {
                 // Validating pool limits, exception is thrown if invalid.
                 ValidatePoolLimits(_minimumPoolSize, value);
-
                 _maximumPoolSize = value;
-
                 AdjustPoolSizeToBounds();
             }
         }
@@ -150,6 +156,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
+        [Pure]
         public Func<T> FactoryMethod { get; private set; }
 
         #endregion Public Properties
@@ -169,6 +176,11 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="minimumPoolSize"/> is less than zero,
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
+        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
+        /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize)
             : this(minimumPoolSize, maximumPoolSize, null)
         {
@@ -189,6 +201,11 @@ namespace CodeProject.ObjectPool
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="minimumPoolSize"/> is less than zero,
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
+        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
+        /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
         {
             // Validating pool limits, exception is thrown if invalid
@@ -198,9 +215,6 @@ namespace CodeProject.ObjectPool
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
-
-            // Initializing the internal pool data structure
-            _pooledObjects = new ConcurrentQueue<T>();
 
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
@@ -216,7 +230,7 @@ namespace CodeProject.ObjectPool
 
         #region Private Methods
 
-        private void AdjustPoolSizeToBounds()
+        internal void AdjustPoolSizeToBounds()
         {
             // If there is an Adjusting operation in progress, skip and return.
             if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
@@ -321,7 +335,6 @@ namespace CodeProject.ObjectPool
 
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
-            Debug.Assert(objectToReturnToPool is T);
             var returnedObject = objectToReturnToPool as T;
 
             // Diagnostics update.
@@ -335,7 +348,7 @@ namespace CodeProject.ObjectPool
             {
                 // Reset the object state (if implemented) before returning it to the pool. If
                 // reseting the object have failed, destroy the object.
-                if (!returnedObject.ResetState())
+                if (returnedObject != null && !returnedObject.ResetState())
                 {
                     // Diagnostics update.
                     Diagnostics.IncrementResetStateFailedCount();

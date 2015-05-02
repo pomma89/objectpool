@@ -123,9 +123,9 @@
     <DocumentationFile>bin\Release\CodeProject.ObjectPool.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.7\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -159,51 +159,6 @@
       <Link>PooledObject.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentDictionary.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentDoublyLinkedList.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentHashLinkedList.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentQueue.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentSinglyLinkedList.cs" />
-    <Compile Include="Utilities\Collections\Concurrent\ConcurrentThinLinkedList.cs" />
-    <Compile Include="Utilities\Collections\Contracts\LinkedListsContracts.cs" />
-    <Compile Include="Utilities\Collections\Core\LinkedListsBases.cs" />
-    <Compile Include="Utilities\Collections\Core\LinkedListsNodes.cs" />
-    <Compile Include="Utilities\Collections\DoublyLinkedList.cs" />
-    <Compile Include="Utilities\Collections\HashLinkedList.cs" />
-    <Compile Include="Utilities\Collections\LinkedListsInterfaces.cs" />
-    <Compile Include="Utilities\Collections\LinkedQueue.cs" />
-    <Compile Include="Utilities\Collections\LinkedStack.cs" />
-    <Compile Include="Utilities\Collections\ReadOnly\ReadOnlyDictionary.cs" />
-    <Compile Include="Utilities\Collections\ReadOnly\ReadOnlyList.cs" />
-    <Compile Include="Utilities\Collections\SinglyLinkedList.cs" />
-    <Compile Include="Utilities\Collections\ThinLinkedList.cs" />
-    <Compile Include="Utilities\Constants.cs" />
-    <Compile Include="Utilities\Core\ErrorMessages.cs" />
-    <Compile Include="Utilities\Diagnostics\Raise.cs" />
-    <Compile Include="Utilities\Environment.cs" />
-    <Compile Include="Utilities\EquatableObject.cs" />
-    <Compile Include="Utilities\Extensions\BooleanExtensions.cs" />
-    <Compile Include="Utilities\Extensions\DataTableExtensions.cs" />
-    <Compile Include="Utilities\Extensions\DecimalExtensions.cs" />
-    <Compile Include="Utilities\Extensions\DelegateExtensions.cs" />
-    <Compile Include="Utilities\Extensions\DoubleExtensions.cs" />
-    <Compile Include="Utilities\Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Utilities\Extensions\EventExtensions.cs" />
-    <Compile Include="Utilities\Extensions\IntegerExtensions.cs" />
-    <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
-    <Compile Include="Utilities\Extensions\StringExtensions.cs" />
-    <Compile Include="Utilities\FormattableObject.cs" />
-    <Compile Include="Utilities\Option.cs" />
-    <Compile Include="Utilities\PairAndTriple.cs" />
-    <Compile Include="Utilities\Portability\SerializableAttribute.cs" />
-    <Compile Include="Utilities\Portability\TypeInfo.cs" />
-    <Compile Include="Utilities\Reflection\ServiceLocator.cs" />
-    <Compile Include="Utilities\Testing\RandomDataTableGenerator.cs" />
-    <Compile Include="Utilities\Text\DiffMatchPatch.cs" />
-    <Compile Include="Utilities\Text\FastReplacer.cs" />
-    <Compile Include="Utilities\Threading\ConcurrentWorkQueue.cs" />
-    <Compile Include="Utilities\Tuples.cs" />
-    <Compile Include="Utilities\XML\DynamicXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

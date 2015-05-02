@@ -44,7 +44,6 @@ namespace CodeProject.ObjectPool
         ///   there is no need for this object anymore (decreasing pooled objects count, pool is
         ///   being destroyed).
         /// </summary>
-        /// <returns></returns>
         internal bool ReleaseResources()
         {
             var successFlag = true;
@@ -65,7 +64,6 @@ namespace CodeProject.ObjectPool
         ///   Reset the object state. This method will be called by the pool manager just before the
         ///   object is being returned to the pool.
         /// </summary>
-        /// <returns></returns>
         internal bool ResetState()
         {
             var successFlag = true;
@@ -157,6 +155,7 @@ namespace CodeProject.ObjectPool
         ///   Wraps a given resource so that it can be put in the pool.
         /// </summary>
         /// <param name="resource">The resource to be wrapped.</param>
+        /// <exception cref="ArgumentNullException">Given resource is null.</exception>
         public PooledObjectWrapper(T resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null, ErrorMessages.NullResource);
@@ -177,13 +176,18 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The resource wrapped inside this class.
         /// </summary>
+        [Pure]
         public T InternalResource
         {
-            get { return _internalResource; }
+            get
+            {
+                Contract.Ensures(Contract.Result<T>() != null);
+                return _internalResource;
+            }
         }
 
         /// <summary>
-        ///   Triggers <see cref="WrapperReleaseResourcesAction"/>, if any.
+        ///   Triggers the <see cref="WrapperReleaseResourcesAction"/>, if any.
         /// </summary>
         protected override void OnReleaseResources()
         {
@@ -195,7 +199,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Triggers <see cref="WrapperResetStateAction"/>, if any.
+        ///   Triggers the <see cref="WrapperResetStateAction"/>, if any.
         /// </summary>
         protected override void OnResetState()
         {
