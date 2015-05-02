@@ -27,7 +27,7 @@ A generic, concurrent and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="FSharpx.Collections" version="1.10.1" />
+            <dependency id="Finsa.CodeServices.Common" version="1.0.7" />
             <dependency id="Microsoft.Bcl" version="1.1.10" />
         </dependencies>
         <references></references>
