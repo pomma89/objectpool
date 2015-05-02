@@ -9,7 +9,6 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +24,7 @@ namespace CodeProject.ObjectPool
     {
         internal ObjectPool()
         {
+            // Constructor is internal because this class is not meant for public consumption.
         }
 
         #region Validation
@@ -325,11 +325,7 @@ namespace CodeProject.ObjectPool
 
             // This should not happen normally, but could be happening when there is stress on the
             // pool. No available objects in pool, create a new one and return it to the caller.
-            Debug.WriteLine("Object pool failed to return a pooled object. pool is empty. consider increasing the number of minimum pooled objects.");
-
-            // Diagnostics update.
             Diagnostics.IncrementPoolObjectMissCount();
-
             return CreatePooledObject();
         }
 

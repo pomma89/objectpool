@@ -15,24 +15,9 @@ namespace CodeProject.ObjectPool.Core
     /// </summary>
     internal static class ErrorMessages
     {
-        /// <summary>
-        ///   An error message.
-        /// </summary>
         public const string NegativeMinimumPoolSize = "Minimum pool size must be greater or equals to zero.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
         public const string NegativeOrZeroMaximumPoolSize = "Maximum pool size must be greater than zero.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
         public const string NullResource = "Resource cannot be null.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
         public const string WrongCacheBounds = "Maximum pool size must be greater than the maximum pool size.";
     }
 }

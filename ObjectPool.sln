@@ -24,9 +24,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{46B475AA-C638-49F7-A102-666505D5A5F1}"
 	ProjectSection(SolutionItems) = preProject
 		Project Logo\logo-128.png = Project Logo\logo-128.png
+		Project Logo\logo-256.png = Project Logo\logo-256.png
 		Project Logo\logo-32.png = Project Logo\logo-32.png
 		Project Logo\logo-64.png = Project Logo\logo-64.png
-		Project Logo\logo-original.gif = Project Logo\logo-original.gif
+		Project Logo\logo-modified.png = Project Logo\logo-modified.png
+		Project Logo\logo-original.png = Project Logo\logo-original.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F24E7E68-8CB4-454E-82E7-62AFB1CAF214}"
