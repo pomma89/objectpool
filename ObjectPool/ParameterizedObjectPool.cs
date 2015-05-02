@@ -12,8 +12,6 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Finsa.CodeServices.Common.Collections.Concurrent;
-using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -25,7 +23,6 @@ namespace CodeProject.ObjectPool
     public sealed class ParameterizedObjectPool<TKey, TValue> : ObjectPool where TValue : PooledObject
     {
         private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
-        private FSharpMap<TKey, ObjectPool<TValue>> _pools = MapModule.Empty<TKey, ObjectPool<TValue>>();
 
         private int _minimumPoolSize;
         private int _maximumPoolSize;
@@ -132,17 +129,22 @@ namespace CodeProject.ObjectPool
         /// <returns>The objects linked to given key.</returns>
         public TValue GetObject(TKey key)
         {
-            var localPools = _pools;
-            var pool = localPools.TryFind(key);
-            if (pool == null)
+            ObjectPool<TValue> pool;
+
+            if (!_pools.TryGetValue(key, out pool))
             {
                 // Initialize the new pool.
-                var objPool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
-                pool = FSharpOption<ObjectPool<TValue>>.Some(objPool);
-                _pools = MapModule.Add(key, objPool, localPools);
+                pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
+                ObjectPool<TValue> foundPool;
+                if (!_pools.TryAdd(key, pool, out foundPool))
+                {
+                    // Someone added the pool in the meantime!
+                    pool = foundPool;
+                }
             }
+
             Debug.Assert(pool != null);
-            return pool.Value.GetObject();
+            return pool.GetObject();
         }
 
         private Func<TValue> PrepareFactoryMethod(TKey key)
