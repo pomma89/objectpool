@@ -83,7 +83,7 @@ namespace UnitTests
         public void ShouldFillUntilMaximumSize_Async(int maxSize)
         {
             var pool = new ObjectPool<MyPooledObject>(0, maxSize);
-            var objectCount = maxSize*4;
+            var objectCount = maxSize * 4;
             var objects = new MyPooledObject[objectCount];
             Parallel.For(0, objectCount, i =>
             {
