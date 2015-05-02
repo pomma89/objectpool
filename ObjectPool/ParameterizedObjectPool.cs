@@ -10,7 +10,8 @@
 
 using System;
 using System.Diagnostics;
-using CodeProject.ObjectPool.Utilities.Collections.Concurrent;
+using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -19,19 +20,19 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    [Serializable]
     public sealed class ParameterizedObjectPool<TKey, TValue> : ObjectPool where TValue : PooledObject
     {
         private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
-        private int _minimumPoolSize = DefaultPoolMinimumSize;
-        private int _maximumPoolSize = DefaultPoolMaximumSize;
+        private int _minimumPoolSize;
+        private int _maximumPoolSize;
 
         #region Public Properties
 
         /// <summary>
         ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
+        [Pure]
         public int MinimumPoolSize
         {
             get
@@ -50,6 +51,7 @@ namespace CodeProject.ObjectPool
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
+        [Pure]
         public int MaximumPoolSize
         {
             get
@@ -67,6 +69,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
+        [Pure]
         public Func<TKey, TValue> FactoryMethod { get; private set; }
 
         #endregion Public Properties
