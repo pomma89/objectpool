@@ -14,7 +14,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
-using FSharpx.Collections;
+using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -80,9 +80,9 @@ namespace CodeProject.ObjectPool
         private readonly Action<PooledObject, bool> _returnToPoolAction;
 
         /// <summary>
-        ///   The immutable queue containing pooled objects.
+        ///   The concurrent queue containing pooled objects.
         /// </summary>
-        private Queue<T> _pooledObjects = QueueModule.empty<T>();
+        private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
@@ -109,7 +109,7 @@ namespace CodeProject.ObjectPool
         [Pure]
         public int ObjectsInPoolCount
         {
-            get { return _pooledObjects.Length; }
+            get { return _pooledObjects.Count; }
         }
 
         /// <summary>
@@ -243,16 +243,15 @@ namespace CodeProject.ObjectPool
             // interferences :)
 
             // Adjusting...
-
             while (ObjectsInPoolCount < MinimumPoolSize)
             {
-                _pooledObjects = QueueModule.conj(CreatePooledObject(), _pooledObjects);
+                _pooledObjects.Enqueue(CreatePooledObject());
             }
 
             while (ObjectsInPoolCount > MaximumPoolSize)
             {
-                var dequeuedObjectToDestroy = SafelyDequeueFromPool();
-                if (dequeuedObjectToDestroy != null)
+                T dequeuedObjectToDestroy;
+                if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
                 {
                     // Diagnostics update.
                     Diagnostics.IncrementPoolOverflowCount();
@@ -263,21 +262,6 @@ namespace CodeProject.ObjectPool
 
             // Finished adjusting, allowing additional callers to enter when needed.
             _adjustPoolSizeIsInProgressCasFlag = 0;
-        }
-
-        private T SafelyDequeueFromPool()
-        {
-            lock (_pooledObjects)
-            {
-                var dequeuedObject = _pooledObjects.TryUncons;
-                if (dequeuedObject == null)
-                {
-                    return null;
-                }
-                // Updates the queue, assigning the tail to the main queue.
-                _pooledObjects = dequeuedObject.Value.Item2;
-                return dequeuedObject.Value.Item1;
-            }
         }
 
         private T CreatePooledObject()
@@ -326,8 +310,9 @@ namespace CodeProject.ObjectPool
         /// <returns></returns>
         public T GetObject()
         {
-            var dequeuedObject = SafelyDequeueFromPool();
-            if (dequeuedObject != null)
+            T dequeuedObject;
+
+            if (_pooledObjects.TryDequeue(out dequeuedObject))
             {
                 // Invokes AdjustPoolSize asynchronously.
                 Task.Factory.StartNew(AdjustPoolSizeToBounds);
@@ -382,7 +367,7 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementReturnedToPoolCount();
 
                 // Adding the object back to the pool.
-                _pooledObjects = QueueModule.conj(returnedObject, _pooledObjects);
+                _pooledObjects.Enqueue(returnedObject);
             }
             else
             {
