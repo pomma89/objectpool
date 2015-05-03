@@ -1,5 +1,6 @@
-A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal ([http://goo.gl/4qig6T](http://goo.gl/4qig6T)).
-Library is production ready and it is successfully working in real life systems.
+A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the [Code Project article of Ofir Makmal](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET).
+
+Library is production ready and it is successfully working in real life systems. [Here](https://4538d366a46bbb00d202aaaa7b99c4e50320a061.googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/doc/index.html) you can find the Doxygen-generated API documentation.
 
 Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. 
 Moreover, a few unit tests have been added, in order to improve code reliability, and a lot of other small changes have also been applied. 
