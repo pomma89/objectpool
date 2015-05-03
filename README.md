@@ -1,4 +1,4 @@
-A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal ([http://goo.gl/4qig6T](http://goo.gl/4qig6T)).
+A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the [Code Project article of Ofir Makmal](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET).
 Library is production ready and it is successfully working in real life systems.
 
 Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. 
