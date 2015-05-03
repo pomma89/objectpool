@@ -17,6 +17,7 @@ syntax: glob
 x64/
 build/
 [Bb]in/
+[Dd]oc/
 [Oo]bj/
 
 ## MSTest test Results
