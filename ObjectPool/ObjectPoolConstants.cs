@@ -38,7 +38,7 @@ namespace CodeProject.ObjectPool
             Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
         }
 
-        #endregion
+        #endregion Validation
     }
 
 #if !PORTABLE

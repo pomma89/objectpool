@@ -9,10 +9,8 @@
  */
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeProject.ObjectPool.Contracts;
 using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
