@@ -17,6 +17,7 @@ namespace CodeProject.ObjectPool.Core
     {
         public const string NegativeMinimumPoolSize = "Minimum pool size must be greater or equals to zero.";
         public const string NegativeOrZeroMaximumPoolSize = "Maximum pool size must be greater than zero.";
+        public const string NullDiagnostics = "Pool diagnostics recorder cannot be null.";
         public const string NullResource = "Resource cannot be null.";
         public const string WrongCacheBounds = "Maximum pool size must be greater than the maximum pool size.";
     }

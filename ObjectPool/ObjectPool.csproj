@@ -117,10 +117,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Contracts\ObjectPoolContract.cs" />
+    <Compile Include="Contracts\ParameterizedObjectPoolContract.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
     <Compile Include="IObjectPool.cs" />
     <Compile Include="IParameterizedObjectPool.cs" />
     <Compile Include="ObjectPool.cs" />
+    <Compile Include="ObjectPoolConstants.cs" />
     <Compile Include="ObjectPoolDiagnostics.cs" />
     <Compile Include="ParameterizedObjectPool.cs" />
     <Compile Include="PooledObject.cs" />

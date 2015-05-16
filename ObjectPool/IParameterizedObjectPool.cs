@@ -10,6 +10,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using CodeProject.ObjectPool.Contracts;
 
 namespace CodeProject.ObjectPool
 {
@@ -18,15 +19,17 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
+    [ContractClass(typeof(ParameterizedObjectPoolContract<,>))]
     public interface IParameterizedObjectPool<in TKey, out TValue>
     {
         /// <summary>
-        ///   Gets the Diagnostics class for the current Object Pool, whose goal is to record data
-        ///   about how the pool operates. By default, however, an object pool records anything; you
-        ///   have to enable it through the <see cref="ObjectPoolDiagnostics.Enabled"/> property.
+        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
+        ///   record data about how the pool operates. By default, however, an object pool records
+        ///   anything, in order to be most efficient; in any case, you can enable it through the
+        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         [Pure]
-        ObjectPoolDiagnostics Diagnostics { get; }
+        ObjectPoolDiagnostics Diagnostics { get; set; }
 
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
@@ -48,10 +51,10 @@ namespace CodeProject.ObjectPool
         int MinimumPoolSize { get; set; }
 
         /// <summary>
-        ///   Gets the count of the objects currently in the pool.
+        ///   Gets the count of the keys currently handled by the pool.
         /// </summary>
         [Pure]
-        int ObjectsInPoolCount { get; }
+        int KeysInPoolCount { get; }
 
         /// <summary>
         ///   Gets an object linked to given key.

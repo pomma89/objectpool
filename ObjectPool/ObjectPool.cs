@@ -12,52 +12,11 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeProject.ObjectPool.Core;
+using CodeProject.ObjectPool.Contracts;
 using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
-    /// <summary>
-    ///   Base class for Object Pools.
-    /// </summary>
-    public abstract class ObjectPool
-    {
-        internal ObjectPool()
-        {
-            // Constructor is internal because this class is not meant for public consumption.
-        }
-
-        #region Validation
-
-        /// <summary>
-        ///   Checks the lower and upper bounds for the pool size.
-        /// </summary>
-        /// <param name="minimumPoolSize">The lower bound.</param>
-        /// <param name="maximumPoolSize">The upper bound.</param>
-        protected static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
-        {
-            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize >= 0, ErrorMessages.NegativeMinimumPoolSize);
-            Contract.Requires<ArgumentOutOfRangeException>(maximumPoolSize >= 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
-        }
-
-        #endregion Validation
-
-        #region Constants
-
-        /// <summary>
-        ///   The default minimum size for the pool.
-        /// </summary>
-        protected const int DefaultPoolMinimumSize = 5;
-
-        /// <summary>
-        ///   The default maximum size for the pool.
-        /// </summary>
-        protected const int DefaultPoolMaximumSize = 100;
-
-        #endregion Constants
-    }
-
     /// <summary>
     ///   Generic object pool.
     /// </summary>
@@ -65,7 +24,7 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to
     ///   be a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class ObjectPool<T> : ObjectPool, IObjectPool<T> where T : PooledObject
+    public sealed class ObjectPool<T> : IObjectPool<T> where T : PooledObject
     {
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
@@ -94,7 +53,7 @@ namespace CodeProject.ObjectPool
         ///   about how the pool operates. By default, however, an object pool records anything; you
         ///   have to enable it through the <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
-        public ObjectPoolDiagnostics Diagnostics { get; private set; }
+        public ObjectPoolDiagnostics Diagnostics { get; set; }
 
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
@@ -109,13 +68,10 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() >= 1 && Contract.Result<int>() >= MinimumPoolSize);
                 return _maximumPoolSize;
             }
             set
             {
-                // Validating pool limits, exception is thrown if invalid.
-                ValidatePoolLimits(_minimumPoolSize, value);
                 _maximumPoolSize = value;
                 AdjustPoolSizeToBounds();
             }
@@ -128,13 +84,10 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() >= 0);
                 return _minimumPoolSize;
             }
             set
             {
-                // Validating pool limits, exception is thrown if invalid.
-                ValidatePoolLimits(value, _maximumPoolSize);
                 _minimumPoolSize = value;
                 AdjustPoolSizeToBounds();
             }
@@ -156,7 +109,7 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
         {
         }
 
@@ -180,7 +133,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
         {
         }
 
@@ -198,7 +151,7 @@ namespace CodeProject.ObjectPool
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
         {
             // Validating pool limits, exception is thrown if invalid
-            ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
+            ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
 
             // Assigning properties
             FactoryMethod = factoryMethod;
@@ -325,7 +278,7 @@ namespace CodeProject.ObjectPool
             // Diagnostics update.
             if (reRegisterForFinalization)
             {
-                Diagnostics.IncrementObjectRessurectionCount();
+                Diagnostics.IncrementObjectResurrectionCount();
             }
 
             // Checking that the pool is not full.
