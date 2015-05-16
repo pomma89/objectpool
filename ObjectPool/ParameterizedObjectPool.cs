@@ -10,7 +10,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
@@ -20,20 +19,40 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    public sealed class ParameterizedObjectPool<TKey, TValue> : ObjectPool where TValue : PooledObject
+    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
     {
         private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
         private int _minimumPoolSize;
         private int _maximumPoolSize;
+        private ObjectPoolDiagnostics _diagnostics;
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
+        /// record data about how the pool operates. By default, however, an object pool records
+        /// anything, in order to be most efficient; in any case, you can enable it through the
+        /// <see cref="ObjectPoolDiagnostics.Enabled" /> property.
+        /// </summary>
+        public ObjectPoolDiagnostics Diagnostics
+        {
+            get { return _diagnostics; }
+            set
+            {
+                _diagnostics = value;
+                foreach (var p in _pools)
+                {
+                    p.Value.Diagnostics = _diagnostics;
+                }
+            }
+        }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
-        [Pure]
+        // ReSharper disable once ConvertToAutoProperty
         public int MaximumPoolSize
         {
             get
@@ -42,8 +61,6 @@ namespace CodeProject.ObjectPool
             }
             set
             {
-                // Validating pool limits, exception is thrown if invalid
-                ValidatePoolLimits(_minimumPoolSize, value);
                 _maximumPoolSize = value;
             }
         }
@@ -51,7 +68,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
-        [Pure]
+        // ReSharper disable once ConvertToAutoProperty
         public int MinimumPoolSize
         {
             get
@@ -60,8 +77,6 @@ namespace CodeProject.ObjectPool
             }
             set
             {
-                // Validating pool limits, exception is thrown if invalid
-                ValidatePoolLimits(value, _maximumPoolSize);
                 _minimumPoolSize = value;
             }
         }
@@ -69,8 +84,15 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        [Pure]
         public Func<TKey, TValue> FactoryMethod { get; private set; }
+
+        /// <summary>
+        ///   Gets the count of the keys currently handled by the pool.
+        /// </summary>
+        public int KeysInPoolCount
+        {
+            get { return _pools.Count; }
+        }
 
         #endregion Public Properties
 
@@ -80,12 +102,12 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ParameterizedObjectPool()
-            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, null)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
         {
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified minimum pool size and maximum pool size
+        ///   Initializes a new pool with specified minimum pool size and maximum pool size.
         /// </summary>
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
@@ -99,7 +121,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ParameterizedObjectPool(Func<TKey, TValue> factoryMethod)
-            : this(DefaultPoolMinimumSize, DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
         {
         }
 
@@ -112,7 +134,7 @@ namespace CodeProject.ObjectPool
         public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
             // Validating pool limits, exception is thrown if invalid
-            ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
+            ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
 
             // Assigning properties
             FactoryMethod = factoryMethod;
@@ -140,6 +162,11 @@ namespace CodeProject.ObjectPool
                 {
                     // Someone added the pool in the meantime!
                     pool = foundPool;
+                }
+                else
+                {
+                    // The new pool has been added, now we have to configure it.
+                    pool.Diagnostics = _diagnostics;
                 }
             }
 

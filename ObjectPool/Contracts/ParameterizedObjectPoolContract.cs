@@ -15,16 +15,16 @@ using CodeProject.ObjectPool.Core;
 namespace CodeProject.ObjectPool.Contracts
 {
     /// <summary>
-    ///   Contract class for <see cref="IObjectPool{T}"/>.
+    ///   Contract class for <see cref="IParameterizedObjectPool{TKey,TValue}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [ContractClassFor(typeof(IObjectPool<>))]
-    public abstract class ObjectPoolContract<T> : IObjectPool<T> where T : PooledObject
+    [ContractClassFor(typeof(IParameterizedObjectPool<,>))]
+    public abstract class ParameterizedObjectPoolContract<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
     {
         /// <summary>
-        ///   Gets the Diagnostics class for the current Object Pool, whose goal is to record data
-        ///   about how the pool operates. By default, however, an object pool records anything; you
-        ///   have to enable it through the <see cref="ObjectPoolDiagnostics.Enabled"/> property.
+        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
+        ///   record data about how the pool operates. By default, however, an object pool records
+        ///   anything, in order to be most efficient; in any case, you can enable it through the
+        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics
         {
@@ -42,12 +42,12 @@ namespace CodeProject.ObjectPool.Contracts
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        public Func<T> FactoryMethod
+        public Func<TKey, TValue> FactoryMethod
         {
             get
             {
-                Contract.Ensures(Contract.Result<Func<T>>() != null);
-                return default(Func<T>);
+                Contract.Ensures(Contract.Result<Func<TKey, TValue>>() != null);
+                return default(Func<TKey, TValue>);
             }
         }
 
@@ -85,9 +85,9 @@ namespace CodeProject.ObjectPool.Contracts
         }
 
         /// <summary>
-        ///   Gets the count of the objects currently in the pool.
+        ///   Gets the count of the keys currently handled by the pool.
         /// </summary>
-        public int ObjectsInPoolCount
+        public int KeysInPoolCount
         {
             get
             {
@@ -97,14 +97,14 @@ namespace CodeProject.ObjectPool.Contracts
         }
 
         /// <summary>
-        ///   Gets a monitored object from the pool.
+        ///   Gets an object linked to given key.
         /// </summary>
-        /// <returns>A monitored object from the pool.</returns>
-        public T GetObject()
+        /// <param name="key">The key linked to the object.</param>
+        /// <returns>The objects linked to given key.</returns>
+        public TValue GetObject(TKey key)
         {
-            Contract.Ensures(Contract.Result<T>() != null);
-            return default(T);
+            Contract.Ensures(Contract.Result<TValue>() != null);
+            return default(TValue);
         }
-
     }
 }

@@ -15,7 +15,7 @@ namespace CodeProject.ObjectPool
     /// <summary>
     ///   A simple class to track stats during execution. By default, this class does not record anything.
     /// </summary>
-    public sealed class ObjectPoolDiagnostics
+    public class ObjectPoolDiagnostics
     {
         #region C'tor and Initialization code
 
@@ -37,7 +37,7 @@ namespace CodeProject.ObjectPool
         private long _poolObjectMissCount;
         private long _poolOverflowCount;
 
-        private long _returnedToPoolByRessurectionCount;
+        private long _returnedToPoolByResurrectionCount;
         private long _returnedToPoolCount;
         private long _totalInstancesCreated;
         private long _totalInstancesDestroyed;
@@ -67,14 +67,14 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the total count of object that has been picked up by the GC, and returned to pool.
         /// </summary>
-        public long ReturnedToPoolByRessurectionCount
+        public long ReturnedToPoolByResurrectionCount
         {
-            get { return _returnedToPoolByRessurectionCount; }
+            get { return _returnedToPoolByResurrectionCount; }
         }
 
         /// <summary>
-        ///   Gets the total count of successful accesses. The pool had a spare object to
-        ///   provide to the user without creating it on demand.
+        ///   Gets the total count of successful accesses. The pool had a spare object to provide to
+        ///   the user without creating it on demand.
         /// </summary>
         public long PoolObjectHitCount
         {
@@ -127,9 +127,12 @@ namespace CodeProject.ObjectPool
 
         #endregion Public Properties and backing fields
 
-        #region Internal Methods for incrementing the counters
+        #region Protected Methods for incrementing the counters
 
-        internal void IncrementObjectsCreatedCount()
+        /// <summary>
+        ///   Increments the objects created count.
+        /// </summary>
+        protected internal virtual void IncrementObjectsCreatedCount()
         {
             if (Enabled)
             {
@@ -137,7 +140,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementObjectsDestroyedCount()
+        /// <summary>
+        ///   Increments the objects destroyed count.
+        /// </summary>
+        protected internal virtual void IncrementObjectsDestroyedCount()
         {
             if (Enabled)
             {
@@ -145,7 +151,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementPoolObjectHitCount()
+        /// <summary>
+        ///   Increments the pool object hit count.
+        /// </summary>
+        protected internal virtual void IncrementPoolObjectHitCount()
         {
             if (Enabled)
             {
@@ -153,7 +162,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementPoolObjectMissCount()
+        /// <summary>
+        ///   Increments the pool object miss count.
+        /// </summary>
+        protected internal virtual void IncrementPoolObjectMissCount()
         {
             if (Enabled)
             {
@@ -161,7 +173,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementPoolOverflowCount()
+        /// <summary>
+        ///   Increments the pool overflow count.
+        /// </summary>
+        protected internal virtual void IncrementPoolOverflowCount()
         {
             if (Enabled)
             {
@@ -169,7 +184,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementResetStateFailedCount()
+        /// <summary>
+        ///   Increments the reset state failed count.
+        /// </summary>
+        protected internal virtual void IncrementResetStateFailedCount()
         {
             if (Enabled)
             {
@@ -177,15 +195,21 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        internal void IncrementObjectRessurectionCount()
+        /// <summary>
+        ///   Increments the count of objects returned to pool by resurrection.
+        /// </summary>
+        protected internal virtual void IncrementObjectResurrectionCount()
         {
             if (Enabled)
             {
-                Interlocked.Increment(ref _returnedToPoolByRessurectionCount);
+                Interlocked.Increment(ref _returnedToPoolByResurrectionCount);
             }
         }
 
-        internal void IncrementReturnedToPoolCount()
+        /// <summary>
+        ///   Increments the returned to pool count.
+        /// </summary>
+        protected internal virtual void IncrementReturnedToPoolCount()
         {
             if (Enabled)
             {
@@ -193,6 +217,6 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        #endregion Internal Methods for incrementing the counters
+        #endregion Protected Methods for incrementing the counters
     }
 }

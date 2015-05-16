@@ -149,6 +149,9 @@
     <Compile Include="..\ObjectPool\Contracts\ObjectPoolContract.cs">
       <Link>Contracts\ObjectPoolContract.cs</Link>
     </Compile>
+    <Compile Include="..\ObjectPool\Contracts\ParameterizedObjectPoolContract.cs">
+      <Link>Contracts\ParameterizedObjectPoolContract.cs</Link>
+    </Compile>
     <Compile Include="..\ObjectPool\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
@@ -160,6 +163,9 @@
     </Compile>
     <Compile Include="..\ObjectPool\ObjectPool.cs">
       <Link>ObjectPool.cs</Link>
+    </Compile>
+    <Compile Include="..\ObjectPool\ObjectPoolConstants.cs">
+      <Link>ObjectPoolConstants.cs</Link>
     </Compile>
     <Compile Include="..\ObjectPool\ObjectPoolDiagnostics.cs">
       <Link>ObjectPoolDiagnostics.cs</Link>
