@@ -30,24 +30,6 @@ namespace CodeProject.ObjectPool
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets the minimum number of objects in the pool.
-        /// </summary>
-        [Pure]
-        public int MinimumPoolSize
-        {
-            get
-            {
-                return _minimumPoolSize;
-            }
-            set
-            {
-                // Validating pool limits, exception is thrown if invalid
-                ValidatePoolLimits(value, _maximumPoolSize);
-                _minimumPoolSize = value;
-            }
-        }
-
-        /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
@@ -63,6 +45,24 @@ namespace CodeProject.ObjectPool
                 // Validating pool limits, exception is thrown if invalid
                 ValidatePoolLimits(_minimumPoolSize, value);
                 _maximumPoolSize = value;
+            }
+        }
+
+        /// <summary>
+        ///   Gets or sets the minimum number of objects in the pool.
+        /// </summary>
+        [Pure]
+        public int MinimumPoolSize
+        {
+            get
+            {
+                return _minimumPoolSize;
+            }
+            set
+            {
+                // Validating pool limits, exception is thrown if invalid
+                ValidatePoolLimits(value, _maximumPoolSize);
+                _minimumPoolSize = value;
             }
         }
 

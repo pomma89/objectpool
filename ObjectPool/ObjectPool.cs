@@ -65,7 +65,7 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to
     ///   be a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class ObjectPool<T> : ObjectPool where T : PooledObject
+    public sealed class ObjectPool<T> : ObjectPool, IObjectPool<T> where T : PooledObject
     {
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
@@ -90,53 +90,21 @@ namespace CodeProject.ObjectPool
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets whether the pool should record data about how it operates.
-        /// </summary>
-        public bool DiagnosticsEnabled
-        {
-            get { return Diagnostics.Enabled; }
-            set { Diagnostics.Enabled = value; }
-        }
-
-        /// <summary>
-        ///   Gets the Diagnostics class for the current Object Pool.
+        ///   Gets the Diagnostics class for the current Object Pool, whose goal is to record data
+        ///   about how the pool operates. By default, however, an object pool records anything; you
+        ///   have to enable it through the <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics { get; private set; }
 
         /// <summary>
-        ///   Gets the count of the objects currently in the pool.
+        ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        [Pure]
-        public int ObjectsInPoolCount
-        {
-            get { return _pooledObjects.Count; }
-        }
-
-        /// <summary>
-        ///   Gets or sets the minimum number of objects in the pool.
-        /// </summary>
-        [Pure]
-        public int MinimumPoolSize
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<int>() >= 0);
-                return _minimumPoolSize;
-            }
-            set
-            {
-                // Validating pool limits, exception is thrown if invalid.
-                ValidatePoolLimits(value, _maximumPoolSize);
-                _minimumPoolSize = value;
-                AdjustPoolSizeToBounds();
-            }
-        }
+        public Func<T> FactoryMethod { get; private set; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
-        [Pure]
         public int MaximumPoolSize
         {
             get
@@ -154,10 +122,31 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Gets the Factory method that will be used for creating new objects.
+        ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
-        [Pure]
-        public Func<T> FactoryMethod { get; private set; }
+        public int MinimumPoolSize
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() >= 0);
+                return _minimumPoolSize;
+            }
+            set
+            {
+                // Validating pool limits, exception is thrown if invalid.
+                ValidatePoolLimits(value, _maximumPoolSize);
+                _minimumPoolSize = value;
+                AdjustPoolSizeToBounds();
+            }
+        }
+
+        /// <summary>
+        ///   Gets the count of the objects currently in the pool.
+        /// </summary>
+        public int ObjectsInPoolCount
+        {
+            get { return _pooledObjects.Count; }
+        }
 
         #endregion Public Properties
 
@@ -172,7 +161,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified minimum pool size and maximum pool size
+        ///   Initializes a new pool with specified minimum pool size and maximum pool size.
         /// </summary>
         /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
@@ -307,7 +296,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets a monitored object from the pool.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
             T dequeuedObject;
@@ -393,193 +382,5 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Finalizer
-
-        #region Nested type: ObjectPoolDiagnostics
-
-        /// <summary>
-        ///   A simple class to track stats during execution. By default, this class does not record anything.
-        /// </summary>
-        public sealed class ObjectPoolDiagnostics
-        {
-            #region C'tor and Initialization code
-
-            /// <summary>
-            ///   Creates a new diagnostics object, ready to record Object Pool main events.
-            /// </summary>
-            public ObjectPoolDiagnostics()
-            {
-                // By default, diagnostics are disabled.
-                Enabled = false;
-            }
-
-            #endregion C'tor and Initialization code
-
-            #region Public Properties and backing fields
-
-            private long _objectResetFailedCount;
-            private long _poolObjectHitCount;
-            private long _poolObjectMissCount;
-            private long _poolOverflowCount;
-
-            private long _returnedToPoolByRessurectionCount;
-            private long _returnedToPoolCount;
-            private long _totalInstancesCreated;
-            private long _totalInstancesDestroyed;
-
-            /// <summary>
-            ///   Gets or sets whether this object can record data about how the Pool operates.
-            /// </summary>
-            public bool Enabled { get; set; }
-
-            /// <summary>
-            ///   Gets the total count of live instances, both in the pool and in use.
-            /// </summary>
-            public long TotalLiveInstancesCount
-            {
-                get { return _totalInstancesCreated - _totalInstancesDestroyed; }
-            }
-
-            /// <summary>
-            ///   Gets the count of object reset failures occured while the pool tried to re-add the
-            ///   object into the pool.
-            /// </summary>
-            public long ObjectResetFailedCount
-            {
-                get { return _objectResetFailedCount; }
-            }
-
-            /// <summary>
-            ///   Gets the total count of object that has been picked up by the GC, and returned to pool.
-            /// </summary>
-            public long ReturnedToPoolByRessurectionCount
-            {
-                get { return _returnedToPoolByRessurectionCount; }
-            }
-
-            /// <summary>
-            ///   Gets the total count of successful accesses. The pool had a spare object to
-            ///   provide to the user without creating it on demand.
-            /// </summary>
-            public long PoolObjectHitCount
-            {
-                get { return _poolObjectHitCount; }
-            }
-
-            /// <summary>
-            ///   Gets the total count of unsuccessful accesses. The pool had to create an object in
-            ///   order to satisfy the user request. If the number is high, consider increasing the
-            ///   object minimum limit.
-            /// </summary>
-            public long PoolObjectMissCount
-            {
-                get { return _poolObjectMissCount; }
-            }
-
-            /// <summary>
-            ///   Gets the total number of pooled objected created.
-            /// </summary>
-            public long TotalInstancesCreated
-            {
-                get { return _totalInstancesCreated; }
-            }
-
-            /// <summary>
-            ///   Gets the total number of objects destroyes, both in case of an pool overflow, and
-            ///   state corruption.
-            /// </summary>
-            public long TotalInstancesDestroyed
-            {
-                get { return _totalInstancesDestroyed; }
-            }
-
-            /// <summary>
-            ///   Gets the number of objects been destroyed because the pool was full at the time of
-            ///   returning the object to the pool.
-            /// </summary>
-            public long PoolOverflowCount
-            {
-                get { return _poolOverflowCount; }
-            }
-
-            /// <summary>
-            ///   Gets the total count of objects that been successfully returned to the pool.
-            /// </summary>
-            public long ReturnedToPoolCount
-            {
-                get { return _returnedToPoolCount; }
-            }
-
-            #endregion Public Properties and backing fields
-
-            #region Internal Methods for incrementing the counters
-
-            internal void IncrementObjectsCreatedCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _totalInstancesCreated);
-                }
-            }
-
-            internal void IncrementObjectsDestroyedCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _totalInstancesDestroyed);
-                }
-            }
-
-            internal void IncrementPoolObjectHitCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _poolObjectHitCount);
-                }
-            }
-
-            internal void IncrementPoolObjectMissCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _poolObjectMissCount);
-                }
-            }
-
-            internal void IncrementPoolOverflowCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _poolOverflowCount);
-                }
-            }
-
-            internal void IncrementResetStateFailedCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _objectResetFailedCount);
-                }
-            }
-
-            internal void IncrementObjectRessurectionCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _returnedToPoolByRessurectionCount);
-                }
-            }
-
-            internal void IncrementReturnedToPoolCount()
-            {
-                if (Enabled)
-                {
-                    Interlocked.Increment(ref _returnedToPoolCount);
-                }
-            }
-
-            #endregion Internal Methods for incrementing the counters
-        }
-
-        #endregion Nested type: ObjectPoolDiagnostics
     }
 }

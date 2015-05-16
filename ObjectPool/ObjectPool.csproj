@@ -116,8 +116,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Contracts\ObjectPoolContract.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
+    <Compile Include="IObjectPool.cs" />
+    <Compile Include="IParameterizedObjectPool.cs" />
     <Compile Include="ObjectPool.cs" />
+    <Compile Include="ObjectPoolDiagnostics.cs" />
     <Compile Include="ParameterizedObjectPool.cs" />
     <Compile Include="PooledObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,13 +132,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.7\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
+    <Content Include="doxyfile.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.9\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="doxyfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

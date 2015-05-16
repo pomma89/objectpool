@@ -123,8 +123,8 @@
     <DocumentationFile>bin\Release\CodeProject.ObjectPool.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.7\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.9\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -146,11 +146,23 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ObjectPool\Contracts\ObjectPoolContract.cs">
+      <Link>Contracts\ObjectPoolContract.cs</Link>
+    </Compile>
     <Compile Include="..\ObjectPool\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
+    <Compile Include="..\ObjectPool\IObjectPool.cs">
+      <Link>IObjectPool.cs</Link>
+    </Compile>
+    <Compile Include="..\ObjectPool\IParameterizedObjectPool.cs">
+      <Link>IParameterizedObjectPool.cs</Link>
+    </Compile>
     <Compile Include="..\ObjectPool\ObjectPool.cs">
       <Link>ObjectPool.cs</Link>
+    </Compile>
+    <Compile Include="..\ObjectPool\ObjectPoolDiagnostics.cs">
+      <Link>ObjectPoolDiagnostics.cs</Link>
     </Compile>
     <Compile Include="..\ObjectPool\ParameterizedObjectPool.cs">
       <Link>ParameterizedObjectPool.cs</Link>
@@ -163,6 +175,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager/lib/net40-client" mkdir "$(SolutionDir)NuGet Packager/lib/net40-client"
