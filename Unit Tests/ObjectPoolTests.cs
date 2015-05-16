@@ -31,6 +31,16 @@ namespace UnitTests
             new ObjectPool<MyPooledObject>(minSize, 1);
         }
 
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeMinimumPoolSize, MatchType = MessageMatch.Contains)]
+        public void ShouldThrowOnNegativeMinimumSizeOnProperty(int minSize)
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new ObjectPool<MyPooledObject> {MinimumPoolSize = minSize};
+        }
+
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
@@ -40,6 +50,17 @@ namespace UnitTests
         {
             // ReSharper disable once ObjectCreationAsStatement
             new ObjectPool<MyPooledObject>(0, maxSize);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeOrZeroMaximumPoolSize, MatchType = MessageMatch.Contains)]
+        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new ObjectPool<MyPooledObject> {MaximumPoolSize = maxSize};
         }
 
         [TestCase(0)]
@@ -98,8 +119,28 @@ namespace UnitTests
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
-        private sealed class MyPooledObject : PooledObject
+        [Test]
+        public void ShouldChangePoolLimitsIfCorrect()
         {
+            var pool = new ObjectPool<MyPooledObject>();
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMinimumSize, pool.MinimumPoolSize);
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
+
+            pool.MinimumPoolSize = pool.MaximumPoolSize - 5;
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize - 5, pool.MinimumPoolSize);
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
+
+            pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize - 5, pool.MinimumPoolSize);
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
+
+            pool.MinimumPoolSize = 1;
+            Assert.AreEqual(1, pool.MinimumPoolSize);
+            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
+
+            pool.MaximumPoolSize = 2;
+            Assert.AreEqual(1, pool.MinimumPoolSize);
+            Assert.AreEqual(2, pool.MaximumPoolSize);
         }
     }
 }

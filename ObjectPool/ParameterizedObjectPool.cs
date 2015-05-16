@@ -30,10 +30,10 @@ namespace CodeProject.ObjectPool
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
-        /// record data about how the pool operates. By default, however, an object pool records
-        /// anything, in order to be most efficient; in any case, you can enable it through the
-        /// <see cref="ObjectPoolDiagnostics.Enabled" /> property.
+        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
+        ///   record data about how the pool operates. By default, however, an object pool records
+        ///   anything, in order to be most efficient; in any case, you can enable it through the
+        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics
         {

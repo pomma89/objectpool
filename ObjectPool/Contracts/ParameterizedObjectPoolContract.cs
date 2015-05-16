@@ -42,18 +42,11 @@ namespace CodeProject.ObjectPool.Contracts
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        public Func<TKey, TValue> FactoryMethod
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<Func<TKey, TValue>>() != null);
-                return default(Func<TKey, TValue>);
-            }
-        }
+        public abstract Func<TKey, TValue> FactoryMethod { get; }
 
         /// <summary>
-        /// Gets or sets the maximum number of objects that could be available at the same time in
-        /// the pool.
+        ///   Gets or sets the maximum number of objects that could be available at the same time in
+        ///   the pool.
         /// </summary>
         public int MaximumPoolSize
         {
@@ -69,7 +62,7 @@ namespace CodeProject.ObjectPool.Contracts
         }
 
         /// <summary>
-        /// Gets or sets the minimum number of objects in the pool.
+        ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
         public int MinimumPoolSize
         {
