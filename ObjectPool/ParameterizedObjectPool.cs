@@ -137,6 +137,7 @@ namespace CodeProject.ObjectPool
             ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
 
             // Assigning properties
+            Diagnostics = new ObjectPoolDiagnostics();
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;

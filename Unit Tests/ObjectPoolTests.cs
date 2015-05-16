@@ -38,7 +38,7 @@ namespace UnitTests
         public void ShouldThrowOnNegativeMinimumSizeOnProperty(int minSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ObjectPool<MyPooledObject> {MinimumPoolSize = minSize};
+            new ObjectPool<MyPooledObject> { MinimumPoolSize = minSize };
         }
 
         [TestCase(0)]
@@ -60,7 +60,7 @@ namespace UnitTests
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ObjectPool<MyPooledObject> {MaximumPoolSize = maxSize};
+            new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize };
         }
 
         [TestCase(0)]
