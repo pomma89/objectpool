@@ -123,8 +123,12 @@
     <DocumentationFile>bin\Release\CodeProject.ObjectPool.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.10\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.16.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.16\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ReadOnlyCollectionsInterfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReadOnlyCollectionInterfaces.1.0.0\lib\NET40-client\ReadOnlyCollectionsInterfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

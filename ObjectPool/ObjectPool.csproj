@@ -137,8 +137,8 @@
     <Content Include="doxyfile.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.10\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.16.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.16\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
