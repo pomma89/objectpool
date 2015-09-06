@@ -58,9 +58,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObjectPool %28.NET40%29\ObjectPool %28.NET40%29.csproj">
+    <ProjectReference Include="..\ObjectPool %28.NET40%29\ObjectPool.NET40.csproj">
       <Project>{BB805911-63DD-4E2E-A03C-963DA1C72738}</Project>
-      <Name>ObjectPool %28.NET40%29</Name>
+      <Name>ObjectPool.NET40</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
