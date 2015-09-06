@@ -5,6 +5,7 @@ syntax: glob
 
 ## User-specific files
 
+.vs
 *.suo
 *.user
 *.userprefs
