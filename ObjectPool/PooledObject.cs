@@ -109,7 +109,7 @@ namespace CodeProject.ObjectPool
         public void Dispose()
         {
             // Returning to pool
-            Task.Factory.StartNew(() => HandleReAddingToPool(false));
+            HandleReAddingToPool(false);
         }
 
         void HandleReAddingToPool(bool reRegisterForFinalization)
