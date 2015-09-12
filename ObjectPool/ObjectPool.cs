@@ -10,8 +10,6 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -24,6 +22,22 @@ namespace CodeProject.ObjectPool
     /// </typeparam>
     public sealed class ObjectPool<T> : IObjectPool<T> where T : PooledObject
     {
+#if PORTABLE
+
+        /// <summary>
+        ///   The concurrent queue containing pooled objects.
+        /// </summary>
+        readonly Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T>();
+
+#else
+
+        /// <summary>
+        ///   The concurrent queue containing pooled objects.
+        /// </summary>
+        readonly System.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new System.Collections.Concurrent.ConcurrentQueue<T>();
+
+#endif
+
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
         ///   Int, altought it looks like it should be bool - this was done for Interlocked CAS
@@ -35,11 +49,6 @@ namespace CodeProject.ObjectPool
         ///   The action performed when an object returns to the pool.
         /// </summary>
         readonly Action<PooledObject, bool> _returnToPoolAction;
-
-        /// <summary>
-        ///   The concurrent queue containing pooled objects.
-        /// </summary>
-        readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
         int _maximumPoolSize;
         int _minimumPoolSize;
