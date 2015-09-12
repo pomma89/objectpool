@@ -10,7 +10,6 @@
 
 using System;
 using System.Diagnostics;
-using Finsa.CodeServices.Common.Collections.Concurrent;
 
 namespace CodeProject.ObjectPool
 {
@@ -21,13 +20,37 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
     {
-        readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+#if PORTABLE
+
+        readonly Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
+        {
+            return _pools.TryAdd(key, value, out foundValue);
+        }
+
+#else
+
+        readonly System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+
+#if (NET45 || NET46)
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+        bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
+        {
+            var added = false;
+            foundValue = _pools.GetOrAdd(key, k => { added = true; return value; });
+            return added;
+        }
+
+#endif
 
         int _minimumPoolSize;
         int _maximumPoolSize;
         ObjectPoolDiagnostics _diagnostics;
 
-        #region Public Properties
+#region Public Properties
 
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
@@ -96,9 +119,9 @@ namespace CodeProject.ObjectPool
             get { return _pools.Count; }
         }
 
-        #endregion Public Properties
+#endregion Public Properties
 
-        #region C'tor and Initialization code
+#region C'tor and Initialization code
 
         /// <summary>
         ///   Initializes a new pool with default settings.
@@ -145,7 +168,7 @@ namespace CodeProject.ObjectPool
             _minimumPoolSize = minimumPoolSize;
         }
 
-        #endregion C'tor and Initialization code
+#endregion C'tor and Initialization code
 
         /// <summary>
         ///   Gets an object linked to given key.
@@ -161,7 +184,7 @@ namespace CodeProject.ObjectPool
                 // Initialize the new pool.
                 pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
                 ObjectPool<TValue> foundPool;
-                if (!_pools.TryAdd(key, pool, out foundPool))
+                if (!TryAddToPools(key, pool, out foundPool))
                 {
                     // Someone added the pool in the meantime!
                     pool = foundPool;
