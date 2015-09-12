@@ -1,6 +1,16 @@
-using System;
-using System.Diagnostics.Contracts;
+/*
+ * Generic Object Pool Implementation
+ *
+ * Implemented by Ofir Makmal, 28/1/2013
+ *
+ * My Blog: Blogs.microsoft.co.il/blogs/OfirMakmal
+ * Email:   Ofir.Makmal@gmail.com
+ *
+ */
+
 using CodeProject.ObjectPool.Core;
+using PommaLabs.Thrower;
+using System;
 
 namespace CodeProject.ObjectPool
 {
@@ -30,24 +40,13 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="minimumPoolSize">The lower bound.</param>
         /// <param name="maximumPoolSize">The upper bound.</param>
-        [ContractAbbreviator]
         public static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize >= 0, ErrorMessages.NegativeMinimumPoolSize);
-            Contract.Requires<ArgumentOutOfRangeException>(maximumPoolSize >= 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Contract.Requires<ArgumentOutOfRangeException>(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize >= 0, ErrorMessages.NegativeMinimumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize >= 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
         }
 
         #endregion Validation
     }
-
-#if !PORTABLE
-
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [global::System.Diagnostics.Conditional("CONTRACTS_FULL")]
-    internal sealed class ContractAbbreviatorAttribute : global::System.Attribute
-    {
-    }
-
-#endif
 }

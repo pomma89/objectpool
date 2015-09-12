@@ -10,7 +10,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using CodeProject.ObjectPool.Contracts;
 
 namespace CodeProject.ObjectPool
 {
@@ -19,7 +18,6 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    [ContractClass(typeof(ParameterizedObjectPoolContract<,>))]
     public interface IParameterizedObjectPool<in TKey, out TValue>
     {
         /// <summary>

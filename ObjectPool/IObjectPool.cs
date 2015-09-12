@@ -10,7 +10,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using CodeProject.ObjectPool.Contracts;
 
 namespace CodeProject.ObjectPool
 {
@@ -18,7 +17,6 @@ namespace CodeProject.ObjectPool
     ///   Describes all methods available on Object Pools.
     /// </summary>
     /// <typeparam name="T">The type of the objects stored in the pool.</typeparam>
-    [ContractClass(typeof(ObjectPoolContract<>))]
     public interface IObjectPool<out T> where T : PooledObject
     {
         /// <summary>
