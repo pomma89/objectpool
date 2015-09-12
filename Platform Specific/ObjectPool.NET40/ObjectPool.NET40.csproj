@@ -168,10 +168,10 @@
   <Import Project="..\..\ObjectPool\ObjectPool.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager/lib/net40-client" mkdir "$(SolutionDir)NuGet Packager/lib/net40-client"
-copy "CodeProject.ObjectPool.dll" "$(SolutionDir)NuGet Packager/lib/net40-client"
-copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)NuGet Packager/lib/net40-client"
-copy "CodeProject.ObjectPool.xml" "$(SolutionDir)NuGet Packager/lib/net40-client"</PostBuildEvent>
+    <PostBuildEvent>if not exist "$(SolutionDir)ObjectPool.NuGetPackager/lib/net40" mkdir "$(SolutionDir)ObjectPool.NuGetPackager/lib/net40"
+copy "CodeProject.ObjectPool.dll" "$(SolutionDir)ObjectPool.NuGetPackager/lib/net40"
+copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)ObjectPool.NuGetPackager/lib/net40"
+copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/net40"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
