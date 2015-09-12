@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
@@ -18,7 +19,7 @@ using NUnit.Framework;
 namespace UnitTests
 {
     [TestFixture]
-    internal sealed class ParameterizedObjectPoolTests
+    internal sealed class ObjectPoolTests
     {
         [TestCase(-1)]
         [TestCase(-5)]
@@ -27,7 +28,7 @@ namespace UnitTests
         public void ShouldThrowOnNegativeMinimumSize(int minSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject>(minSize, 1);
+            new ObjectPool<MyPooledObject>(minSize, 1);
         }
 
         [TestCase(-1)]
@@ -37,7 +38,7 @@ namespace UnitTests
         public void ShouldThrowOnNegativeMinimumSizeOnProperty(int minSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject> { MinimumPoolSize = minSize };
+            new ObjectPool<MyPooledObject> { MinimumPoolSize = minSize };
         }
 
         [TestCase(0)]
@@ -48,7 +49,7 @@ namespace UnitTests
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize);
+            new ObjectPool<MyPooledObject>(0, maxSize);
         }
 
         [TestCase(0)]
@@ -59,7 +60,19 @@ namespace UnitTests
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize };
+            new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize };
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public void ShouldSatisfyMinimumSizeRequirement(int minSize)
+        {
+            var pool = new ObjectPool<MyPooledObject>(minSize, minSize * 2 + 1);
+            Assert.AreEqual(minSize, pool.ObjectsInPoolCount);
         }
 
         [TestCase(1)]
@@ -67,28 +80,53 @@ namespace UnitTests
         [TestCase(10)]
         [TestCase(50)]
         [TestCase(100)]
-        public void ShouldSimplyWork(int maxSize)
+        public void ShouldFillUntilMaximumSize(int maxSize)
         {
-            const int keyCount = 4;
-            var pool = new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize);
-            var objectCount = maxSize * keyCount;
+            var pool = new ObjectPool<MyPooledObject>(0, maxSize);
+            var objects = new List<MyPooledObject>();
+            for (var i = 0; i < maxSize * 2; ++i)
+            {
+                var obj = pool.GetObject();
+                objects.Add(obj);
+            }
+            foreach (var obj in objects)
+            {
+                pool.ReturnObjectToPool(obj, false);
+            }
+            Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
+        }
+
+#if !PORTABLE
+
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public void ShouldFillUntilMaximumSize_Async(int maxSize)
+        {
+            var pool = new ObjectPool<MyPooledObject>(0, maxSize);
+            var objectCount = maxSize * 4;
             var objects = new MyPooledObject[objectCount];
             Parallel.For(0, objectCount, i =>
             {
-                objects[i] = pool.GetObject(i % keyCount);
+                objects[i] = pool.GetObject();
             });
             Parallel.For(0, objectCount, i =>
             {
                 objects[i].Dispose();
             });
             Thread.Sleep(1000);
-            Assert.AreEqual(keyCount, pool.KeysInPoolCount);
+            pool.AdjustPoolSizeToBounds();
+            Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
+
+#endif
 
         [Test]
         public void ShouldChangePoolLimitsIfCorrect()
         {
-            var pool = new ParameterizedObjectPool<int, MyPooledObject>();
+            var pool = new ObjectPool<MyPooledObject>();
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMinimumSize, pool.MinimumPoolSize);
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 

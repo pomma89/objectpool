@@ -6,7 +6,7 @@
     <SharedGUID>5ab13e6f-960e-4688-86ff-5a1a1bd2a935</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>ObjectPool</Import_RootNamespace>
+    <Import_RootNamespace>CodeProject.ObjectPool</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />

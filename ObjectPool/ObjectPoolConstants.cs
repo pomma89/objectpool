@@ -42,9 +42,9 @@ namespace CodeProject.ObjectPool
         /// <param name="maximumPoolSize">The upper bound.</param>
         public static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
         {
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize >= 0, ErrorMessages.NegativeMinimumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize >= 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize <= maximumPoolSize, ErrorMessages.WrongCacheBounds);
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize < 0, ErrorMessages.NegativeMinimumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(maximumPoolSize < 1, ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            Raise<ArgumentOutOfRangeException>.If(minimumPoolSize > maximumPoolSize, ErrorMessages.WrongCacheBounds);
         }
 
         #endregion Validation
