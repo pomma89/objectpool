@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5ab13e6f-960e-4688-86ff-5a1a1bd2a935</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ObjectPool</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ObjectPoolContract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ParameterizedObjectPoolContract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IObjectPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IParameterizedObjectPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectPoolConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectPoolDiagnostics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ParameterizedObjectPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PooledObject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
+  </ItemGroup>
+</Project>
