@@ -29,20 +29,20 @@ namespace CodeProject.ObjectPool
         ///   Int, altought it looks like it should be bool - this was done for Interlocked CAS
         ///   operation (CompareExchange).
         /// </summary>
-        private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
+        int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
 
         /// <summary>
         ///   The action performed when an object returns to the pool.
         /// </summary>
-        private readonly Action<PooledObject, bool> _returnToPoolAction;
+        readonly Action<PooledObject, bool> _returnToPoolAction;
 
         /// <summary>
         ///   The concurrent queue containing pooled objects.
         /// </summary>
-        private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
+        readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
-        private int _maximumPoolSize;
-        private int _minimumPoolSize;
+        int _maximumPoolSize;
+        int _minimumPoolSize;
 
         #region Public Properties
 
@@ -56,7 +56,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        public Func<T> FactoryMethod { get; private set; }
+        public Func<T> FactoryMethod { get; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -70,6 +70,7 @@ namespace CodeProject.ObjectPool
             }
             set
             {
+                ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
                 _maximumPoolSize = value;
                 AdjustPoolSizeToBounds();
             }
@@ -86,6 +87,7 @@ namespace CodeProject.ObjectPool
             }
             set
             {
+                ObjectPoolConstants.ValidatePoolLimits(value, MaximumPoolSize);
                 _minimumPoolSize = value;
                 AdjustPoolSizeToBounds();
             }
@@ -94,10 +96,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount
-        {
-            get { return _pooledObjects.Count; }
-        }
+        public int ObjectsInPoolCount => _pooledObjects.Count;
 
         #endregion Public Properties
 
@@ -204,7 +203,7 @@ namespace CodeProject.ObjectPool
             _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
-        private T CreatePooledObject()
+        T CreatePooledObject()
         {
             // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
             // add a generic constraint with new (), but I didn't want to limit the user and force a
@@ -220,7 +219,7 @@ namespace CodeProject.ObjectPool
             return newObject;
         }
 
-        private void DestroyPooledObject(PooledObject objectToDestroy)
+        void DestroyPooledObject(PooledObject objectToDestroy)
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).

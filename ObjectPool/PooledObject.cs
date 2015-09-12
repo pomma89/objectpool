@@ -8,10 +8,11 @@
  *
  */
 
+using CodeProject.ObjectPool.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -111,7 +112,7 @@ namespace CodeProject.ObjectPool
             Task.Factory.StartNew(() => HandleReAddingToPool(false));
         }
 
-        private void HandleReAddingToPool(bool reRegisterForFinalization)
+        void HandleReAddingToPool(bool reRegisterForFinalization)
         {
             if (Disposed)
             {
@@ -149,8 +150,6 @@ namespace CodeProject.ObjectPool
     [Serializable]
     public sealed class PooledObjectWrapper<T> : PooledObject where T : class
     {
-        private readonly T _internalResource;
-
         /// <summary>
         ///   Wraps a given resource so that it can be put in the pool.
         /// </summary>
@@ -158,9 +157,9 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentNullException">Given resource is null.</exception>
         public PooledObjectWrapper(T resource)
         {
-            Contract.Requires<ArgumentNullException>(resource != null, ErrorMessages.NullResource);
+            RaiseArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
             // Setting the internal resource
-            _internalResource = resource;
+            InternalResource = resource;
         }
 
         /// <summary>
@@ -177,14 +176,7 @@ namespace CodeProject.ObjectPool
         ///   The resource wrapped inside this class.
         /// </summary>
         [Pure]
-        public T InternalResource
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<T>() != null);
-                return _internalResource;
-            }
-        }
+        public T InternalResource { get; }
 
         /// <summary>
         ///   Triggers the <see cref="WrapperReleaseResourcesAction"/>, if any.

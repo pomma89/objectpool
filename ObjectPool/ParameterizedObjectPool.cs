@@ -21,11 +21,11 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
     {
-        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+        readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
-        private int _minimumPoolSize;
-        private int _maximumPoolSize;
-        private ObjectPoolDiagnostics _diagnostics;
+        int _minimumPoolSize;
+        int _maximumPoolSize;
+        ObjectPoolDiagnostics _diagnostics;
 
         #region Public Properties
 
@@ -61,6 +61,7 @@ namespace CodeProject.ObjectPool
             }
             set
             {
+                ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
                 _maximumPoolSize = value;
             }
         }
@@ -77,6 +78,7 @@ namespace CodeProject.ObjectPool
             }
             set
             {
+                ObjectPoolConstants.ValidatePoolLimits(value, MaximumPoolSize);
                 _minimumPoolSize = value;
             }
         }
@@ -175,7 +177,7 @@ namespace CodeProject.ObjectPool
             return pool.GetObject();
         }
 
-        private Func<TValue> PrepareFactoryMethod(TKey key)
+        Func<TValue> PrepareFactoryMethod(TKey key)
         {
             var factory = FactoryMethod;
             if (factory == null)

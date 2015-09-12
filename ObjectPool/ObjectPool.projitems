@@ -9,8 +9,6 @@
     <Import_RootNamespace>ObjectPool</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ObjectPoolContract.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Contracts\ParameterizedObjectPoolContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IParameterizedObjectPool.cs" />
