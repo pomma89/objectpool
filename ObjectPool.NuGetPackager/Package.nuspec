@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>1.8.0</version>
+        <version>1.9.0</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,9 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Added new DLLs specifically compiled for .NET 4, 4.5 and 4.6.
-* Thanks to shared projects, all platform specific versions are properly unit tested.
-* Removed internal usages of Task.Run, in order to be more friendly towards ASP.NET.
+* All assemblies are now signed.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -32,22 +30,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <group>
-                <dependency id="Finsa.CodeServices.Common" version="2.5.0" />
-            </group>
-
-            <group targetFramework="net46">
-                <dependency id="Finsa.CodeServices.Common" version="2.5.0" />
-            </group>
-
-            <group targetFramework="net45">
-                <dependency id="Finsa.CodeServices.Common" version="2.5.0" />
-            </group>
-
-            <group targetFramework="net40">
-                <dependency id="Finsa.CodeServices.Common" version="2.5.0" />
-                <dependency id="Microsoft.Bcl" version="1.1.10" />
-            </group>
+            <dependency id="Finsa.CodeServices.Common" version="[3.0.3, 4.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
