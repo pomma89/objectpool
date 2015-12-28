@@ -188,5 +188,29 @@ namespace UnitTests
 
             Assert.That(1, Is.EqualTo(pool.ObjectsInPoolCount));
         }
+
+        [Test]
+        public void ShouldHandleClearAndThenReachMinimumSizeAtSecondUsage()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            using (var obj = pool.GetObject())
+            {
+            }
+
+            pool.Clear();
+
+            // Usage #A
+            using (var obj = pool.GetObject())
+            {
+            }
+
+            using (var obj = pool.GetObject())
+            {
+            }
+
+            // One is for usage #A
+            Assert.That(ObjectPoolConstants.DefaultPoolMinimumSize + 1, Is.EqualTo(pool.ObjectsInPoolCount));
+        }
     }
 }
