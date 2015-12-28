@@ -10,6 +10,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace CodeProject.ObjectPool
 {
@@ -50,7 +51,7 @@ namespace CodeProject.ObjectPool
         int _maximumPoolSize;
         ObjectPoolDiagnostics _diagnostics;
 
-#region Public Properties
+        #region Public Properties
 
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
@@ -114,14 +115,11 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the keys currently handled by the pool.
         /// </summary>
-        public int KeysInPoolCount
-        {
-            get { return _pools.Count; }
-        }
+        public int KeysInPoolCount => _pools.Count;
 
-#endregion Public Properties
+        #endregion Public Properties
 
-#region C'tor and Initialization code
+        #region C'tor and Initialization code
 
         /// <summary>
         ///   Initializes a new pool with default settings.
@@ -168,7 +166,25 @@ namespace CodeProject.ObjectPool
             _minimumPoolSize = minimumPoolSize;
         }
 
-#endregion C'tor and Initialization code
+        #endregion C'tor and Initialization code
+
+        /// <summary>
+        ///   Clears the parameterized pool and each inner pool stored inside it.
+        /// </summary>
+        public void Clear()
+        {
+            // Safe copy of the current pools.
+            var innerPools = _pools.Values.ToArray();
+
+            // Clear the main pool.
+            _pools.Clear();
+
+            // Then clear each pool, taking it from the safe copy.
+            foreach (var innerPool in innerPools)
+            {
+                innerPool.Clear();
+            }
+        }
 
         /// <summary>
         ///   Gets an object linked to given key.

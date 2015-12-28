@@ -112,5 +112,47 @@ namespace UnitTests
             Assert.AreEqual(1, pool.MinimumPoolSize);
             Assert.AreEqual(2, pool.MaximumPoolSize);
         }
+
+        [Test]
+        public void ShouldHandleClearAfterNoUsage()
+        {
+            var pool = new ParameterizedObjectPool<int, MyPooledObject>();
+
+            pool.Clear();
+
+            Assert.That(0, Is.EqualTo(pool.KeysInPoolCount));
+        }
+
+        [Test]
+        public void ShouldHandleClearAfterSomeUsage()
+        {
+            var pool = new ParameterizedObjectPool<int, MyPooledObject>();
+
+            using (var obj = pool.GetObject(1))
+            {
+            }
+
+            pool.Clear();
+
+            Assert.That(0, Is.EqualTo(pool.KeysInPoolCount));
+        }
+
+        [Test]
+        public void ShouldHandleClearAndThenPoolCanBeUsedAgain()
+        {
+            var pool = new ParameterizedObjectPool<int, MyPooledObject>();
+
+            using (var obj = pool.GetObject(1))
+            {
+            }
+
+            pool.Clear();
+
+            using (var obj = pool.GetObject(1))
+            {
+            }
+
+            Assert.That(1, Is.EqualTo(pool.KeysInPoolCount));
+        }
     }
 }
