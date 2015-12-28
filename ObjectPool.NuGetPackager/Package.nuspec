@@ -18,7 +18,8 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* All assemblies are now signed.
+* Updated dependencies.
+* Add a method to clear the pool.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -30,7 +31,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Finsa.CodeServices.Common" version="[3.0.3, 4.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[3.0.11, 4.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>

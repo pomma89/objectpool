@@ -138,6 +138,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="C:\Keys\pomma89.pfx">
       <Link>pomma89.pfx</Link>
     </None>
@@ -146,12 +147,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=3.0.5.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Common.3.0.5\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Common.3.0.11\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.Thrower, Version=2.0.1.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.2.0.1\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
+    <Reference Include="PommaLabs.Thrower, Version=2.1.1.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Thrower.2.1.1\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
@@ -165,7 +166,12 @@
     <PostBuildEvent>if not exist "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81" mkdir "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
 copy "CodeProject.ObjectPool.dll" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
 copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
-copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"</PostBuildEvent>
+copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
+
+if not exist "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50" mkdir "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
+copy "CodeProject.ObjectPool.dll" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
+copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
+copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
