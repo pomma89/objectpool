@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Portable", "Platform Specific\ObjectPool.Portable\ObjectPool.Portable.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NET40", "Platform Specific\ObjectPool.UnitTests.NET40\ObjectPool.UnitTests.NET40.csproj", "{6707C111-57B0-462E-A450-BD4DE8AA328C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NuGetPackager", "ObjectPool.NuGetPackager\ObjectPool.NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NuGet", "ObjectPool.NuGetPackager\ObjectPool.NuGet.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BB805911-63DD-4E2E-A03C-963DA1C72738} = {BB805911-63DD-4E2E-A03C-963DA1C72738}
 		{B5106212-8593-4599-B966-113DCB9F8F35} = {B5106212-8593-4599-B966-113DCB9F8F35}

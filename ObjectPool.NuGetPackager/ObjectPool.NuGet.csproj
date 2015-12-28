@@ -58,6 +58,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="lib\dnxcore50\" />
     <Folder Include="lib\net40\" />
     <Folder Include="lib\net45\" />
     <Folder Include="lib\net46\" />

@@ -56,6 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="C:\Keys\pomma89.pfx">
       <Link>pomma89.pfx</Link>
     </None>

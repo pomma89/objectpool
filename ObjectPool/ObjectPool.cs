@@ -180,7 +180,7 @@ namespace CodeProject.ObjectPool
 
         internal void AdjustPoolSizeToBounds()
         {
-            // If there is an Adjusting operation in progress, skip and return.
+            // If there is an Adjusting/Clear operation in progress, skip and return.
             if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
             {
                 return;
@@ -251,6 +251,28 @@ namespace CodeProject.ObjectPool
         #endregion Private Methods
 
         #region Pool Operations
+
+        /// <summary>
+        ///   Clears the pool and destroys each object stored inside it.
+        /// </summary>
+        public void Clear()
+        {
+            // If there is an Adjusting/Clear operation in progress, wait until it is done.
+            while (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
+            {
+                // Wait...
+            }
+
+            // Destroy all objects.
+            T dequeuedObjectToDestroy;
+            while (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
+            {
+                DestroyPooledObject(dequeuedObjectToDestroy);
+            }
+
+            // Finished clearing, allowing additional callers to enter when needed.
+            _adjustPoolSizeIsInProgressCasFlag = 0;
+        }
 
         /// <summary>
         ///   Gets a monitored object from the pool.
