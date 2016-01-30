@@ -147,12 +147,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=4.0.1.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Common.4.0.1\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common">
+      <HintPath>..\..\packages\Finsa.CodeServices.Common.4.0.9\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.Thrower, Version=2.1.1.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.2.1.1\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
+    <Reference Include="PommaLabs.Thrower">
+      <HintPath>..\..\packages\Thrower.2.1.4\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
@@ -163,22 +163,13 @@
   <Import Project="..\..\ObjectPool\ObjectPool.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81" mkdir "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
-copy "CodeProject.ObjectPool.dll" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
-copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
-copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/portable-net45+win8+wp8+wpa81"
-
-if not exist "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50" mkdir "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
-copy "CodeProject.ObjectPool.dll" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
-copy "CodeProject.ObjectPool.pdb" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"
-copy "CodeProject.ObjectPool.xml" "$(SolutionDir)ObjectPool.NuGetPackager/lib/dnxcore50"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

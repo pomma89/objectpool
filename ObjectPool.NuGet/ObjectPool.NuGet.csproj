@@ -87,4 +87,39 @@
     <Message Text="SUCCESS: Created package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Debug|AnyCPU|0' " Importance="High" />
     <Message Text="SUCCESS: Published package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Release|AnyCPU|0' " Importance="High" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>del "$(ProjectDir)*.nupkg"
+del "$(ProjectDir)*.nupkg.bak"
+
+if not exist "$(ProjectDir)lib\net35" mkdir "$(ProjectDir)lib\net35"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net35"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net35"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net35"
+
+if not exist "$(ProjectDir)lib\net40" mkdir "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET40\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET40\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET40\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net40"
+
+if not exist "$(ProjectDir)lib\net45" mkdir "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET45\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET45\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET45\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net45"
+
+if not exist "$(ProjectDir)lib\net46" mkdir "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net46"
+
+if not exist "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81" mkdir "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+
+if not exist "$(ProjectDir)lib\dnxcore50" mkdir "$(ProjectDir)lib\dnxcore50"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\dnxcore50"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\dnxcore50"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\dnxcore50"
+</PreBuildEvent>
+  </PropertyGroup>
 </Project>
