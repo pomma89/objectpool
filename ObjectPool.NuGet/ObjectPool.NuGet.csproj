@@ -91,11 +91,6 @@
     <PreBuildEvent>del "$(ProjectDir)*.nupkg"
 del "$(ProjectDir)*.nupkg.bak"
 
-if not exist "$(ProjectDir)lib\net35" mkdir "$(ProjectDir)lib\net35"
-copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net35"
-copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net35"
-copy "$(SolutionDir)Platform Specific\ObjectPool.NET35\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net35"
-
 if not exist "$(ProjectDir)lib\net40" mkdir "$(ProjectDir)lib\net40"
 copy "$(SolutionDir)Platform Specific\ObjectPool.NET40\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\net40"
 copy "$(SolutionDir)Platform Specific\ObjectPool.NET40\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net40"
