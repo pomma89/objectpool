@@ -25,13 +25,13 @@ Many thanks to Ofir Makmal for his great work.
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/objectpool/overview</projectUrl>
+        <projectUrl>https://github.com/pomma89/ObjectPool</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Finsa.CodeServices.Common" version="[4.0.1, 6.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.0.9, 6.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
