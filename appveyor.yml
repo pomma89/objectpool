@@ -41,6 +41,9 @@ build:
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Debug
+
+before_build:
+  - nuget restore
   
 #---------------------------------#
 #          web settings           #
