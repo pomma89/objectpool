@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>1.9.2</version>
+        <version>1.9.3</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -31,7 +31,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Finsa.CodeServices.Common" version="[4.0.9, 6.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.1.0, 6.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
