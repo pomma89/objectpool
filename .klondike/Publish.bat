@@ -1,1 +1,1 @@
-PommaLabs.KlondikePackager.exe "..\Nuget Packagers" Packages
+PommaLabs.KlondikePackager.exe .. Packages
