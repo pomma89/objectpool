@@ -30,7 +30,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Finsa.CodeServices.Common" version="[4.1.0, 6.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.1.1, 6.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
@@ -39,5 +39,6 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
     <files>
         <file src="lib\" target="lib" />
         <file src="LICENSE.htm" target="LICENSE.htm" />
+        <file src="refman.pdf" target="refman.pdf" />
     </files>
 </package>
