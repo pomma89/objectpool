@@ -18,8 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Updated dependencies.
-* Added a method to clear the pool.
+* Fixed AssemblyVersion, now it will not change anymore between minor releases.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -35,7 +34,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>codeproject object pool concurrent generic threadsafe portable</tags>
+        <tags>codeproject object pool concurrent generic threadsafe portable dnx</tags>
     </metadata>
     <files>
         <file src="lib\" target="lib" />
