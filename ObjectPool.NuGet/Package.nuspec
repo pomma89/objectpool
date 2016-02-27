@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>1.9.3</version>
+        <version>1.10.1</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,8 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Updated dependencies.
-* Added a method to clear the pool.
+* Fixed AssemblyVersion, now it will not change anymore between minor releases.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -31,14 +30,15 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Finsa.CodeServices.Common" version="[4.1.0, 6.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.1.1, 6.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>codeproject object pool concurrent generic threadsafe portable</tags>
+        <tags>codeproject object pool concurrent generic threadsafe portable dnx</tags>
     </metadata>
     <files>
         <file src="lib\" target="lib" />
         <file src="LICENSE.htm" target="LICENSE.htm" />
+        <file src="refman.pdf" target="refman.pdf" />
     </files>
 </package>

@@ -40,6 +40,7 @@ local.properties
 *.suo
 *.user
 *.sln.docstates
+.vs
 
 # Build results
 
@@ -49,6 +50,7 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+[Dd]oc/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

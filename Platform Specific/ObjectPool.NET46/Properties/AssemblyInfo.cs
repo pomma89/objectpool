@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A generic, concurrent, portable and flexible Object Pool for the .NET Framework.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ofir Makmal")]
-[assembly: AssemblyProduct("CodeProject")]
+[assembly: AssemblyProduct("CodeProject.ObjectPool")]
 [assembly: AssemblyCopyright("Copyright © Ofir Makmal 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -34,8 +34,8 @@ using System.Runtime.InteropServices;
 // 
 // You can specify all the values or you can default the Build and Revision Numbers by using the '*'
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.9.3")]
-[assembly: AssemblyFileVersion("1.9.3")]
+[assembly: AssemblyVersion("1.10.0")]
+[assembly: AssemblyFileVersion("1.10.1")]
 
 // Common Language Specification (CLS) compliance generally refers to the claim that CLS rules and
 // restrictions are being followed.
