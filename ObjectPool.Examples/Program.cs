@@ -8,12 +8,16 @@
  *
  */
 
-using CodeProject.ObjectPool;
-
-namespace ObjectPoolTester
+namespace CodeProject.ObjectPool.Examples
 {
+    /// <summary>
+    ///   Example usages of ObjectPool.
+    /// </summary>
     internal static class Program
     {
+        /// <summary>
+        ///   Example usages of ObjectPool.
+        /// </summary>
         private static void Main()
         {
             // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
@@ -49,38 +53,38 @@ namespace ObjectPoolTester
 
         public static void ExternalResourceResetState(ExternalExpensiveResource resource)
         {
-            // External Resource reset state code
+            // External Resource reset state code.
         }
 
         public static void ExternalResourceReleaseResource(ExternalExpensiveResource resource)
         {
-            // External Resource release code
+            // External Resource release code.
         }
     }
 
-    public class ExpensiveResource : PooledObject
+    internal sealed class ExpensiveResource : PooledObject
     {
         public void DoStuff()
         {
-            // Do some work here, for example
+            // Do some work here, for example.
         }
 
         protected override void OnReleaseResources()
         {
-            // Override if the resource needs to be manually cleaned before the memory is reclaimed
+            // Override if the resource needs to be manually cleaned before the memory is reclaimed.
         }
 
         protected override void OnResetState()
         {
-            // Override if the resource needs resetting before it is getting back into the pool
+            // Override if the resource needs resetting before it is getting back into the pool.
         }
     }
 
-    public class ExternalExpensiveResource
+    internal sealed class ExternalExpensiveResource
     {
         public void DoOtherStuff()
         {
-            // Do some work here, for example
+            // Do some work here, for example.
         }
     }
 }
