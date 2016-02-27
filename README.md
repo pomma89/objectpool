@@ -1,6 +1,17 @@
+![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/logo-64.png "Object Pool Logo") Object Pool
+=============================================================================================================================
+
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the [Code Project article of Ofir Makmal](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
+## Summary ##
+
+* Latest release version: `v1.10.1`
+* Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
+* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: https://goo.gl/RVA7mV
+* [NuGet](https://www.nuget.org) package(s):
+    + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
+
+## Introduction ##
 
 Library is production ready and it is successfully working in real life systems. [Here](https://4538d366a46bbb00d202aaaa7b99c4e50320a061.googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/doc/index.html) you can find the Doxygen-generated API documentation.
 
@@ -10,16 +21,18 @@ Of course, all modified source code is freely available in this repository.
 
 Many thanks to Ofir Makmal for his great work.
 
-Build status: [![Build status](https://ci.appveyor.com/api/projects/status/xaon6fgwal0vjbhl)](https://ci.appveyor.com/project/pomma89/objectpool)
-
-Quick example:
+Quick and dirty example:
 
 
-```
-#!c#
-
+```cs
+/// <summary>
+///   Example usages of ObjectPool.
+/// </summary>
 internal static class Program
 {
+    /// <summary>
+    ///   Example usages of ObjectPool.
+    /// </summary>
     private static void Main()
     {
         // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
@@ -55,38 +68,42 @@ internal static class Program
 
     public static void ExternalResourceResetState(ExternalExpensiveResource resource)
     {
-        // External Resource reset state code
+        // External Resource reset state code.
     }
 
     public static void ExternalResourceReleaseResource(ExternalExpensiveResource resource)
     {
-        // External Resource release code
+        // External Resource release code.
     }
 }
 
-public class ExpensiveResource : PooledObject
+internal sealed class ExpensiveResource : PooledObject
 {
     public void DoStuff()
     {
-        // Do some work here, for example
+        // Do some work here, for example.
     }
 
     protected override void OnReleaseResources()
     {
-        // Override if the resource needs to be manually cleaned before the memory is reclaimed
+        // Override if the resource needs to be manually cleaned before the memory is reclaimed.
     }
 
     protected override void OnResetState()
     {
-        // Override if the resource needs resetting before it is getting back into the pool
+        // Override if the resource needs resetting before it is getting back into the pool.
     }
 }
 
-public class ExternalExpensiveResource
+internal sealed class ExternalExpensiveResource
 {
     public void DoOtherStuff()
     {
-        // Do some work here, for example
+        // Do some work here, for example.
     }
 }
 ```
+
+## About this repository and its maintainer ##
+
+Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
