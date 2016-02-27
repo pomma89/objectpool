@@ -15,11 +15,15 @@ Build status: [![Build status](https://ci.appveyor.com/api/projects/status/xaon6
 Quick example:
 
 
-```
-#!c#
-
+```cs
+/// <summary>
+///   Example usages of ObjectPool.
+/// </summary>
 internal static class Program
 {
+    /// <summary>
+    ///   Example usages of ObjectPool.
+    /// </summary>
     private static void Main()
     {
         // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
@@ -55,38 +59,42 @@ internal static class Program
 
     public static void ExternalResourceResetState(ExternalExpensiveResource resource)
     {
-        // External Resource reset state code
+        // External Resource reset state code.
     }
 
     public static void ExternalResourceReleaseResource(ExternalExpensiveResource resource)
     {
-        // External Resource release code
+        // External Resource release code.
     }
 }
 
-public class ExpensiveResource : PooledObject
+internal sealed class ExpensiveResource : PooledObject
 {
     public void DoStuff()
     {
-        // Do some work here, for example
+        // Do some work here, for example.
     }
 
     protected override void OnReleaseResources()
     {
-        // Override if the resource needs to be manually cleaned before the memory is reclaimed
+        // Override if the resource needs to be manually cleaned before the memory is reclaimed.
     }
 
     protected override void OnResetState()
     {
-        // Override if the resource needs resetting before it is getting back into the pool
+        // Override if the resource needs resetting before it is getting back into the pool.
     }
 }
 
-public class ExternalExpensiveResource
+internal sealed class ExternalExpensiveResource
 {
     public void DoOtherStuff()
     {
-        // Do some work here, for example
+        // Do some work here, for example.
     }
 }
 ```
+
+## About this repository and its maintainer ##
+
+Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
