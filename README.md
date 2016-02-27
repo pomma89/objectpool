@@ -7,7 +7,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 * Latest release version: `v1.10.1`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
-* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: https://goo.gl/iO6qZG
+* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: https://goo.gl/RVA7mV
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
 
@@ -21,9 +21,7 @@ Of course, all modified source code is freely available in this repository.
 
 Many thanks to Ofir Makmal for his great work.
 
-Build status: [![Build status](https://ci.appveyor.com/api/projects/status/xaon6fgwal0vjbhl)](https://ci.appveyor.com/project/pomma89/objectpool)
-
-Quick example:
+Quick and dirty example:
 
 
 ```cs
