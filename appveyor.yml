@@ -49,4 +49,4 @@ before_build:
 #          web settings           #
 #---------------------------------#
 
-# crontab: 0 21 * * *
+crontab: 0 21 * * *
