@@ -6,7 +6,7 @@ open Fake.Testing
 RestorePackages()
 
 // Properties
-let buildMode    = getBuildParamOrDefault "buildMode" "Debug"
+let solutionFile = "./ObjectPool.sln"
 let artifactsDir = "./.artifacts/"
 let testDir      = "./Platform Specific/ObjectPool.UnitTests.*/bin/{0}/"
 let testDll      = "CodeProject.ObjectPool.UnitTests.dll"
@@ -26,7 +26,7 @@ let myBuild target buildMode =
               "Configuration", buildMode
             ]
       }
-    build setParams "./ObjectPool.sln" |> DoNothing
+    build setParams solutionFile |> DoNothing
 
 // Common - Test
 let myTest (buildMode: string) =
