@@ -1,13 +1,13 @@
 ﻿{
-    "supports": {},
-    "dependencies": {
-        "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
-        "NETStandard.Library": "1.6.0",
-        "Thrower": "2.2.6",
-        "System.Collections.Concurrent": "4.0.12",
-        "System.Diagnostics.Contracts": "4.0.1"
-    },
-    "frameworks": {
-        "netstandard1.1": {}
-    }
+  "supports": {},
+  "dependencies": {
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+    "NETStandard.Library": "1.6.0",
+    "System.Collections.Concurrent": "4.0.12",
+    "System.Diagnostics.Contracts": "4.0.1",
+    "Thrower": "3.0.1"
+  },
+  "frameworks": {
+    "netstandard1.1": {}
+  }
 }
