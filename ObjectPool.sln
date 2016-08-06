@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NETSTD11", "Platform Specific\ObjectPool.Portable\ObjectPool.NETSTD11.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NETSTD11", "Platform Specific\ObjectPool.NETSTD11\ObjectPool.NETSTD11.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Examples", "ObjectPool.Examples\ObjectPool.Examples.csproj", "{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}"
 EndProject

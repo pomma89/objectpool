@@ -52,7 +52,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform Specific\ObjectPool.Portable\ObjectPool.NETSTD11.csproj">
+    <ProjectReference Include="..\Platform Specific\ObjectPool.NETSTD11\ObjectPool.NETSTD11.csproj">
       <Project>{b5106212-8593-4599-b966-113dcb9f8f35}</Project>
       <Name>ObjectPool.NETSTD11</Name>
     </ProjectReference>
