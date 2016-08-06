@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 
@@ -21,31 +22,14 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
     {
-#if PORTABLE
+        readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
-        readonly Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
-        {
-            return _pools.TryAdd(key, value, out foundValue);
-        }
-
-#else
-
-        readonly System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
-
-#if (NET45 || NET46)
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
         bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
         {
             var added = false;
             foundValue = _pools.GetOrAdd(key, k => { added = true; return value; });
             return added;
         }
-
-#endif
 
         int _minimumPoolSize;
         int _maximumPoolSize;

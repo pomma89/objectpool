@@ -22,21 +22,10 @@ namespace CodeProject.ObjectPool
     /// </typeparam>
     public sealed class ObjectPool<T> : IObjectPool<T> where T : PooledObject
     {
-#if PORTABLE
-
-        /// <summary>
-        ///   The concurrent queue containing pooled objects.
-        /// </summary>
-        readonly Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T>();
-
-#else
-
         /// <summary>
         ///   The concurrent queue containing pooled objects.
         /// </summary>
         readonly System.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new System.Collections.Concurrent.ConcurrentQueue<T>();
-
-#endif
 
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is

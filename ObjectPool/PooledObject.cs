@@ -157,7 +157,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentNullException">Given resource is null.</exception>
         public PooledObjectWrapper(T resource)
         {
-            RaiseArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
+            Raise.ArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
             // Setting the internal resource
             InternalResource = resource;
         }

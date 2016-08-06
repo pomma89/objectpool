@@ -10,14 +10,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CodeProject.ObjectPool</RootNamespace>
     <AssemblyName>CodeProject.ObjectPool</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -142,21 +143,7 @@
       <Link>pomma89.snk</Link>
     </None>
     <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Common.4.1.4\lib\portable-net45+win8+wp8+wpa81\Finsa.CodeServices.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PommaLabs.Thrower, Version=2.2.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.2.2.3\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Troschuetz.Random.4.0.4\lib\portable-net45+win8+wp8+wpa81\Troschuetz.Random.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <None Include="project.json" />
   </ItemGroup>
   <Import Project="..\..\ObjectPool\ObjectPool.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

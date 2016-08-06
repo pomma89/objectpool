@@ -8,12 +8,11 @@
  *
  */
 
+using CodeProject.ObjectPool;
+using NUnit.Framework;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeProject.ObjectPool;
-using CodeProject.ObjectPool.Core;
-using NUnit.Framework;
 
 namespace UnitTests
 {
@@ -23,46 +22,36 @@ namespace UnitTests
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
-        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeMinimumPoolSize, MatchType = MessageMatch.Contains)]
         public void ShouldThrowOnNegativeMinimumSize(int minSize)
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject>(minSize, 1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(minSize, 1));
         }
 
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
-        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeMinimumPoolSize, MatchType = MessageMatch.Contains)]
         public void ShouldThrowOnNegativeMinimumSizeOnProperty(int minSize)
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject> { MinimumPoolSize = minSize };
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MinimumPoolSize = minSize });
         }
 
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
-        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeOrZeroMaximumPoolSize, MatchType = MessageMatch.Contains)]
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize));
         }
 
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
-        [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = ErrorMessages.NegativeOrZeroMaximumPoolSize, MatchType = MessageMatch.Contains)]
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize };
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
         }
-
-#if !PORTABLE
 
         [TestCase(1)]
         [TestCase(5)]
@@ -86,8 +75,6 @@ namespace UnitTests
             Thread.Sleep(1000);
             Assert.AreEqual(keyCount, pool.KeysInPoolCount);
         }
-
-#endif
 
         [Test]
         public void ShouldChangePoolLimitsIfCorrect()
