@@ -7,7 +7,7 @@ RestorePackages()
 
 // Properties
 let buildMode    = getBuildParamOrDefault "buildMode" "Debug"
-let artifactsDir = "./.artifacts"
+let artifactsDir = "./.artifacts/"
 let testDir      = "./Platform Specific/ObjectPool.UnitTests.*/bin/{0}/"
 let testDll      = "CodeProject.ObjectPool.UnitTests.dll"
 let perfDir      = "./ObjectPool.Benchmarks/bin/Release/"
@@ -34,7 +34,7 @@ let myTest (buildMode: string) =
       |> NUnit3 (fun p -> 
         { p with
             ShadowCopy = true;
-            OutputDir = artifactsDir
+            OutputDir = artifactsDir + "test-results.xml"
             ResultSpecs  = [ "test-results.xml" ]
         })
 
