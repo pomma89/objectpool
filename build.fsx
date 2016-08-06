@@ -35,7 +35,7 @@ let myTest (buildMode: string) =
         { p with
             ShadowCopy = true;
             OutputDir = artifactsDir + "test-results.xml"
-            ResultSpecs  = [ "test-results.xml" ]
+            ResultSpecs  = [ ]
         })
 
 // Targets

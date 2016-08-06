@@ -52,9 +52,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform Specific\ObjectPool.Portable\ObjectPool.Portable.csproj">
+    <ProjectReference Include="..\Platform Specific\ObjectPool.Portable\ObjectPool.NETSTD11.csproj">
       <Project>{b5106212-8593-4599-b966-113dcb9f8f35}</Project>
-      <Name>ObjectPool.Portable</Name>
+      <Name>ObjectPool.NETSTD11</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

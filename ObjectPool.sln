@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Portable", "Platform Specific\ObjectPool.Portable\ObjectPool.Portable.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NETSTD11", "Platform Specific\ObjectPool.Portable\ObjectPool.NETSTD11.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Examples", "ObjectPool.Examples\ObjectPool.Examples.csproj", "{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}"
 EndProject
@@ -53,6 +53,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NET46", "Platform Specific\ObjectPool.NET46\ObjectPool.NET46.csproj", "{0031C03A-A007-4844-A8E6-DDAAF90DD4FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Benchmarks", "ObjectPool.Benchmarks\ObjectPool.Benchmarks.csproj", "{083B5B40-371F-4F24-A594-B8EE48848730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NETSTD11", "Platform Specific\ObjectPool.UnitTests.NETSTD11\ObjectPool.UnitTests.NETSTD11.csproj", "{0E07589F-48F9-45B0-9F73-D4FED1414B97}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -114,6 +116,11 @@ Global
 		{083B5B40-371F-4F24-A594-B8EE48848730}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{083B5B40-371F-4F24-A594-B8EE48848730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{083B5B40-371F-4F24-A594-B8EE48848730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,5 +131,6 @@ Global
 		{E5A900A0-0564-489D-AEF0-2C4FB9928614} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{F8D47E02-05FB-49F1-A6EF-843EFDB3E19E} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{0031C03A-A007-4844-A8E6-DDAAF90DD4FC} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{0E07589F-48F9-45B0-9F73-D4FED1414B97} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 	EndGlobalSection
 EndGlobal
