@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Portable", "Platform Specific\ObjectPool.Portable\ObjectPool.Portable.csproj", "{B5106212-8593-4599-B966-113DCB9F8F35}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		build.fsx = build.fsx
+		CHANGELOG.md = CHANGELOG.md
 		LICENSE.htm = LICENSE.htm
 		pomma89.snk = pomma89.snk
 		README.md = README.md
@@ -48,15 +50,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NET45"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NET46", "Platform Specific\ObjectPool.NET46\ObjectPool.NET46.csproj", "{0031C03A-A007-4844-A8E6-DDAAF90DD4FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Benchmarks", "ObjectPool.Benchmarks\ObjectPool.Benchmarks.csproj", "{083B5B40-371F-4F24-A594-B8EE48848730}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		ObjectPool\ObjectPool.projitems*{5ab13e6f-960e-4688-86ff-5a1a1bd2a935}*SharedItemsImports = 13
-		ObjectPool\ObjectPool.projitems*{e5a900a0-0564-489d-aef0-2c4fb9928614}*SharedItemsImports = 4
-		ObjectPool\ObjectPool.projitems*{b5106212-8593-4599-b966-113dcb9f8f35}*SharedItemsImports = 4
-		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{64e981e2-a63d-479e-a59e-ec4cb9acc4e7}*SharedItemsImports = 13
-		ObjectPool\ObjectPool.projitems*{bb805911-63dd-4e2e-a03c-963da1c72738}*SharedItemsImports = 4
-		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{f8d47e02-05fb-49f1-a6ef-843efdb3e19e}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{0031c03a-a007-4844-a8e6-ddaaf90dd4fc}*SharedItemsImports = 4
+		ObjectPool\ObjectPool.projitems*{5ab13e6f-960e-4688-86ff-5a1a1bd2a935}*SharedItemsImports = 13
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{64e981e2-a63d-479e-a59e-ec4cb9acc4e7}*SharedItemsImports = 13
+		ObjectPool\ObjectPool.projitems*{b5106212-8593-4599-b966-113dcb9f8f35}*SharedItemsImports = 4
+		ObjectPool\ObjectPool.projitems*{bb805911-63dd-4e2e-a03c-963da1c72738}*SharedItemsImports = 4
+		ObjectPool\ObjectPool.projitems*{e5a900a0-0564-489d-aef0-2c4fb9928614}*SharedItemsImports = 4
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{f8d47e02-05fb-49f1-a6ef-843efdb3e19e}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +106,12 @@ Global
 		{0031C03A-A007-4844-A8E6-DDAAF90DD4FC}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{0031C03A-A007-4844-A8E6-DDAAF90DD4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0031C03A-A007-4844-A8E6-DDAAF90DD4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083B5B40-371F-4F24-A594-B8EE48848730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
