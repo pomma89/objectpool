@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Portable", "Plat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.Portable", "Platform Specific\ObjectPool.UnitTests.Portable\ObjectPool.UnitTests.Portable.csproj", "{257B4492-E5ED-4D24-A702-B590BA860322}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Benchmarks", "ObjectPool.Benchmarks\ObjectPool.Benchmarks.csproj", "{A43DCCE5-21DE-4011-88CD-DF2749622EA3}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ObjectPool\ObjectPool.projitems*{0031c03a-a007-4844-a8e6-ddaaf90dd4fc}*SharedItemsImports = 4
@@ -147,6 +149,12 @@ Global
 		{257B4492-E5ED-4D24-A702-B590BA860322}.Publish|Any CPU.ActiveCfg = Release|Any CPU
 		{257B4492-E5ED-4D24-A702-B590BA860322}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{257B4492-E5ED-4D24-A702-B590BA860322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
