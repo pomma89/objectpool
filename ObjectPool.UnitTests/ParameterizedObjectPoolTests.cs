@@ -58,7 +58,7 @@ namespace UnitTests
         [TestCase(10)]
         [TestCase(50)]
         [TestCase(100)]
-        public void ShouldSimplyWork(int maxSize)
+        public async Task ShouldSimplyWork(int maxSize)
         {
             const int keyCount = 4;
             var pool = new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize);
@@ -72,7 +72,11 @@ namespace UnitTests
             {
                 objects[i].Dispose();
             });
-            Thread.Sleep(1000);
+#if !NET40
+            await Task.Delay(1000);
+#else
+            await TaskEx.Delay(1000);
+#endif
             Assert.AreEqual(keyCount, pool.KeysInPoolCount);
         }
 

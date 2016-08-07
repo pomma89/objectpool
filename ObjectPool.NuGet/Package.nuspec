@@ -34,7 +34,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>codeproject object pool concurrent generic threadsafe portable dnx</tags>
+        <tags>codeproject object pool concurrent generic threadsafe portable netstandard</tags>
     </metadata>
     <files>
         <file src="lib\" target="lib" />

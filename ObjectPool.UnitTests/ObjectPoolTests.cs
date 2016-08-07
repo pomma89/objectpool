@@ -93,7 +93,7 @@ namespace UnitTests
         [TestCase(10)]
         [TestCase(50)]
         [TestCase(100)]
-        public void ShouldFillUntilMaximumSize_Async(int maxSize)
+        public async Task ShouldFillUntilMaximumSize_Async(int maxSize)
         {
             var pool = new ObjectPool<MyPooledObject>(0, maxSize);
             var objectCount = maxSize * 4;
@@ -106,7 +106,11 @@ namespace UnitTests
             {
                 objects[i].Dispose();
             });
-            Thread.Sleep(1000);
+#if !NET40
+            await Task.Delay(1000);
+#else
+            await TaskEx.Delay(1000);
+#endif
             pool.AdjustPoolSizeToBounds();
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
