@@ -22,8 +22,8 @@ namespace CodeProject.ObjectPool.Benchmarks
     [Config(typeof(Config))]
     public class RetrieveOneObject
     {
-        private readonly ObjectPool<PooledObjectWrapper<string>> _objectPool = new ObjectPool<PooledObjectWrapper<string>>(1, 10, () => new PooledObjectWrapper<string>(DateTime.UtcNow.ToString()));
-        private readonly ParameterizedObjectPool<int, PooledObjectWrapper<string>> _paramObjectPool = new ParameterizedObjectPool<int, PooledObjectWrapper<string>>(1, 10, x => new PooledObjectWrapper<string>(DateTime.UtcNow + "#" + x));
+        private readonly ObjectPool<PooledObjectWrapper<string>> _objectPool = new ObjectPool<PooledObjectWrapper<string>>(9, 21, () => new PooledObjectWrapper<string>(DateTime.UtcNow.ToString()));
+        private readonly ParameterizedObjectPool<int, PooledObjectWrapper<string>> _paramObjectPool = new ParameterizedObjectPool<int, PooledObjectWrapper<string>>(9, 21, x => new PooledObjectWrapper<string>(DateTime.UtcNow + "#" + x));
 
         private class Config : ManualConfig
         {
