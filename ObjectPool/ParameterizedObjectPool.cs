@@ -22,25 +22,25 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
     {
-        readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
-        bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
+        private bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
         {
             var added = false;
             foundValue = _pools.GetOrAdd(key, k => { added = true; return value; });
             return added;
         }
 
-        int _minimumPoolSize;
-        int _maximumPoolSize;
-        ObjectPoolDiagnostics _diagnostics;
+        private int _minimumPoolSize;
+        private int _maximumPoolSize;
+        private ObjectPoolDiagnostics _diagnostics;
 
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
-        ///   record data about how the pool operates. By default, however, an object pool records
-        ///   anything, in order to be most efficient; in any case, you can enable it through the
+        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
+        ///   data about how the pool operates. By default, however, an object pool records anything,
+        ///   in order to be most efficient; in any case, you can enable it through the
         ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics
@@ -200,7 +200,7 @@ namespace CodeProject.ObjectPool
             return pool.GetObject();
         }
 
-        Func<TValue> PrepareFactoryMethod(TKey key)
+        private Func<TValue> PrepareFactoryMethod(TKey key)
         {
             var factory = FactoryMethod;
             if (factory == null)

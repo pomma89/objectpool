@@ -21,9 +21,9 @@ namespace CodeProject.ObjectPool
     public interface IParameterizedObjectPool<in TKey, out TValue>
     {
         /// <summary>
-        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to
-        ///   record data about how the pool operates. By default, however, an object pool records
-        ///   anything, in order to be most efficient; in any case, you can enable it through the
+        ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
+        ///   data about how the pool operates. By default, however, an object pool records anything,
+        ///   in order to be most efficient; in any case, you can enable it through the
         ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         [Pure]

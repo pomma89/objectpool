@@ -12,7 +12,6 @@ using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 
 namespace CodeProject.ObjectPool
 {
@@ -112,7 +111,7 @@ namespace CodeProject.ObjectPool
             HandleReAddingToPool(false);
         }
 
-        void HandleReAddingToPool(bool reRegisterForFinalization)
+        private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
             if (Disposed)
             {
