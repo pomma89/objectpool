@@ -18,7 +18,6 @@ namespace CodeProject.ObjectPool.Benchmarks
         public static void Main()
         {
             BenchmarkRunner.Run<RetrieveOneObject>();
-            Console.Read();
         }
     }
 }
