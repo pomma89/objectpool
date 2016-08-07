@@ -22,8 +22,9 @@ namespace CodeProject.ObjectPool.Benchmarks
     [Config(typeof(Config))]
     public class RetrieveOneObject
     {
-        private readonly ObjectPool<PooledObjectWrapper<string>> _objectPool = new ObjectPool<PooledObjectWrapper<string>>(9, 21, () => new PooledObjectWrapper<string>(DateTime.UtcNow.ToString()));
-        private readonly ParameterizedObjectPool<int, PooledObjectWrapper<string>> _paramObjectPool = new ParameterizedObjectPool<int, PooledObjectWrapper<string>>(9, 21, x => new PooledObjectWrapper<string>(DateTime.UtcNow + "#" + x));
+        private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(9, 21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
+        private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(9, 21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
+        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create<MyResource>(new MyResource.Policy());
 
         private class Config : ManualConfig
         {
@@ -37,13 +38,27 @@ namespace CodeProject.ObjectPool.Benchmarks
             }
         }
 
+        private sealed class MyResource : PooledObject
+        {
+            public string Value { get; set; }
+
+            public sealed class Policy : Microsoft.Extensions.ObjectPool.IPooledObjectPolicy<MyResource>
+            {
+#pragma warning disable CC0022 // Should dispose object
+                public MyResource Create() => new MyResource { Value = DateTime.UtcNow.ToString() };
+#pragma warning restore CC0022 // Should dispose object
+
+                public bool Return(MyResource obj) => true;
+            }
+        }
+
         [Benchmark]
         public string SimpleObjectPool()
         {
             string str;
             using (var x = _objectPool.GetObject())
             {
-                str = x.InternalResource;
+                str = x.Value;
             }
             return str;
         }
@@ -54,7 +69,27 @@ namespace CodeProject.ObjectPool.Benchmarks
             string str;
             using (var x = _paramObjectPool.GetObject(21))
             {
-                str = x.InternalResource;
+                str = x.Value;
+            }
+            return str;
+        }
+
+        [Benchmark]
+        public string MicrosoftObjectPool()
+        {
+            MyResource res = null;
+            string str;
+            try
+            {
+                res = _microsoftObjectPool.Get();
+                str = res.Value;
+            }
+            finally
+            {
+                if (res != null)
+                {
+                    _microsoftObjectPool.Return(res);
+                }
             }
             return str;
         }
