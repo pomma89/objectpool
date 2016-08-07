@@ -56,7 +56,6 @@
     <None Include="Package.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="refman.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\net40\" />

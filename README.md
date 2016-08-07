@@ -7,7 +7,9 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 * Latest release version: `v1.10.1`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
-* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: https://goo.gl/RVA7mV
+* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
+    + [HTML](https://goo.gl/RVA7mV)
+    + [PDF](https://goo.gl/U6dNkt)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
 
