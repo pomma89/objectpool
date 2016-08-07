@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 
 namespace CodeProject.ObjectPool
@@ -17,41 +18,30 @@ namespace CodeProject.ObjectPool
     ///   Generic object pool.
     /// </summary>
     /// <typeparam name="T">
-    ///   The type of the object that which will be managed by the pool. The pooled object have to
-    ///   be a sub-class of PooledObject.
+    ///   The type of the object that which will be managed by the pool. The pooled object have to be
+    ///   a sub-class of PooledObject.
     /// </typeparam>
     public sealed class ObjectPool<T> : IObjectPool<T> where T : PooledObject
     {
-#if PORTABLE
-
         /// <summary>
         ///   The concurrent queue containing pooled objects.
         /// </summary>
-        readonly Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new Finsa.CodeServices.Common.Collections.Concurrent.ConcurrentQueue<T>();
-
-#else
-
-        /// <summary>
-        ///   The concurrent queue containing pooled objects.
-        /// </summary>
-        readonly System.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new System.Collections.Concurrent.ConcurrentQueue<T>();
-
-#endif
+        private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
         ///   Int, altought it looks like it should be bool - this was done for Interlocked CAS
         ///   operation (CompareExchange).
         /// </summary>
-        int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
+        private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
 
         /// <summary>
         ///   The action performed when an object returns to the pool.
         /// </summary>
-        readonly Action<PooledObject, bool> _returnToPoolAction;
+        private readonly Action<PooledObject, bool> _returnToPoolAction;
 
-        int _maximumPoolSize;
-        int _minimumPoolSize;
+        private int _maximumPoolSize;
+        private int _minimumPoolSize;
 
         #region Public Properties
 
@@ -212,7 +202,7 @@ namespace CodeProject.ObjectPool
             _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
-        T CreatePooledObject()
+        private T CreatePooledObject()
         {
             // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
             // add a generic constraint with new (), but I didn't want to limit the user and force a
@@ -228,7 +218,7 @@ namespace CodeProject.ObjectPool
             return newObject;
         }
 
-        void DestroyPooledObject(PooledObject objectToDestroy)
+        private void DestroyPooledObject(PooledObject objectToDestroy)
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
@@ -243,8 +233,8 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectsDestroyedCount();
             }
 
-            // The object is being destroyed, resources have been already released
-            // deterministically, so we di no need the finalizer to fire.
+            // The object is being destroyed, resources have been already released deterministically,
+            // so we di no need the finalizer to fire.
             GC.SuppressFinalize(objectToDestroy);
         }
 
@@ -339,8 +329,8 @@ namespace CodeProject.ObjectPool
                 // Diagnostics update.
                 Diagnostics.IncrementPoolOverflowCount();
 
-                // The Pool's upper limit has exceeded, there is no need to add this object back
-                // into the pool and we can destroy it.
+                // The Pool's upper limit has exceeded, there is no need to add this object back into
+                // the pool and we can destroy it.
                 DestroyPooledObject(returnedObject);
             }
         }

@@ -32,15 +32,15 @@ namespace CodeProject.ObjectPool
 
         #region Public Properties and backing fields
 
-        long _objectResetFailedCount;
-        long _poolObjectHitCount;
-        long _poolObjectMissCount;
-        long _poolOverflowCount;
+        private long _objectResetFailedCount;
+        private long _poolObjectHitCount;
+        private long _poolObjectMissCount;
+        private long _poolOverflowCount;
 
-        long _returnedToPoolByResurrectionCount;
-        long _returnedToPoolCount;
-        long _totalInstancesCreated;
-        long _totalInstancesDestroyed;
+        private long _returnedToPoolByResurrectionCount;
+        private long _returnedToPoolCount;
+        private long _totalInstancesCreated;
+        private long _totalInstancesDestroyed;
 
         /// <summary>
         ///   Gets or sets whether this object can record data about how the Pool operates.
@@ -100,8 +100,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Gets the total number of objects destroyes, both in case of an pool overflow, and
-        ///   state corruption.
+        ///   Gets the total number of objects destroyes, both in case of an pool overflow, and state corruption.
         /// </summary>
         public long TotalInstancesDestroyed
         {

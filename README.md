@@ -5,9 +5,11 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 ## Summary ##
 
-* Latest release version: `v1.10.1`
+* Latest release version: `v2.0.1`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
-* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: https://goo.gl/RVA7mV
+* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
+    + [HTML](https://goo.gl/RVA7mV)
+    + [PDF](https://goo.gl/U6dNkt)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
 
@@ -103,6 +105,28 @@ internal sealed class ExternalExpensiveResource
     }
 }
 ```
+
+## Benchmarks ##
+
+```ini
+
+Host Process Environment Information:
+BenchmarkDotNet=v0.9.8.0
+OS=Microsoft Windows NT 6.2.9200.0
+Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
+Frequency=2143569 ticks, Resolution=466.5117 ns, Timer=TSC
+CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
+GC=Concurrent Workstation
+JitModules=clrjit-v4.6.1586.0
+
+Type=RetrieveOneObject  Mode=Throughput  GarbageCollection=Concurrent Workstation  
+
+```
+                  Method |      Median |     StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------------ |----------- |------ |------ |------ |------------------- |
+        SimpleObjectPool | 271.0199 ns | 15.1334 ns | 22.52 |     - |     - |               3,12 |
+ ParameterizedObjectPool | 320.7931 ns | 22.6953 ns | 22.00 |     - |     - |               2,98 |
+     MicrosoftObjectPool |  74.9782 ns |  4.1367 ns |     - |     - |     - |               0,00 |
 
 ## About this repository and its maintainer ##
 
