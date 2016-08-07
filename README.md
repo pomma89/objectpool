@@ -106,6 +106,28 @@ internal sealed class ExternalExpensiveResource
 }
 ```
 
+## Benchmarks ##
+
+```ini
+
+Host Process Environment Information:
+BenchmarkDotNet=v0.9.8.0
+OS=Microsoft Windows NT 6.2.9200.0
+Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
+Frequency=2143569 ticks, Resolution=466.5117 ns, Timer=TSC
+CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
+GC=Concurrent Workstation
+JitModules=clrjit-v4.6.1586.0
+
+Type=RetrieveOneObject  Mode=Throughput  GarbageCollection=Concurrent Workstation  
+
+```
+                  Method |      Median |     StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------------ |----------- |------ |------ |------ |------------------- |
+        SimpleObjectPool | 271.0199 ns | 15.1334 ns | 22.52 |     - |     - |               3,12 |
+ ParameterizedObjectPool | 320.7931 ns | 22.6953 ns | 22.00 |     - |     - |               2,98 |
+     MicrosoftObjectPool |  74.9782 ns |  4.1367 ns |     - |     - |     - |               0,00 |
+
 ## About this repository and its maintainer ##
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
