@@ -3,7 +3,10 @@
 open Fake
 open Fake.Testing
 
-RestorePackages()
+directExec (fun info ->
+  info.FileName <- ".nuget/NuGet.exe"
+  info.Arguments <- "restore"
+  info.WorkingDirectory <- ".")
 
 // Properties
 let solutionFile = "./ObjectPool.sln"
