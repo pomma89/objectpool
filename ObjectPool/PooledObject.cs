@@ -11,6 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
 using System;
+using System.Diagnostics;
 
 namespace CodeProject.ObjectPool
 {
@@ -20,6 +21,14 @@ namespace CodeProject.ObjectPool
     [Serializable]
     public abstract class PooledObject : IDisposable
     {
+        #region Logging
+
+#if (NET40 || NET45 || NET46)
+        private static readonly Logging.ILog Log = Logging.LogProvider.GetLogger(typeof(PooledObject));
+#endif
+
+        #endregion Logging
+
         #region Internal Properties
 
         /// <summary>
@@ -51,8 +60,13 @@ namespace CodeProject.ObjectPool
             {
                 OnReleaseResources();
             }
-            catch
+            catch (Exception ex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while releasing resources", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 successFlag = false;
             }
 
@@ -71,8 +85,13 @@ namespace CodeProject.ObjectPool
             {
                 OnResetState();
             }
-            catch
+            catch (Exception ex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while resetting state", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 successFlag = false;
             }
 
@@ -101,10 +120,13 @@ namespace CodeProject.ObjectPool
 
         #region Returning object to pool - Dispose and Finalizer
 
+#pragma warning disable CC0029 // Disposables Should Call Suppress Finalize
+
         /// <summary>
         ///   See <see cref="IDisposable"/> docs.
         /// </summary>
         public void Dispose()
+#pragma warning restore CC0029 // Disposables Should Call Suppress Finalize
         {
             // Returning to pool
             HandleReAddingToPool(false);
@@ -123,8 +145,13 @@ namespace CodeProject.ObjectPool
                 // Notifying the pool that this object is ready for re-adding to the pool.
                 Handle.ReturnObjectToPool(this, reRegisterForFinalization);
             }
-            catch
+            catch (Exception ex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while re-adding to pool", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 Disposed = true;
                 ReleaseResources();
             }
