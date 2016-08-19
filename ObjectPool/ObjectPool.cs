@@ -286,7 +286,7 @@ namespace CodeProject.ObjectPool
         internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
             // Adjusting lower bound.
-            if (adjustMode.HasFlag(AdjustMode.Minimum) && _pooledObjects.Count < MinimumPoolSize)
+            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum) && _pooledObjects.Count < MinimumPoolSize)
             {
                 lock (_pooledObjects)
                 {
@@ -299,7 +299,7 @@ namespace CodeProject.ObjectPool
             }
 
             // Adjusting upper bound.
-            if (adjustMode.HasFlag(AdjustMode.Maximum) && _pooledObjects.Count > MaximumPoolSize)
+            if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum) && _pooledObjects.Count > MaximumPoolSize)
             {
                 lock (_pooledObjects)
                 {

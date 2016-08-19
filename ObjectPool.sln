@@ -65,11 +65,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.Portab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Benchmarks", "ObjectPool.Benchmarks\ObjectPool.Benchmarks.csproj", "{A43DCCE5-21DE-4011-88CD-DF2749622EA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NET35", "Platform Specific\ObjectPool.NET35\ObjectPool.NET35.csproj", "{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ObjectPool\ObjectPool.projitems*{0031c03a-a007-4844-a8e6-ddaaf90dd4fc}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{2296c5f1-406c-4fd7-bf21-8bf6163baa47}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{257b4492-e5ed-4d24-a702-b590ba860322}*SharedItemsImports = 4
+		ObjectPool\ObjectPool.projitems*{4044415e-cef6-4a0d-a675-5aede6fdadda}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{5ab13e6f-960e-4688-86ff-5a1a1bd2a935}*SharedItemsImports = 13
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{64e981e2-a63d-479e-a59e-ec4cb9acc4e7}*SharedItemsImports = 13
 		ObjectPool\ObjectPool.projitems*{b5106212-8593-4599-b966-113dcb9f8f35}*SharedItemsImports = 4
@@ -155,6 +158,12 @@ Global
 		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A43DCCE5-21DE-4011-88CD-DF2749622EA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,5 +179,6 @@ Global
 		{2296C5F1-406C-4FD7-BF21-8BF6163BAA47} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{F996E787-D6E2-4FFB-A328-087B031AC32E} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{257B4492-E5ED-4D24-A702-B590BA860322} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 	EndGlobalSection
 EndGlobal

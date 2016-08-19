@@ -11,7 +11,6 @@
 using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
 using System;
-using System.Diagnostics.Contracts;
 
 namespace CodeProject.ObjectPool
 {
@@ -174,7 +173,6 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The resource wrapped inside this class.
         /// </summary>
-        [Pure]
         public T InternalResource { get; }
 
         /// <summary>

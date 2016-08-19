@@ -5,7 +5,6 @@
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
     "NETStandard.Library": "1.6.0",
     "Stamp.Fody": "1.2.5",
-    "System.Diagnostics.Contracts": "4.0.1",
     "Thrower": "3.0.1"
   },
   "frameworks": {
