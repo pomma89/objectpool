@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
+using Shouldly;
 
 #if !NET35
 
@@ -143,8 +144,8 @@ namespace UnitTests
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;
-            Assert.AreEqual(1, pool.MinimumPoolSize);
-            Assert.AreEqual(2, pool.MaximumPoolSize);
+            pool.MinimumPoolSize.ShouldBe(1);
+            pool.MaximumPoolSize.ShouldBe(2);
         }
 
         [Test]
@@ -154,7 +155,7 @@ namespace UnitTests
 
             pool.Clear();
 
-            Assert.That(0, Is.EqualTo(pool.ObjectsInPoolCount));
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         [Test]
@@ -168,7 +169,7 @@ namespace UnitTests
 
             pool.Clear();
 
-            Assert.That(0, Is.EqualTo(pool.ObjectsInPoolCount));
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         [Test]
@@ -186,7 +187,7 @@ namespace UnitTests
             {
             }
 
-            Assert.That(1, Is.EqualTo(pool.ObjectsInPoolCount));
+            pool.ObjectsInPoolCount.ShouldBe(1);
         }
 
         [Test]
@@ -217,7 +218,7 @@ namespace UnitTests
             }
 
             // Despite usage #B, count always be one, caused by #A.
-            Assert.That(pool.ObjectsInPoolCount, Is.EqualTo(1));
+            pool.ObjectsInPoolCount.ShouldBe(1);
         }
     }
 }
