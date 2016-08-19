@@ -11,6 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace CodeProject.ObjectPool
@@ -27,12 +28,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The concurrent queue containing pooled objects.
         /// </summary>
-        private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
-
-        /// <summary>
-        ///   The count of the objects currently in the pool.
-        /// </summary>
-        private int _objectsInPoolCount;
+        private readonly Stack<T> _pooledObjects = new Stack<T>();
 
         /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
@@ -101,7 +97,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _objectsInPoolCount;
+        public int ObjectsInPoolCount => _pooledObjects.Count;
 
         #endregion Public Properties
 
@@ -180,9 +176,12 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            foreach (var item in _pooledObjects)
+            lock (_pooledObjects)
             {
-                DestroyPooledObject(item);
+                foreach (var item in _pooledObjects)
+                {
+                    DestroyPooledObject(item);
+                }
             }
         }
 
@@ -201,12 +200,14 @@ namespace CodeProject.ObjectPool
                 // Wait...
             }
 
-            // Destroy all objects.
-            T dequeuedObjectToDestroy;
-            while (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
+            lock (_pooledObjects)
             {
-                Interlocked.Decrement(ref _objectsInPoolCount);
-                DestroyPooledObject(dequeuedObjectToDestroy);
+                // Destroy all objects.
+                while (_pooledObjects.Count > 0)
+                {
+                    var dequeuedObjectToDestroy = _pooledObjects.Pop();
+                    DestroyPooledObject(dequeuedObjectToDestroy);
+                }
             }
 
             // Finished clearing, allowing additional callers to enter when needed.
@@ -219,16 +220,21 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            T dequeuedObject;
-
-            if (_pooledObjects.TryDequeue(out dequeuedObject))
+            // Just a quick check in order to avoid a useless lock.
+            if (_pooledObjects.Count > 0)
             {
-                Interlocked.Decrement(ref _objectsInPoolCount);
-                if (Diagnostics.Enabled)
+                lock (_pooledObjects)
                 {
-                    Diagnostics.IncrementPoolObjectHitCount();
+                    // Check again, collection might have changed.
+                    if (_pooledObjects.Count > 0)
+                    {
+                        if (Diagnostics.Enabled)
+                        {
+                            Diagnostics.IncrementPoolObjectHitCount();
+                        }
+                        return _pooledObjects.Pop();
+                    }
                 }
-                return dequeuedObject;
             }
 
             // This should not happen normally, but could be happening when there is stress on the
@@ -250,7 +256,7 @@ namespace CodeProject.ObjectPool
             }
 
             // Checking that the pool is not full.
-            if (_objectsInPoolCount < MaximumPoolSize)
+            if (_pooledObjects.Count < MaximumPoolSize)
             {
                 // Reset the object state (if implemented) before returning it to the pool. If
                 // reseting the object have failed, destroy the object.
@@ -275,8 +281,10 @@ namespace CodeProject.ObjectPool
                 {
                     Diagnostics.IncrementReturnedToPoolCount();
                 }
-                _pooledObjects.Enqueue(returnedObject);
-                Interlocked.Increment(ref _objectsInPoolCount);
+                lock (_pooledObjects)
+                {
+                    _pooledObjects.Push(returnedObject);
+                }
             }
             else
             {
@@ -311,31 +319,33 @@ namespace CodeProject.ObjectPool
             // interferences :)
 
             // Adjusting lower bound.
-            if (adjustMode.HasFlag(AdjustMode.Minimum))
+            if (adjustMode.HasFlag(AdjustMode.Minimum) && _pooledObjects.Count < MinimumPoolSize)
             {
-                while (_objectsInPoolCount < MinimumPoolSize)
+                lock (_pooledObjects)
                 {
-                    _pooledObjects.Enqueue(CreatePooledObject());
-                    Interlocked.Increment(ref _objectsInPoolCount);
+                    while (_pooledObjects.Count < MinimumPoolSize)
+                    {
+                        _pooledObjects.Push(CreatePooledObject());
+                    }
                 }
+                
             }
 
             // Adjusting upper bound.
-            if (adjustMode.HasFlag(AdjustMode.Maximum))
+            if (adjustMode.HasFlag(AdjustMode.Maximum) && _pooledObjects.Count > MaximumPoolSize)
             {
-                while (_objectsInPoolCount > MaximumPoolSize)
+                lock (_pooledObjects)
                 {
-                    T dequeuedObjectToDestroy;
-                    if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
+                    while (_pooledObjects.Count > MaximumPoolSize)
                     {
-                        Interlocked.Decrement(ref _objectsInPoolCount);
                         if (Diagnostics.Enabled)
                         {
                             Diagnostics.IncrementPoolOverflowCount();
                         }
+                        var dequeuedObjectToDestroy = _pooledObjects.Pop();
                         DestroyPooledObject(dequeuedObjectToDestroy);
                     }
-                }
+                }                
             }
 
             // Finished adjusting, allowing additional callers to enter when needed.
@@ -344,15 +354,15 @@ namespace CodeProject.ObjectPool
 
         private T CreatePooledObject()
         {
-            // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
-            // add a generic constraint with new (), but I didn't want to limit the user and force a
-            // parameterless c'tor.
-            var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
-
             if (Diagnostics.Enabled)
             {
                 Diagnostics.IncrementObjectsCreatedCount();
             }
+
+            // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
+            // add a generic constraint with new (), but I didn't want to limit the user and force a
+            // parameterless c'tor.
+            var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
             // Setting the 'return to pool' action in the newly created pooled object.
             newObject.ReturnToPool = _returnToPoolAction;
@@ -365,15 +375,15 @@ namespace CodeProject.ObjectPool
             // down and we don't control the order of the finalization).
             if (!objectToDestroy.Disposed)
             {
-                // Deterministically release object resources, nevermind the result, we are
-                // destroying the object.
-                objectToDestroy.ReleaseResources();
-                objectToDestroy.Disposed = true;
-
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementObjectsDestroyedCount();
                 }
+
+                // Deterministically release object resources, nevermind the result, we are
+                // destroying the object.
+                objectToDestroy.ReleaseResources();
+                objectToDestroy.Disposed = true;
             }
 
             // The object is being destroyed, resources have been already released deterministically,
