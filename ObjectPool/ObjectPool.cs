@@ -160,7 +160,10 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            Clear();
+            if (_pooledObjects != null)
+            {
+                Clear();
+            }
         }
 
         #endregion Finalizer
