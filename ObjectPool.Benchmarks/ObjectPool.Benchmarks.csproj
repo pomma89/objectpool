@@ -158,6 +158,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetrieveObjectsConcurrently.cs" />
     <Compile Include="RetrieveOneObject.cs" />
   </ItemGroup>
   <ItemGroup>

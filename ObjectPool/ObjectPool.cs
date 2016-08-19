@@ -10,8 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace CodeProject.ObjectPool
 {
@@ -26,9 +24,9 @@ namespace CodeProject.ObjectPool
         where T : PooledObject
     {
         /// <summary>
-        ///   The concurrent queue containing pooled objects.
+        ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        private readonly Stack<T> _pooledObjects = new Stack<T>();
+        private readonly ResizableBuffer<T> _pooledObjects;
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
@@ -143,6 +141,7 @@ namespace CodeProject.ObjectPool
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
+            _pooledObjects = new ResizableBuffer<T>(_maximumPoolSize);
 
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
@@ -161,13 +160,7 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            lock (_pooledObjects)
-            {
-                foreach (var item in _pooledObjects)
-                {
-                    DestroyPooledObject(item);
-                }
-            }
+            Clear();
         }
 
         #endregion Finalizer
@@ -179,14 +172,14 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            lock (_pooledObjects)
+            int clearedObjectsCount;
+            var clearedObjects = _pooledObjects.Clear(out clearedObjectsCount);
+
+            // Destroy all objects.
+            for (var i = 0; i < clearedObjectsCount; ++i)
             {
-                // Destroy all objects.
-                while (_pooledObjects.Count > 0)
-                {
-                    var dequeuedObjectToDestroy = _pooledObjects.Pop();
-                    DestroyPooledObject(dequeuedObjectToDestroy);
-                }
+                var dequeuedObjectToDestroy = clearedObjects[i];
+                DestroyPooledObject(dequeuedObjectToDestroy);
             }
         }
 
@@ -196,21 +189,15 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            // Just a quick check in order to avoid a useless lock.
-            if (_pooledObjects.Count > 0)
+            T pooledObject;
+            if (_pooledObjects.TryPop(out pooledObject))
             {
-                lock (_pooledObjects)
+                // Object found in pool.
+                if (Diagnostics.Enabled)
                 {
-                    // Check again, collection might have changed.
-                    if (_pooledObjects.Count > 0)
-                    {
-                        if (Diagnostics.Enabled)
-                        {
-                            Diagnostics.IncrementPoolObjectHitCount();
-                        }
-                        return _pooledObjects.Pop();
-                    }
+                    Diagnostics.IncrementPoolObjectHitCount();
                 }
+                return pooledObject;
             }
 
             // This should not happen normally, but could be happening when there is stress on the
@@ -231,51 +218,41 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectResurrectionCount();
             }
 
-            // Checking that the pool is not full.
-            if (_pooledObjects.Count < MaximumPoolSize)
+            // Reset the object state (if implemented) before returning it to the pool. If
+            // reseting the object have failed, destroy the object.
+            if (returnedObject != null && !returnedObject.ResetState())
             {
-                // Reset the object state (if implemented) before returning it to the pool. If
-                // reseting the object have failed, destroy the object.
-                if (returnedObject != null && !returnedObject.ResetState())
+                if (Diagnostics.Enabled)
                 {
-                    if (Diagnostics.Enabled)
-                    {
-                        Diagnostics.IncrementResetStateFailedCount();
-                    }
-                    DestroyPooledObject(returnedObject);
-                    return;
+                    Diagnostics.IncrementResetStateFailedCount();
                 }
+                DestroyPooledObject(returnedObject);
+                return;
+            }
 
-                // Re-registering for finalization - in case of resurrection (called from Finalize method).
-                if (reRegisterForFinalization)
-                {
-                    GC.ReRegisterForFinalize(returnedObject);
-                }
+            // Re-registering for finalization - in case of resurrection (called from Finalize method).
+            if (reRegisterForFinalization)
+            {
+                GC.ReRegisterForFinalize(returnedObject);
+            }
 
+            // Trying to add the object back to the pool.
+            if (_pooledObjects.TryPush(returnedObject))
+            {
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementReturnedToPoolCount();
                 }
-
-                // Adding the object back to the pool.
-                lock (_pooledObjects)
-                {
-                    _pooledObjects.Push(returnedObject);
-                }
             }
             else
             {
+                // The Pool's upper limit has exceeded, there is no need to add this object back into
+                // the pool and we can destroy it.
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementPoolOverflowCount();
                 }
-
-                // The Pool's upper limit has exceeded, there is no need to add this object back into
-                // the pool and we can destroy it.
                 DestroyPooledObject(returnedObject);
-
-                // We also make sure that the pool is not overflowing.
-                AdjustPoolSizeToBounds(AdjustMode.Maximum);
             }
         }
 
@@ -285,33 +262,25 @@ namespace CodeProject.ObjectPool
 
         internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
-            // Adjusting lower bound.
-            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum) && _pooledObjects.Count < MinimumPoolSize)
+            // Adjusting upper bound.
+            if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum))
             {
-                lock (_pooledObjects)
+                var dequeuedObjectsToDestroy = _pooledObjects.Resize(MaximumPoolSize);
+                foreach (var dequeuedObjectToDestroy in dequeuedObjectsToDestroy)
                 {
-                    while (_pooledObjects.Count < MinimumPoolSize)
+                    if (Diagnostics.Enabled)
                     {
-                        _pooledObjects.Push(CreatePooledObject());
+                        Diagnostics.IncrementPoolOverflowCount();
                     }
+                    DestroyPooledObject(dequeuedObjectToDestroy);
                 }
-                
             }
 
-            // Adjusting upper bound.
-            if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum) && _pooledObjects.Count > MaximumPoolSize)
+            // Adjusting lower bound.
+            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
             {
-                lock (_pooledObjects)
+                while (_pooledObjects.Count < MinimumPoolSize && _pooledObjects.TryPush(CreatePooledObject()))
                 {
-                    while (_pooledObjects.Count > MaximumPoolSize)
-                    {
-                        if (Diagnostics.Enabled)
-                        {
-                            Diagnostics.IncrementPoolOverflowCount();
-                        }
-                        var dequeuedObjectToDestroy = _pooledObjects.Pop();
-                        DestroyPooledObject(dequeuedObjectToDestroy);
-                    }
                 }                
             }
         }

@@ -23,6 +23,7 @@ namespace CodeProject.ObjectPool.Benchmarks
             //    PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
             //}
 
+            BenchmarkRunner.Run<RetrieveObjectsConcurrently>();
             BenchmarkRunner.Run<RetrieveOneObject>();
         }
     }
