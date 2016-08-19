@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,8 +18,9 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Library for .NET Standard 1.1.
-* Updated NUnit to 3.x branch.
+* Added LibLog to .NET 4.x projects.
+* Added a DLL compiled for .NET 3.5.
+* Performance have been improved by 30%.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
