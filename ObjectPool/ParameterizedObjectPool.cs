@@ -20,9 +20,10 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
+    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> 
+        where TValue : PooledObject
     {
-        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
 
         private bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
         {

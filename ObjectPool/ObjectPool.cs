@@ -10,7 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -23,7 +22,8 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class ObjectPool<T> : IObjectPool<T> where T : PooledObject
+    public sealed class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
+        where T : PooledObject
     {
         /// <summary>
         ///   The concurrent queue containing pooled objects.
@@ -36,11 +36,6 @@ namespace CodeProject.ObjectPool
         ///   operation (CompareExchange).
         /// </summary>
         private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
-
-        /// <summary>
-        ///   The action performed when an object returns to the pool.
-        /// </summary>
-        private readonly Action<PooledObject, bool> _returnToPoolAction;
 
         private int _maximumPoolSize;
         private int _minimumPoolSize;
@@ -159,9 +154,6 @@ namespace CodeProject.ObjectPool
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
 
-            // Setting the action for returning to the pool to be integrated in the pooled objects
-            _returnToPoolAction = ReturnObjectToPool;
-
             // Initilizing objects in pool
             AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
         }
@@ -246,7 +238,7 @@ namespace CodeProject.ObjectPool
             return CreatePooledObject();
         }
 
-        internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
+        void IObjectPoolHandle.ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
             var returnedObject = objectToReturnToPool as T;
 
@@ -365,7 +357,7 @@ namespace CodeProject.ObjectPool
             var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
             // Setting the 'return to pool' action in the newly created pooled object.
-            newObject.ReturnToPool = _returnToPoolAction;
+            newObject.Handle = this;
             return newObject;
         }
 

@@ -27,7 +27,7 @@ namespace CodeProject.ObjectPool
         ///   Internal Action that is initialized by the pool while creating the object, this allow
         ///   that object to re-add itself back to the pool.
         /// </summary>
-        internal Action<PooledObject, bool> ReturnToPool { get; set; }
+        internal IObjectPoolHandle Handle { get; set; }
 
         /// <summary>
         ///   Internal flag that is being managed by the pool to describe the object state - primary
@@ -122,7 +122,7 @@ namespace CodeProject.ObjectPool
             try
             {
                 // Notifying the pool that this object is ready for re-adding to the pool.
-                ReturnToPool(this, reRegisterForFinalization);
+                Handle.ReturnObjectToPool(this, reRegisterForFinalization);
             }
             catch
             {
@@ -182,11 +182,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         protected override void OnReleaseResources()
         {
-            var safeAction = WrapperReleaseResourcesAction;
-            if (safeAction != null)
-            {
-                safeAction(InternalResource);
-            }
+            WrapperReleaseResourcesAction?.Invoke(InternalResource);
         }
 
         /// <summary>
@@ -194,11 +190,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         protected override void OnResetState()
         {
-            var safeAction = WrapperResetStateAction;
-            if (safeAction != null)
-            {
-                safeAction(InternalResource);
-            }
+            WrapperResetStateAction?.Invoke(InternalResource);
         }
     }
 }

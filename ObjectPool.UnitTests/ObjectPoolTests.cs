@@ -83,7 +83,7 @@ namespace UnitTests
             }
             foreach (var obj in objects)
             {
-                pool.ReturnObjectToPool(obj, false);
+                (pool as IObjectPoolHandle).ReturnObjectToPool(obj, false);
             }
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
@@ -182,7 +182,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void ShouldHandleClearAndThenReachMinimumSizeAtSecondUsage()
+        public void ShouldHandleClearAndThenReachMinimumSizeAtLaterUsage()
         {
             var pool = new ObjectPool<MyPooledObject>();
 
@@ -197,12 +197,19 @@ namespace UnitTests
             {
             }
 
+            // Usages #B
+            using (var obj = pool.GetObject())
+            {
+            }
+            using (var obj = pool.GetObject())
+            {
+            }
             using (var obj = pool.GetObject())
             {
             }
 
-            // One is for usage #A
-            Assert.That(ObjectPoolConstants.DefaultPoolMinimumSize + 1, Is.EqualTo(pool.ObjectsInPoolCount));
+            // Despite usage #B, count always be one, caused by #A.
+            Assert.That(pool.ObjectsInPoolCount, Is.EqualTo(1));
         }
     }
 }
