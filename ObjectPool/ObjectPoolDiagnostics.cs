@@ -13,7 +13,8 @@ using System.Threading;
 namespace CodeProject.ObjectPool
 {
     /// <summary>
-    ///   A simple class to track stats during execution. By default, this class does not record anything.
+    ///   A simple class to track stats during execution. By default, this class does not record
+    ///   anything, since its <see cref="Enabled"/> property is set to <c>false</c>.
     /// </summary>
     public class ObjectPoolDiagnostics
     {
@@ -50,79 +51,52 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the total count of live instances, both in the pool and in use.
         /// </summary>
-        public long TotalLiveInstancesCount
-        {
-            get { return _totalInstancesCreated - _totalInstancesDestroyed; }
-        }
+        public long TotalLiveInstancesCount => _totalInstancesCreated - _totalInstancesDestroyed;
 
         /// <summary>
         ///   Gets the count of object reset failures occured while the pool tried to re-add the
         ///   object into the pool.
         /// </summary>
-        public long ObjectResetFailedCount
-        {
-            get { return _objectResetFailedCount; }
-        }
+        public long ObjectResetFailedCount => _objectResetFailedCount;
 
         /// <summary>
         ///   Gets the total count of object that has been picked up by the GC, and returned to pool.
         /// </summary>
-        public long ReturnedToPoolByResurrectionCount
-        {
-            get { return _returnedToPoolByResurrectionCount; }
-        }
+        public long ReturnedToPoolByResurrectionCount => _returnedToPoolByResurrectionCount;
 
         /// <summary>
         ///   Gets the total count of successful accesses. The pool had a spare object to provide to
         ///   the user without creating it on demand.
         /// </summary>
-        public long PoolObjectHitCount
-        {
-            get { return _poolObjectHitCount; }
-        }
+        public long PoolObjectHitCount => _poolObjectHitCount;
 
         /// <summary>
         ///   Gets the total count of unsuccessful accesses. The pool had to create an object in
         ///   order to satisfy the user request. If the number is high, consider increasing the
         ///   object minimum limit.
         /// </summary>
-        public long PoolObjectMissCount
-        {
-            get { return _poolObjectMissCount; }
-        }
+        public long PoolObjectMissCount => _poolObjectMissCount;
 
         /// <summary>
         ///   Gets the total number of pooled objected created.
         /// </summary>
-        public long TotalInstancesCreated
-        {
-            get { return _totalInstancesCreated; }
-        }
+        public long TotalInstancesCreated => _totalInstancesCreated;
 
         /// <summary>
         ///   Gets the total number of objects destroyes, both in case of an pool overflow, and state corruption.
         /// </summary>
-        public long TotalInstancesDestroyed
-        {
-            get { return _totalInstancesDestroyed; }
-        }
+        public long TotalInstancesDestroyed => _totalInstancesDestroyed;
 
         /// <summary>
         ///   Gets the number of objects been destroyed because the pool was full at the time of
         ///   returning the object to the pool.
         /// </summary>
-        public long PoolOverflowCount
-        {
-            get { return _poolOverflowCount; }
-        }
+        public long PoolOverflowCount => _poolOverflowCount;
 
         /// <summary>
         ///   Gets the total count of objects that been successfully returned to the pool.
         /// </summary>
-        public long ReturnedToPoolCount
-        {
-            get { return _returnedToPoolCount; }
-        }
+        public long ReturnedToPoolCount => _returnedToPoolCount;
 
         #endregion Public Properties and backing fields
 

@@ -8,6 +8,7 @@
  *
  */
 
+using CodeProject.ObjectPool.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -71,7 +72,7 @@ namespace CodeProject.ObjectPool
             {
                 ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
                 _maximumPoolSize = value;
-                AdjustPoolSizeToBounds();
+                AdjustPoolSizeToBounds(AdjustMode.Maximum);
             }
         }
 
@@ -88,7 +89,7 @@ namespace CodeProject.ObjectPool
             {
                 ObjectPoolConstants.ValidatePoolLimits(value, MaximumPoolSize);
                 _minimumPoolSize = value;
-                AdjustPoolSizeToBounds();
+                AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
         }
 
@@ -161,84 +162,26 @@ namespace CodeProject.ObjectPool
             _returnToPoolAction = ReturnObjectToPool;
 
             // Initilizing objects in pool
-            AdjustPoolSizeToBounds();
+            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
         }
 
         #endregion C'tor and Initialization code
 
-        #region Private Methods
+        #region Finalizer
 
-        internal void AdjustPoolSizeToBounds()
+        /// <summary>
+        ///   ObjectPool destructor.
+        /// </summary>
+        ~ObjectPool()
         {
-            // If there is an Adjusting/Clear operation in progress, skip and return.
-            if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
+            // The pool is going down, releasing the resources for all objects in pool.
+            foreach (var item in _pooledObjects)
             {
-                return;
+                DestroyPooledObject(item);
             }
-
-            // If we reached this point, we've set the AdjustPoolSizeIsInProgressCASFlag to 1 (true)
-            // using the above CAS function. We can now safely adjust the pool size without
-            // interferences :)
-
-            // Adjusting...
-            while (ObjectsInPoolCount < MinimumPoolSize)
-            {
-                _pooledObjects.Enqueue(CreatePooledObject());
-            }
-
-            while (ObjectsInPoolCount > MaximumPoolSize)
-            {
-                T dequeuedObjectToDestroy;
-                if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
-                {
-                    // Diagnostics update.
-                    Diagnostics.IncrementPoolOverflowCount();
-
-                    DestroyPooledObject(dequeuedObjectToDestroy);
-                }
-            }
-
-            // Finished adjusting, allowing additional callers to enter when needed.
-            _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
-        private T CreatePooledObject()
-        {
-            // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
-            // add a generic constraint with new (), but I didn't want to limit the user and force a
-            // parameterless c'tor.
-            var safeFactory = FactoryMethod;
-            var newObject = (safeFactory != null) ? safeFactory() : Activator.CreateInstance<T>();
-
-            // Diagnostics update.
-            Diagnostics.IncrementObjectsCreatedCount();
-
-            // Setting the 'return to pool' action in the newly created pooled object.
-            newObject.ReturnToPool = _returnToPoolAction;
-            return newObject;
-        }
-
-        private void DestroyPooledObject(PooledObject objectToDestroy)
-        {
-            // Making sure that the object is only disposed once (in case of application shutting
-            // down and we don't control the order of the finalization).
-            if (!objectToDestroy.Disposed)
-            {
-                // Deterministically release object resources, nevermind the result, we are
-                // destroying the object.
-                objectToDestroy.ReleaseResources();
-                objectToDestroy.Disposed = true;
-
-                // Diagnostics update.
-                Diagnostics.IncrementObjectsDestroyedCount();
-            }
-
-            // The object is being destroyed, resources have been already released deterministically,
-            // so we di no need the finalizer to fire.
-            GC.SuppressFinalize(objectToDestroy);
-        }
-
-        #endregion Private Methods
+        #endregion Finalizer
 
         #region Pool Operations
 
@@ -274,26 +217,29 @@ namespace CodeProject.ObjectPool
 
             if (_pooledObjects.TryDequeue(out dequeuedObject))
             {
-                AdjustPoolSizeToBounds();
+                //AdjustPoolSizeToBounds();
 
-                // Diagnostics update.
-                Diagnostics.IncrementPoolObjectHitCount();
-
+                if (Diagnostics.Enabled)
+                {
+                    Diagnostics.IncrementPoolObjectHitCount();
+                }
                 return dequeuedObject;
             }
 
             // This should not happen normally, but could be happening when there is stress on the
             // pool. No available objects in pool, create a new one and return it to the caller.
-            Diagnostics.IncrementPoolObjectMissCount();
+            if (Diagnostics.Enabled)
+            {
+                Diagnostics.IncrementPoolObjectMissCount();
+            }
             return CreatePooledObject();
         }
 
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
             var returnedObject = objectToReturnToPool as T;
-
-            // Diagnostics update.
-            if (reRegisterForFinalization)
+            
+            if (reRegisterForFinalization && Diagnostics.Enabled)
             {
                 Diagnostics.IncrementObjectResurrectionCount();
             }
@@ -305,9 +251,10 @@ namespace CodeProject.ObjectPool
                 // reseting the object have failed, destroy the object.
                 if (returnedObject != null && !returnedObject.ResetState())
                 {
-                    // Diagnostics update.
-                    Diagnostics.IncrementResetStateFailedCount();
-
+                    if (Diagnostics.Enabled)
+                    {
+                        Diagnostics.IncrementResetStateFailedCount();
+                    }
                     DestroyPooledObject(returnedObject);
                     return;
                 }
@@ -318,39 +265,114 @@ namespace CodeProject.ObjectPool
                     GC.ReRegisterForFinalize(returnedObject);
                 }
 
-                // Diagnostics update.
-                Diagnostics.IncrementReturnedToPoolCount();
-
                 // Adding the object back to the pool.
+                if (Diagnostics.Enabled)
+                {
+                    Diagnostics.IncrementReturnedToPoolCount();
+                }
                 _pooledObjects.Enqueue(returnedObject);
             }
             else
             {
-                // Diagnostics update.
-                Diagnostics.IncrementPoolOverflowCount();
+                if (Diagnostics.Enabled)
+                {
+                    Diagnostics.IncrementPoolOverflowCount();
+                }
 
                 // The Pool's upper limit has exceeded, there is no need to add this object back into
                 // the pool and we can destroy it.
                 DestroyPooledObject(returnedObject);
+
+                // We also make sure that the pool is not overflowing.
+                AdjustPoolSizeToBounds(AdjustMode.Maximum);
             }
         }
 
         #endregion Pool Operations
 
-        #region Finalizer
+        #region Private Methods
 
-        /// <summary>
-        ///   ObjectPool destructor.
-        /// </summary>
-        ~ObjectPool()
+        internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
-            // The pool is going down, releasing the resources for all objects in pool.
-            foreach (var item in _pooledObjects)
+            // If there is an Adjusting/Clear operation in progress, skip and return.
+            if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
             {
-                DestroyPooledObject(item);
+                return;
             }
+
+            // If we reached this point, we've set the AdjustPoolSizeIsInProgressCASFlag to 1 (true)
+            // using the above CAS function. We can now safely adjust the pool size without
+            // interferences :)
+
+            // Adjusting lower bound.
+            if (adjustMode.HasFlag(AdjustMode.Minimum))
+            {
+                while (ObjectsInPoolCount < MinimumPoolSize)
+                {
+                    _pooledObjects.Enqueue(CreatePooledObject());
+                }
+            }
+
+            // Adjusting upper bound.
+            if (adjustMode.HasFlag(AdjustMode.Maximum))
+            {
+                while (ObjectsInPoolCount > MaximumPoolSize)
+                {
+                    T dequeuedObjectToDestroy;
+                    if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
+                    {
+                        if (Diagnostics.Enabled)
+                        {
+                            Diagnostics.IncrementPoolOverflowCount();
+                        }
+                        DestroyPooledObject(dequeuedObjectToDestroy);
+                    }
+                }
+            }                
+
+            // Finished adjusting, allowing additional callers to enter when needed.
+            _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
-        #endregion Finalizer
+        private T CreatePooledObject()
+        {
+            // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
+            // add a generic constraint with new (), but I didn't want to limit the user and force a
+            // parameterless c'tor.
+            var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
+
+            if (Diagnostics.Enabled)
+            {
+                Diagnostics.IncrementObjectsCreatedCount();
+            }
+
+            // Setting the 'return to pool' action in the newly created pooled object.
+            newObject.ReturnToPool = _returnToPoolAction;
+            return newObject;
+        }
+
+        private void DestroyPooledObject(PooledObject objectToDestroy)
+        {
+            // Making sure that the object is only disposed once (in case of application shutting
+            // down and we don't control the order of the finalization).
+            if (!objectToDestroy.Disposed)
+            {
+                // Deterministically release object resources, nevermind the result, we are
+                // destroying the object.
+                objectToDestroy.ReleaseResources();
+                objectToDestroy.Disposed = true;
+
+                if (Diagnostics.Enabled)
+                {
+                    Diagnostics.IncrementObjectsDestroyedCount();
+                }
+            }
+
+            // The object is being destroyed, resources have been already released deterministically,
+            // so we di no need the finalizer to fire.
+            GC.SuppressFinalize(objectToDestroy);
+        }
+
+        #endregion Private Methods
     }
 }

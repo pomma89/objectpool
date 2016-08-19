@@ -9,15 +9,22 @@
  */
 
 using BenchmarkDotNet.Running;
-using System;
+using PommaLabs.Thrower;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
-    public class Program
-    {
+    public static class Program
+    {   
         public static void Main()
         {
-            BenchmarkRunner.Run<RetrieveOneObject>();
+            var p = new RetrieveOneObject();
+            for (var i = 0; i < 1000000; ++i)
+            {
+                var x = p.SimpleObjectPool();
+                Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
+            }
+
+            //BenchmarkRunner.Run<RetrieveOneObject>();
         }
     }
 }
