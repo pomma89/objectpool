@@ -10,11 +10,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
+
+#if !NET35
+
+using System.Threading.Tasks;
+
+#endif
 
 namespace UnitTests
 {
@@ -88,6 +92,8 @@ namespace UnitTests
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
+#if !NET35
+
         [TestCase(1)]
         [TestCase(5)]
         [TestCase(10)]
@@ -114,6 +120,8 @@ namespace UnitTests
             pool.AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
+
+#endif
 
         [Test]
         public void ShouldChangePoolLimitsIfCorrect()

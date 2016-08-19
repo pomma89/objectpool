@@ -11,8 +11,12 @@
 using CodeProject.ObjectPool;
 using NUnit.Framework;
 using System;
-using System.Threading;
+
+#if !NET35
+
 using System.Threading.Tasks;
+
+#endif
 
 namespace UnitTests
 {
@@ -53,6 +57,8 @@ namespace UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
+#if !NET35
+
         [TestCase(1)]
         [TestCase(5)]
         [TestCase(10)]
@@ -79,6 +85,8 @@ namespace UnitTests
 #endif
             Assert.AreEqual(keyCount, pool.KeysInPoolCount);
         }
+
+#endif
 
         [Test]
         public void ShouldChangePoolLimitsIfCorrect()
