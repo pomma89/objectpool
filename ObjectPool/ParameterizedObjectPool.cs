@@ -9,7 +9,7 @@
  */
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -23,14 +23,7 @@ namespace CodeProject.ObjectPool
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> 
         where TValue : PooledObject
     {
-        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new ConcurrentDictionary<TKey, ObjectPool<TValue>>();
-
-        private bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
-        {
-            var added = false;
-            foundValue = _pools.GetOrAdd(key, k => { added = true; return value; });
-            return added;
-        }
+        private readonly Dictionary<TKey, ObjectPool<TValue>> _pools = new Dictionary<TKey, ObjectPool<TValue>>();
 
         private int _minimumPoolSize;
         private int _maximumPoolSize;
@@ -49,10 +42,17 @@ namespace CodeProject.ObjectPool
             get { return _diagnostics; }
             set
             {
-                _diagnostics = value;
-                foreach (var p in _pools)
+                ObjectPool<TValue>[] innerPools;
+                lock (_pools)
                 {
-                    p.Value.Diagnostics = _diagnostics;
+                    // Safe copy of the current pools.
+                    innerPools = _pools.Values.ToArray();
+                }
+
+                _diagnostics = value;
+                foreach (var p in innerPools)
+                {
+                    p.Diagnostics = _diagnostics;
                 }
             }
         }
@@ -158,11 +158,15 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            // Safe copy of the current pools.
-            var innerPools = _pools.Values.ToArray();
+            ObjectPool<TValue>[] innerPools;
+            lock (_pools)
+            {
+                // Safe copy of the current pools.
+                innerPools = _pools.Values.ToArray();
 
-            // Clear the main pool.
-            _pools.Clear();
+                // Clear the main pool.
+                _pools.Clear();
+            }
 
             // Then clear each pool, taking it from the safe copy.
             foreach (var innerPool in innerPools)
@@ -179,21 +183,18 @@ namespace CodeProject.ObjectPool
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
-
             if (!_pools.TryGetValue(key, out pool))
             {
-                // Initialize the new pool.
-                pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
-                ObjectPool<TValue> foundPool;
-                if (!TryAddToPools(key, pool, out foundPool))
+                lock (_pools)
                 {
-                    // Someone added the pool in the meantime!
-                    pool = foundPool;
-                }
-                else
-                {
-                    // The new pool has been added, now we have to configure it.
-                    pool.Diagnostics = _diagnostics;
+                    if (!_pools.TryGetValue(key, out pool))
+                    {
+                        // Initialize and insert the new pool.                       
+                        _pools.Add(key, pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key))
+                        {
+                            Diagnostics = _diagnostics
+                        });
+                    }
                 }
             }
 

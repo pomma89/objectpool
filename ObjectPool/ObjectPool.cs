@@ -30,13 +30,6 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private readonly Stack<T> _pooledObjects = new Stack<T>();
 
-        /// <summary>
-        ///   Indication flag that states whether Adjusting operating is in progress. The type is
-        ///   Int, altought it looks like it should be bool - this was done for Interlocked CAS
-        ///   operation (CompareExchange).
-        /// </summary>
-        private int _adjustPoolSizeIsInProgressCasFlag; // 0 state false
-
         private int _maximumPoolSize;
         private int _minimumPoolSize;
 
@@ -186,12 +179,6 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            // If there is an Adjusting/Clear operation in progress, wait until it is done.
-            while (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
-            {
-                // Wait...
-            }
-
             lock (_pooledObjects)
             {
                 // Destroy all objects.
@@ -201,9 +188,6 @@ namespace CodeProject.ObjectPool
                     DestroyPooledObject(dequeuedObjectToDestroy);
                 }
             }
-
-            // Finished clearing, allowing additional callers to enter when needed.
-            _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
         /// <summary>
@@ -268,11 +252,12 @@ namespace CodeProject.ObjectPool
                     GC.ReRegisterForFinalize(returnedObject);
                 }
 
-                // Adding the object back to the pool.
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementReturnedToPoolCount();
                 }
+
+                // Adding the object back to the pool.
                 lock (_pooledObjects)
                 {
                     _pooledObjects.Push(returnedObject);
@@ -300,16 +285,6 @@ namespace CodeProject.ObjectPool
 
         internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
-            // If there is an Adjusting/Clear operation in progress, skip and return.
-            if (Interlocked.CompareExchange(ref _adjustPoolSizeIsInProgressCasFlag, 1, 0) != 0)
-            {
-                return;
-            }
-
-            // If we reached this point, we've set the AdjustPoolSizeIsInProgressCASFlag to 1 (true)
-            // using the above CAS function. We can now safely adjust the pool size without
-            // interferences :)
-
             // Adjusting lower bound.
             if (adjustMode.HasFlag(AdjustMode.Minimum) && _pooledObjects.Count < MinimumPoolSize)
             {
@@ -339,9 +314,6 @@ namespace CodeProject.ObjectPool
                     }
                 }                
             }
-
-            // Finished adjusting, allowing additional callers to enter when needed.
-            _adjustPoolSizeIsInProgressCasFlag = 0;
         }
 
         private T CreatePooledObject()
