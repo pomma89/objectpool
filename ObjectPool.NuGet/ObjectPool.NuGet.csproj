@@ -63,7 +63,7 @@
     <Folder Include="lib\net45\" />
     <Folder Include="lib\net46\" />
     <Folder Include="lib\netstandard1.1\" />
-    <Folder Include="lib\portable-net45+win8+wpa81\" />
+    <Folder Include="lib\portable-net45+win8+wp8+wpa81\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.htm" />
@@ -112,10 +112,10 @@ copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.O
 copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\net46"
 copy "$(SolutionDir)Platform Specific\ObjectPool.NET46\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\net46"
 
-if not exist "$(ProjectDir)lib\portable-net45+win8+wpa81" mkdir "$(ProjectDir)lib\portable-net45+win8+wpa81"
-copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\portable-net45+win8+wpa81"
-copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\portable-net45+win8+wpa81"
-copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\portable-net45+win8+wpa81"
+if not exist "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81" mkdir "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.pdb" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
+copy "$(SolutionDir)Platform Specific\ObjectPool.Portable\bin\Release\CodeProject.ObjectPool.xml" "$(ProjectDir)lib\portable-net45+win8+wp8+wpa81"
 
 if not exist "$(ProjectDir)lib\netstandard1.1" mkdir "$(ProjectDir)lib\netstandard1.1"
 copy "$(SolutionDir)Platform Specific\ObjectPool.NETSTD11\bin\Release\CodeProject.ObjectPool.dll" "$(ProjectDir)lib\netstandard1.1"
