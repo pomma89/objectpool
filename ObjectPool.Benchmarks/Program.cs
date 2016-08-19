@@ -9,7 +9,6 @@
  */
 
 using BenchmarkDotNet.Running;
-using PommaLabs.Thrower;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
@@ -17,14 +16,14 @@ namespace CodeProject.ObjectPool.Benchmarks
     {   
         public static void Main()
         {
-            var p = new RetrieveOneObject();
-            for (var i = 0; i < 1000000; ++i)
-            {
-                var x = p.SimpleObjectPool();
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
-            }
+            //var p = new RetrieveOneObject();
+            //for (var i = 0; i < 1000000; ++i)
+            //{
+            //    var x = p.SimpleObjectPool();
+            //    PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
+            //}
 
-            //BenchmarkRunner.Run<RetrieveOneObject>();
+            BenchmarkRunner.Run<RetrieveOneObject>();
         }
     }
 }
