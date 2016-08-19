@@ -30,6 +30,11 @@ namespace CodeProject.ObjectPool
         private readonly ConcurrentQueue<T> _pooledObjects = new ConcurrentQueue<T>();
 
         /// <summary>
+        ///   The count of the objects currently in the pool.
+        /// </summary>
+        private int _objectsInPoolCount;
+
+        /// <summary>
         ///   Indication flag that states whether Adjusting operating is in progress. The type is
         ///   Int, altought it looks like it should be bool - this was done for Interlocked CAS
         ///   operation (CompareExchange).
@@ -96,7 +101,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _pooledObjects.Count;
+        public int ObjectsInPoolCount => _objectsInPoolCount;
 
         #endregion Public Properties
 
@@ -200,6 +205,7 @@ namespace CodeProject.ObjectPool
             T dequeuedObjectToDestroy;
             while (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
             {
+                Interlocked.Decrement(ref _objectsInPoolCount);
                 DestroyPooledObject(dequeuedObjectToDestroy);
             }
 
@@ -217,8 +223,7 @@ namespace CodeProject.ObjectPool
 
             if (_pooledObjects.TryDequeue(out dequeuedObject))
             {
-                //AdjustPoolSizeToBounds();
-
+                Interlocked.Decrement(ref _objectsInPoolCount);
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementPoolObjectHitCount();
@@ -238,14 +243,14 @@ namespace CodeProject.ObjectPool
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
             var returnedObject = objectToReturnToPool as T;
-            
+
             if (reRegisterForFinalization && Diagnostics.Enabled)
             {
                 Diagnostics.IncrementObjectResurrectionCount();
             }
 
             // Checking that the pool is not full.
-            if (ObjectsInPoolCount < MaximumPoolSize)
+            if (_objectsInPoolCount < MaximumPoolSize)
             {
                 // Reset the object state (if implemented) before returning it to the pool. If
                 // reseting the object have failed, destroy the object.
@@ -271,6 +276,7 @@ namespace CodeProject.ObjectPool
                     Diagnostics.IncrementReturnedToPoolCount();
                 }
                 _pooledObjects.Enqueue(returnedObject);
+                Interlocked.Increment(ref _objectsInPoolCount);
             }
             else
             {
@@ -307,20 +313,22 @@ namespace CodeProject.ObjectPool
             // Adjusting lower bound.
             if (adjustMode.HasFlag(AdjustMode.Minimum))
             {
-                while (ObjectsInPoolCount < MinimumPoolSize)
+                while (_objectsInPoolCount < MinimumPoolSize)
                 {
                     _pooledObjects.Enqueue(CreatePooledObject());
+                    Interlocked.Increment(ref _objectsInPoolCount);
                 }
             }
 
             // Adjusting upper bound.
             if (adjustMode.HasFlag(AdjustMode.Maximum))
             {
-                while (ObjectsInPoolCount > MaximumPoolSize)
+                while (_objectsInPoolCount > MaximumPoolSize)
                 {
                     T dequeuedObjectToDestroy;
                     if (_pooledObjects.TryDequeue(out dequeuedObjectToDestroy))
                     {
+                        Interlocked.Decrement(ref _objectsInPoolCount);
                         if (Diagnostics.Enabled)
                         {
                             Diagnostics.IncrementPoolOverflowCount();
@@ -328,7 +336,7 @@ namespace CodeProject.ObjectPool
                         DestroyPooledObject(dequeuedObjectToDestroy);
                     }
                 }
-            }                
+            }
 
             // Finished adjusting, allowing additional callers to enter when needed.
             _adjustPoolSizeIsInProgressCasFlag = 0;
