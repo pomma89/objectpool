@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\AdjustMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\IObjectPoolHandle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\ResizableBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IParameterizedObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ObjectPool.cs" />

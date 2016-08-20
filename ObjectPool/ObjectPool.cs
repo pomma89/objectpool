@@ -10,6 +10,7 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
+using System.Collections.Generic;
 
 namespace CodeProject.ObjectPool
 {
@@ -24,11 +25,13 @@ namespace CodeProject.ObjectPool
         where T : PooledObject
     {
         /// <summary>
-        ///   The concurrent buffer containing pooled objects.
+        ///   Backing field for <see cref="MaximumPoolSize"/>.
         /// </summary>
-        private readonly ResizableBuffer<T> _pooledObjects;
-
         private int _maximumPoolSize;
+
+        /// <summary>
+        ///   Backing field for <see cref="MinimumPoolSize"/>.
+        /// </summary>
         private int _minimumPoolSize;
 
         #region Public Properties
@@ -141,7 +144,7 @@ namespace CodeProject.ObjectPool
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
-            _pooledObjects = new ResizableBuffer<T>(_maximumPoolSize);
+            _pooledObjects = new Queue<T>(minimumPoolSize);
 
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
@@ -160,10 +163,7 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            if (_pooledObjects != null)
-            {
-                Clear();
-            }
+            ClearQueue();
         }
 
         #endregion Finalizer
@@ -175,15 +175,8 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            int clearedObjectsCount;
-            var clearedObjects = _pooledObjects.Clear(out clearedObjectsCount);
-
             // Destroy all objects.
-            for (var i = 0; i < clearedObjectsCount; ++i)
-            {
-                var dequeuedObjectToDestroy = clearedObjects[i];
-                DestroyPooledObject(dequeuedObjectToDestroy);
-            }
+            ClearQueue();
         }
 
         /// <summary>
@@ -193,7 +186,7 @@ namespace CodeProject.ObjectPool
         public T GetObject()
         {
             T pooledObject;
-            if (_pooledObjects.TryPop(out pooledObject))
+            if (TryDequeue(out pooledObject))
             {
                 // Object found in pool.
                 if (Diagnostics.Enabled)
@@ -240,7 +233,7 @@ namespace CodeProject.ObjectPool
             }
 
             // Trying to add the object back to the pool.
-            if (_pooledObjects.TryPush(returnedObject))
+            if (TryEnqueue(returnedObject))
             {
                 if (Diagnostics.Enabled)
                 {
@@ -261,15 +254,93 @@ namespace CodeProject.ObjectPool
 
         #endregion Pool Operations
 
+        #region Low-level Pooling
+        
+        /// <summary>
+        ///   The concurrent buffer containing pooled objects.
+        /// </summary>
+        private readonly Queue<T> _pooledObjects;
+
+        private void ClearQueue()
+        {
+            if (_pooledObjects == null)
+            {
+                return;
+            }
+
+            lock (_pooledObjects)
+            {
+                foreach (var pooledObject in _pooledObjects)
+                {
+                    DestroyPooledObject(pooledObject);
+                }
+                _pooledObjects.Clear();
+            }
+        }
+
+        private bool TryDequeue(out T pooledObject)
+        {
+            // Fast check to avoid unnecessary locking.
+            if (_pooledObjects.Count == 0)
+            {
+                pooledObject = default(T);
+                return false;
+            }
+
+            // Proper check and push.
+            lock (_pooledObjects)
+            {
+                if (_pooledObjects.Count == 0)
+                {
+                    pooledObject = default(T);
+                    return false;
+                }
+
+                pooledObject = _pooledObjects.Dequeue();
+                return true;
+            }
+        }
+
+        private bool TryEnqueue(T pooledObject)
+        {
+            // Fast check to avoid unnecessary locking.
+            if (_pooledObjects.Count == MaximumPoolSize)
+            {
+                return false;
+            }
+
+            // Proper check and push.
+            lock (_pooledObjects)
+            {
+                if (_pooledObjects.Count == MaximumPoolSize)
+                {
+                    return false;
+                }
+
+                _pooledObjects.Enqueue(pooledObject);
+                return true;
+            }
+        }
+
+        #endregion
+
         #region Private Methods
 
         internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
+            // Adjusting lower bound.
+            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
+            {
+                while (_pooledObjects.Count < MinimumPoolSize && TryEnqueue(CreatePooledObject()))
+                {
+                }
+            }
+
             // Adjusting upper bound.
             if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum))
             {
-                var dequeuedObjectsToDestroy = _pooledObjects.Resize(MaximumPoolSize);
-                foreach (var dequeuedObjectToDestroy in dequeuedObjectsToDestroy)
+                T dequeuedObjectToDestroy;
+                while (_pooledObjects.Count > MaximumPoolSize && TryDequeue(out dequeuedObjectToDestroy))
                 {
                     if (Diagnostics.Enabled)
                     {
@@ -277,14 +348,6 @@ namespace CodeProject.ObjectPool
                     }
                     DestroyPooledObject(dequeuedObjectToDestroy);
                 }
-            }
-
-            // Adjusting lower bound.
-            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
-            {
-                while (_pooledObjects.Count < MinimumPoolSize && _pooledObjects.TryPush(CreatePooledObject()))
-                {
-                }                
             }
         }
 
