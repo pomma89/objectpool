@@ -9,7 +9,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -22,12 +21,25 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> 
         where TValue : PooledObject
-    {
-        private readonly Dictionary<TKey, ObjectPool<TValue>> _pools = new Dictionary<TKey, ObjectPool<TValue>>();
+    {        
+        #region Fields
 
-        private int _minimumPoolSize;
-        private int _maximumPoolSize;
+        /// <summary>
+        ///   Backing field for <see cref="Diagnostics"/>.
+        /// </summary>
         private ObjectPoolDiagnostics _diagnostics;
+
+        /// <summary>
+        ///   Backing field for <see cref="MaximumPoolSize"/>.
+        /// </summary>
+        private int _maximumPoolSize;
+
+        /// <summary>
+        ///   Backing field for <see cref="MinimumPoolSize"/>.
+        /// </summary>
+        private int _minimumPoolSize;
+
+        #endregion
 
         #region Public Properties
 
@@ -42,17 +54,13 @@ namespace CodeProject.ObjectPool
             get { return _diagnostics; }
             set
             {
-                ObjectPool<TValue>[] innerPools;
-                lock (_pools)
-                {
-                    // Safe copy of the current pools.
-                    innerPools = _pools.Values.ToArray();
-                }
+                // Safe copy of the current pools.
+                var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
 
                 _diagnostics = value;
                 foreach (var p in innerPools)
                 {
-                    p.Diagnostics = _diagnostics;
+                    p.Diagnostics = value;
                 }
             }
         }
@@ -153,26 +161,14 @@ namespace CodeProject.ObjectPool
 
         #endregion C'tor and Initialization code
 
+        #region Pool Operations
+
         /// <summary>
         ///   Clears the parameterized pool and each inner pool stored inside it.
         /// </summary>
         public void Clear()
         {
-            ObjectPool<TValue>[] innerPools;
-            lock (_pools)
-            {
-                // Safe copy of the current pools.
-                innerPools = _pools.Values.ToArray();
-
-                // Clear the main pool.
-                _pools.Clear();
-            }
-
-            // Then clear each pool, taking it from the safe copy.
-            foreach (var innerPool in innerPools)
-            {
-                innerPool.Clear();
-            }
+            ClearPools();
         }
 
         /// <summary>
@@ -183,24 +179,84 @@ namespace CodeProject.ObjectPool
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
-            if (!_pools.TryGetValue(key, out pool))
+            if (!TryGetPool(key, out pool))
             {
-                lock (_pools)
-                {
-                    if (!_pools.TryGetValue(key, out pool))
-                    {
-                        // Initialize and insert the new pool.                       
-                        _pools.Add(key, pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key))
-                        {
-                            Diagnostics = _diagnostics
-                        });
-                    }
-                }
+                // Initialize and insert the new pool.                       
+                pool = AddPool(key);
             }
 
             Debug.Assert(pool != null);
             return pool.GetObject();
         }
+
+        #endregion
+
+        #region Low-level Pooling
+
+#if (PORTABLE || NETSTD11)
+        private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
+#else
+        private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
+#endif
+
+        private void ClearPools()
+        {
+            // Safe copy of the current pools.
+            var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
+
+            // Clear the main pool.
+            lock (_pools)
+            {
+                _pools.Clear();
+            }
+
+            // Then clear each pool, taking it from the safe copy.
+            foreach (var innerPool in innerPools)
+            {
+                innerPool.Clear();
+            }
+        }
+
+        private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
+        {
+#if (PORTABLE || NETSTD11)
+            // Dictionary requires locking even for readers.
+            lock (_pools)
+            {
+                return _pools.TryGetValue(key, out objectPool);
+            }
+#else
+            // Hashtable requires no locking for readers.
+            objectPool = _pools[key] as ObjectPool<TValue>;
+            return objectPool != null;
+#endif
+        }
+
+        private ObjectPool<TValue> AddPool(TKey key)
+        {
+            // We are going to write, so we need full locking.
+            lock (_pools)
+            {
+                ObjectPool<TValue> objectPool;
+                if (!_pools.ContainsKey(key))
+                {
+                    _pools.Add(key, objectPool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key))
+                    {
+                        Diagnostics = _diagnostics
+                    });
+                }
+                else
+                {
+                    // Someone added the same pool in the meanwhile.
+                    objectPool = _pools[key] as ObjectPool<TValue>;
+                }
+                return objectPool;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private Func<TValue> PrepareFactoryMethod(TKey key)
         {
@@ -212,5 +268,7 @@ namespace CodeProject.ObjectPool
             }
             return () => factory(key);
         }
+
+        #endregion
     }
 }

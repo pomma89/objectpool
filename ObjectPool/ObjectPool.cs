@@ -24,6 +24,8 @@ namespace CodeProject.ObjectPool
     public sealed class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
         where T : PooledObject
     {
+        #region Fields
+
         /// <summary>
         ///   Backing field for <see cref="MaximumPoolSize"/>.
         /// </summary>
@@ -33,6 +35,8 @@ namespace CodeProject.ObjectPool
         ///   Backing field for <see cref="MinimumPoolSize"/>.
         /// </summary>
         private int _minimumPoolSize;
+
+        #endregion
 
         #region Public Properties
 

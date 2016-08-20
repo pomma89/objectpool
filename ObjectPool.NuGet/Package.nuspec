@@ -32,7 +32,28 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Thrower" version="3.0.1" />
+            <group targetFramework="net35">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="net40">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="net45">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="net46">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="netstandard1.1">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="netstandard1.3">
+                <dependency id="System.Collections.NonGeneric" version="4.0.1" />
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="portable-net45+win8+wp8+wpa81">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
