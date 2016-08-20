@@ -37,15 +37,19 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
                 <dependency id="Thrower" version="3.0.1" />
             </group>
             <group targetFramework="net45">
+                <dependency id="System.Collections.Concurrent" version="4.0.12" />
                 <dependency id="Thrower" version="3.0.1" />
             </group>
             <group targetFramework="net46">
+                <dependency id="System.Collections.Concurrent" version="4.0.12" />
                 <dependency id="Thrower" version="3.0.1" />
             </group>
             <group targetFramework="netstandard1.1">
+                <dependency id="System.Collections.Concurrent" version="4.0.12" />
                 <dependency id="Thrower" version="3.0.1" />
             </group>
             <group targetFramework="netstandard1.3">
+                <dependency id="System.Collections.Concurrent" version="4.0.12" />
                 <dependency id="System.Collections.NonGeneric" version="4.0.1" />
                 <dependency id="Thrower" version="3.0.1" />
             </group>
