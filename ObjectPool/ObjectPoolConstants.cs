@@ -47,6 +47,7 @@ namespace CodeProject.ObjectPool
             Raise<ArgumentOutOfRangeException>.If(minimumPoolSize > maximumPoolSize, ErrorMessages.WrongCacheBounds);
         }
 
-        #endregion Validation       
+        #endregion Validation
+
     }
 }

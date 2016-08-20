@@ -19,9 +19,9 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> 
+    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
         where TValue : PooledObject
-    {        
+    {
         #region Fields
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private int _minimumPoolSize;
 
-        #endregion
+        #endregion Fields
 
         #region Public Properties
 
@@ -181,7 +181,7 @@ namespace CodeProject.ObjectPool
             ObjectPool<TValue> pool;
             if (!TryGetPool(key, out pool))
             {
-                // Initialize and insert the new pool.                       
+                // Initialize and insert the new pool.
                 pool = AddPool(key);
             }
 
@@ -189,7 +189,7 @@ namespace CodeProject.ObjectPool
             return pool.GetObject();
         }
 
-        #endregion
+        #endregion Pool Operations
 
         #region Low-level Pooling
 
@@ -254,7 +254,7 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        #endregion
+        #endregion Low-level Pooling
 
         #region Private Methods
 
@@ -269,6 +269,6 @@ namespace CodeProject.ObjectPool
             return () => factory(key);
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

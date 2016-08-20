@@ -36,7 +36,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private int _minimumPoolSize;
 
-        #endregion
+        #endregion Fields
 
         #region Public Properties
 
@@ -218,8 +218,8 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectResurrectionCount();
             }
 
-            // Reset the object state (if implemented) before returning it to the pool. If
-            // reseting the object have failed, destroy the object.
+            // Reset the object state (if implemented) before returning it to the pool. If resetting
+            // the object have failed, destroy the object.
             if (returnedObject != null && !returnedObject.ResetState())
             {
                 if (Diagnostics.Enabled)
@@ -259,7 +259,7 @@ namespace CodeProject.ObjectPool
         #endregion Pool Operations
 
         #region Low-level Pooling
-        
+
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
@@ -271,7 +271,6 @@ namespace CodeProject.ObjectPool
             {
                 return;
             }
-
             lock (_pooledObjects)
             {
                 foreach (var pooledObject in _pooledObjects)
@@ -284,14 +283,6 @@ namespace CodeProject.ObjectPool
 
         private bool TryDequeue(out T pooledObject)
         {
-            // Fast check to avoid unnecessary locking.
-            if (_pooledObjects.Count == 0)
-            {
-                pooledObject = default(T);
-                return false;
-            }
-
-            // Proper check and push.
             lock (_pooledObjects)
             {
                 if (_pooledObjects.Count == 0)
@@ -299,7 +290,6 @@ namespace CodeProject.ObjectPool
                     pooledObject = default(T);
                     return false;
                 }
-
                 pooledObject = _pooledObjects.Dequeue();
                 return true;
             }
@@ -307,26 +297,18 @@ namespace CodeProject.ObjectPool
 
         private bool TryEnqueue(T pooledObject)
         {
-            // Fast check to avoid unnecessary locking.
-            if (_pooledObjects.Count == MaximumPoolSize)
-            {
-                return false;
-            }
-
-            // Proper check and push.
             lock (_pooledObjects)
             {
                 if (_pooledObjects.Count == MaximumPoolSize)
                 {
                     return false;
                 }
-
                 _pooledObjects.Enqueue(pooledObject);
                 return true;
             }
         }
 
-        #endregion
+        #endregion Low-level Pooling
 
         #region Private Methods
 
