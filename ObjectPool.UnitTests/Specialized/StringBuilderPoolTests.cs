@@ -54,6 +54,8 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 psb.StringBuilder.Append(text1);
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
+
+                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(StringBuilderPool.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);

@@ -58,7 +58,11 @@ namespace CodeProject.ObjectPool.Specialized
             base.OnReleaseResources();
         }
 
-        private void ClearStringBuilder()
+        /// <summary>
+        ///   Clears the <see cref="StringBuilder"/> property, using specific methods depending on
+        ///   the framework for which ObjectPool has been compiled.
+        /// </summary>
+        protected void ClearStringBuilder()
         {
 #if NET35
             StringBuilder.Remove(0, StringBuilder.Length);
