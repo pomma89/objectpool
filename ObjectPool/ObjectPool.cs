@@ -10,7 +10,7 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Collections.Generic;
+using System.Threading;
 
 namespace CodeProject.ObjectPool
 {
@@ -90,7 +90,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _pooledObjects.Count;
+        public int ObjectsInPoolCount => Math.Min(_poolSize, MaximumPoolSize); // We do this because the queue might be slightly larger, for performance reasons.
 
         #endregion Public Properties
 
@@ -148,7 +148,6 @@ namespace CodeProject.ObjectPool
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
-            _pooledObjects = new Queue<T>(minimumPoolSize);
 
             // Creating a new instance for the Diagnostics class
             Diagnostics = new ObjectPoolDiagnostics();
@@ -260,10 +259,17 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
+#if (NET35 || PORTABLE)
+
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        private readonly Queue<T> _pooledObjects;
+        private readonly System.Collections.Generic.Queue<T> _pooledObjects = new System.Collections.Generic.Queue<T>();
+
+        /// <summary>
+        ///   Local copy of the pool size.
+        /// </summary>
+        private int _poolSize;
 
         private void ClearQueue()
         {
@@ -278,6 +284,7 @@ namespace CodeProject.ObjectPool
                     DestroyPooledObject(pooledObject);
                 }
                 _pooledObjects.Clear();
+                _poolSize = 0;
             }
         }
 
@@ -291,6 +298,7 @@ namespace CodeProject.ObjectPool
                     return false;
                 }
                 pooledObject = _pooledObjects.Dequeue();
+                _poolSize--;
                 return true;
             }
         }
@@ -304,9 +312,60 @@ namespace CodeProject.ObjectPool
                     return false;
                 }
                 _pooledObjects.Enqueue(pooledObject);
+                _poolSize++;
                 return true;
             }
         }
+
+#else
+
+        /// <summary>
+        ///   The concurrent buffer containing pooled objects.
+        /// </summary>
+        private readonly System.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new System.Collections.Concurrent.ConcurrentQueue<T>();
+
+        /// <summary>
+        ///   Local copy of the pool size. It seems that accessing the property
+        ///   <see cref="System.Collections.Concurrent.ConcurrentQueue{T}.Count"/> is far slower than
+        ///   keeping a local copy.
+        /// </summary>
+        private int _poolSize;
+
+        private void ClearQueue()
+        {
+            if (_pooledObjects == null)
+            {
+                return;
+            }
+            T dequeuedObjectToDestroy;
+            while (TryDequeue(out dequeuedObjectToDestroy))
+            {
+                DestroyPooledObject(dequeuedObjectToDestroy);
+            }
+        }
+
+        private bool TryDequeue(out T pooledObject)
+        {
+            if (_pooledObjects.TryDequeue(out pooledObject))
+            {
+                Interlocked.Decrement(ref _poolSize);
+                return true;
+            }
+            return false;
+        }
+
+        private bool TryEnqueue(T pooledObject)
+        {
+            if (_poolSize >= MaximumPoolSize)
+            {
+                return false;
+            }
+            _pooledObjects.Enqueue(pooledObject);
+            Interlocked.Increment(ref _poolSize);
+            return true;
+        }
+
+#endif
 
         #endregion Low-level Pooling
 
@@ -317,7 +376,7 @@ namespace CodeProject.ObjectPool
             // Adjusting lower bound.
             if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
             {
-                while (_pooledObjects.Count < MinimumPoolSize && TryEnqueue(CreatePooledObject()))
+                while (_poolSize < MinimumPoolSize && TryEnqueue(CreatePooledObject()))
                 {
                 }
             }
@@ -326,7 +385,7 @@ namespace CodeProject.ObjectPool
             if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum))
             {
                 T dequeuedObjectToDestroy;
-                while (_pooledObjects.Count > MaximumPoolSize && TryDequeue(out dequeuedObjectToDestroy))
+                while (_poolSize > MaximumPoolSize && TryDequeue(out dequeuedObjectToDestroy))
                 {
                     if (Diagnostics.Enabled)
                     {
