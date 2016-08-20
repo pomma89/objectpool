@@ -24,12 +24,12 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The default minimum size for the pool.
         /// </summary>
-        public const int DefaultPoolMinimumSize = 5;
+        public const int DefaultPoolMinimumSize = 4;
 
         /// <summary>
         ///   The default maximum size for the pool.
         /// </summary>
-        public const int DefaultPoolMaximumSize = 100;
+        public const int DefaultPoolMaximumSize = 16;
 
         #endregion Constants
 

@@ -55,6 +55,11 @@ namespace CodeProject.ObjectPool
         int ObjectsInPoolCount { get; }
 
         /// <summary>
+        ///   Clears the pool and destroys each object stored inside it.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
         ///   Gets a monitored object from the pool.
         /// </summary>
         /// <returns>A monitored object from the pool.</returns>

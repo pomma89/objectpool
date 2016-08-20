@@ -85,6 +85,15 @@ namespace CodeProject.ObjectPool
             {
                 OnResetState();
             }
+            catch (CannotResetStateException crsex)
+            {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Debug, () => "[ObjectPool] Object state could not be reset", crsex);
+#else
+                Debug.Assert(crsex != null); // Placeholder to avoid warnings
+#endif
+                successFlag = false;
+            }
             catch (Exception ex)
             {
 #if (NET40 || NET45 || NET46)
@@ -110,7 +119,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Releases the object's resources
+        ///   Releases the object's resources.
         /// </summary>
         protected virtual void OnReleaseResources()
         {
