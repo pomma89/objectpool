@@ -1,4 +1,4 @@
-﻿// File name: Program.cs
+﻿// File name: MemoryStreamPool.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,27 +21,31 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using BenchmarkDotNet.Running;
+using System.IO;
 
-namespace CodeProject.ObjectPool.Benchmarks
+namespace CodeProject.ObjectPool.Specialized
 {
-    public static class Program
-    {   
-        public static void Main(string[] args)
-        {
-            //var p = new RetrieveOneObject();
-            //for (var i = 0; i < 1000000; ++i)
-            //{
-            //    var x = p.SimpleObjectPool();
-            //    PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
-            //}
+    /// <summary>
+    ///   An <see cref="IObjectPool{PooledMemoryStream}"/> ready to be used.
+    ///   <see cref="MemoryStream"/> management can be further configured using the
+    ///   <see cref="MinimumMemoryStreamCapacity"/> and <see cref="MaximumMemoryStreamCapacity"/> properties.
+    /// </summary>
+    public static class MemoryStreamPool
+    {
+        /// <summary>
+        ///   Thread-safe pool instance.
+        /// </summary>
+        public static IObjectPool<PooledMemoryStream> Instance { get; } = new ObjectPool<PooledMemoryStream>();
 
-            new BenchmarkSwitcher(new[]
-            {
-                typeof(MemoryStreamPooling),
-                typeof(RetrieveOneObject),
-                typeof(RetrieveObjectsConcurrently)
-            }).Run(args);
-        }
+        /// <summary>
+        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to 4KB.
+        /// </summary>
+        public static int MinimumMemoryStreamCapacity { get; set; } = 4 * 1024;
+
+        /// <summary>
+        ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
+        ///   to pool. Defaults to 1MB.
+        /// </summary>
+        public static int MaximumMemoryStreamCapacity { get; set; } = 1024 * 1024;
     }
 }

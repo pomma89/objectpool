@@ -1,4 +1,4 @@
-﻿// File name: PooledStringBuilder.cs
+﻿// File name: PooledMemoryStream.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -22,30 +22,39 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
-using System.Text;
+using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   Pooled object prepared to work with <see cref="StringBuilder"/> instances.
+    ///   Pooled object prepared to work with <see cref="System.IO.MemoryStream"/> instances.
     /// </summary>
-    public class PooledStringBuilder : PooledObject
+    public class PooledMemoryStream : PooledObject
     {
+#pragma warning disable CC0022 // Should dispose object
+
         /// <summary>
-        ///   The string builder.
+        ///   The memory stream.
         /// </summary>
-        public StringBuilder StringBuilder { get; } = new StringBuilder(StringBuilderPool.MinimumStringBuilderCapacity);
+        public MemoryStream MemoryStream { get; } = new MemoryStream(MemoryStreamPool.MinimumMemoryStreamCapacity);
+
+#pragma warning restore CC0022 // Should dispose object
 
         /// <summary>
         ///   Reset the object state to allow this object to be re-used by other parts of the application.
         /// </summary>
         protected override void OnResetState()
         {
-            if (StringBuilder.Capacity > StringBuilderPool.MaximumStringBuilderCapacity)
+            if (!MemoryStream.CanWrite)
             {
-                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+                throw new CannotResetStateException("Memory stream has already been disposed");
             }
-            ClearStringBuilder();
+            if (MemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
+            {
+                throw new CannotResetStateException($"Memory stream capacity is {MemoryStream.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+            }
+            MemoryStream.Position = 0L;
+            MemoryStream.SetLength(0L);
             base.OnResetState();
         }
 
@@ -54,21 +63,8 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnReleaseResources()
         {
-            ClearStringBuilder();
+            MemoryStream.Dispose();
             base.OnReleaseResources();
-        }
-
-        /// <summary>
-        ///   Clears the <see cref="StringBuilder"/> property, using specific methods depending on
-        ///   the framework for which ObjectPool has been compiled.
-        /// </summary>
-        protected void ClearStringBuilder()
-        {
-#if NET35
-            StringBuilder.Remove(0, StringBuilder.Length);
-#else
-            StringBuilder.Clear();
-#endif
         }
     }
 }
