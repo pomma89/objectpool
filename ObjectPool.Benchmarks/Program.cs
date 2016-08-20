@@ -29,18 +29,18 @@ namespace CodeProject.ObjectPool.Benchmarks
     {   
         public static void Main(string[] args)
         {
-            //var p = new RetrieveOneObject();
-            //for (var i = 0; i < 1000000; ++i)
-            //{
-            //    var x = p.SimpleObjectPool();
-            //    PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
-            //}
-
-            new BenchmarkSwitcher(new[]
+            var p = new RetrieveOneObject();
+            for (var i = 0; i < 1000000; ++i)
             {
-                typeof(RetrieveOneObject),
-                typeof(RetrieveObjectsConcurrently)
-            }).Run(args);
+                var x = p.SimpleObjectPool();
+                PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
+            }
+
+            //new BenchmarkSwitcher(new[]
+            //{
+            //    typeof(RetrieveOneObject),
+            //    typeof(RetrieveObjectsConcurrently)
+            //}).Run(args);
         }
     }
 }
