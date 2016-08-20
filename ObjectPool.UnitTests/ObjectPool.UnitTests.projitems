@@ -12,5 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)MyPooledObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ObjectPoolTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParameterizedObjectPoolTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\StringBuilderPoolTests.cs" />
   </ItemGroup>
 </Project>

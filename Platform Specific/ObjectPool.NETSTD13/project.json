@@ -1,0 +1,14 @@
+﻿{
+  "supports": {},
+  "dependencies": {
+    "Fody": "1.30.0-beta01",
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
+    "NETStandard.Library": "1.6.0",
+    "Stamp.Fody": "1.2.5",
+    "System.Collections.NonGeneric": "4.0.1", 
+    "Thrower": "3.0.1"
+  },
+  "frameworks": {
+    "netstandard1.3": {}
+  }
+}

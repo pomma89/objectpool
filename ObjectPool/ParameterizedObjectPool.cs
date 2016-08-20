@@ -9,7 +9,6 @@
  */
 
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 
@@ -20,20 +19,27 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue> where TValue : PooledObject
+    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
+        where TValue : PooledObject
     {
-        private readonly ConcurrentDictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Concurrent.ConcurrentDictionary<TKey, ObjectPool<TValue>>();
+        #region Fields
 
-        private bool TryAddToPools(TKey key, ObjectPool<TValue> value, out ObjectPool<TValue> foundValue)
-        {
-            var added = false;
-            foundValue = _pools.GetOrAdd(key, k => { added = true; return value; });
-            return added;
-        }
-
-        private int _minimumPoolSize;
-        private int _maximumPoolSize;
+        /// <summary>
+        ///   Backing field for <see cref="Diagnostics"/>.
+        /// </summary>
         private ObjectPoolDiagnostics _diagnostics;
+
+        /// <summary>
+        ///   Backing field for <see cref="MaximumPoolSize"/>.
+        /// </summary>
+        private int _maximumPoolSize;
+
+        /// <summary>
+        ///   Backing field for <see cref="MinimumPoolSize"/>.
+        /// </summary>
+        private int _minimumPoolSize;
+
+        #endregion Fields
 
         #region Public Properties
 
@@ -48,10 +54,13 @@ namespace CodeProject.ObjectPool
             get { return _diagnostics; }
             set
             {
+                // Safe copy of the current pools.
+                var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
+
                 _diagnostics = value;
-                foreach (var p in _pools)
+                foreach (var p in innerPools)
                 {
-                    p.Value.Diagnostics = _diagnostics;
+                    p.Diagnostics = value;
                 }
             }
         }
@@ -152,22 +161,14 @@ namespace CodeProject.ObjectPool
 
         #endregion C'tor and Initialization code
 
+        #region Pool Operations
+
         /// <summary>
         ///   Clears the parameterized pool and each inner pool stored inside it.
         /// </summary>
         public void Clear()
         {
-            // Safe copy of the current pools.
-            var innerPools = _pools.Values.ToArray();
-
-            // Clear the main pool.
-            _pools.Clear();
-
-            // Then clear each pool, taking it from the safe copy.
-            foreach (var innerPool in innerPools)
-            {
-                innerPool.Clear();
-            }
+            ClearPools();
         }
 
         /// <summary>
@@ -178,27 +179,84 @@ namespace CodeProject.ObjectPool
         public TValue GetObject(TKey key)
         {
             ObjectPool<TValue> pool;
-
-            if (!_pools.TryGetValue(key, out pool))
+            if (!TryGetPool(key, out pool))
             {
-                // Initialize the new pool.
-                pool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key));
-                ObjectPool<TValue> foundPool;
-                if (!TryAddToPools(key, pool, out foundPool))
-                {
-                    // Someone added the pool in the meantime!
-                    pool = foundPool;
-                }
-                else
-                {
-                    // The new pool has been added, now we have to configure it.
-                    pool.Diagnostics = _diagnostics;
-                }
+                // Initialize and insert the new pool.
+                pool = AddPool(key);
             }
 
             Debug.Assert(pool != null);
             return pool.GetObject();
         }
+
+        #endregion Pool Operations
+
+        #region Low-level Pooling
+
+#if (PORTABLE || NETSTD11)
+        private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
+#else
+        private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
+#endif
+
+        private void ClearPools()
+        {
+            // Safe copy of the current pools.
+            var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
+
+            // Clear the main pool.
+            lock (_pools)
+            {
+                _pools.Clear();
+            }
+
+            // Then clear each pool, taking it from the safe copy.
+            foreach (var innerPool in innerPools)
+            {
+                innerPool.Clear();
+            }
+        }
+
+        private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
+        {
+#if (PORTABLE || NETSTD11)
+            // Dictionary requires locking even for readers.
+            lock (_pools)
+            {
+                return _pools.TryGetValue(key, out objectPool);
+            }
+#else
+            // Hashtable requires no locking for readers.
+            objectPool = _pools[key] as ObjectPool<TValue>;
+            return objectPool != null;
+#endif
+        }
+
+        private ObjectPool<TValue> AddPool(TKey key)
+        {
+            // We are going to write, so we need full locking.
+            lock (_pools)
+            {
+                ObjectPool<TValue> objectPool;
+                if (!_pools.ContainsKey(key))
+                {
+                    _pools.Add(key, objectPool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key))
+                    {
+                        Diagnostics = _diagnostics
+                    });
+                }
+                else
+                {
+                    // Someone added the same pool in the meanwhile.
+                    objectPool = _pools[key] as ObjectPool<TValue>;
+                }
+                return objectPool;
+            }
+        }
+
+        #endregion Low-level Pooling
+
+        #region Private Methods
 
         private Func<TValue> PrepareFactoryMethod(TKey key)
         {
@@ -210,5 +268,7 @@ namespace CodeProject.ObjectPool
             }
             return () => factory(key);
         }
+
+        #endregion Private Methods
     }
 }

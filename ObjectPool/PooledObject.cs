@@ -11,7 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace CodeProject.ObjectPool
 {
@@ -21,13 +21,21 @@ namespace CodeProject.ObjectPool
     [Serializable]
     public abstract class PooledObject : IDisposable
     {
+        #region Logging
+
+#if (NET40 || NET45 || NET46)
+        private static readonly Logging.ILog Log = Logging.LogProvider.GetLogger(typeof(PooledObject));
+#endif
+
+        #endregion Logging
+
         #region Internal Properties
 
         /// <summary>
         ///   Internal Action that is initialized by the pool while creating the object, this allow
         ///   that object to re-add itself back to the pool.
         /// </summary>
-        internal Action<PooledObject, bool> ReturnToPool { get; set; }
+        internal IObjectPoolHandle Handle { get; set; }
 
         /// <summary>
         ///   Internal flag that is being managed by the pool to describe the object state - primary
@@ -52,8 +60,13 @@ namespace CodeProject.ObjectPool
             {
                 OnReleaseResources();
             }
-            catch
+            catch (Exception ex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while releasing resources", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 successFlag = false;
             }
 
@@ -72,8 +85,22 @@ namespace CodeProject.ObjectPool
             {
                 OnResetState();
             }
-            catch
+            catch (CannotResetStateException crsex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Debug, () => "[ObjectPool] Object state could not be reset", crsex);
+#else
+                Debug.Assert(crsex != null); // Placeholder to avoid warnings
+#endif
+                successFlag = false;
+            }
+            catch (Exception ex)
+            {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while resetting state", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 successFlag = false;
             }
 
@@ -92,7 +119,7 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Releases the object's resources
+        ///   Releases the object's resources.
         /// </summary>
         protected virtual void OnReleaseResources()
         {
@@ -102,10 +129,13 @@ namespace CodeProject.ObjectPool
 
         #region Returning object to pool - Dispose and Finalizer
 
+#pragma warning disable CC0029 // Disposables Should Call Suppress Finalize
+
         /// <summary>
         ///   See <see cref="IDisposable"/> docs.
         /// </summary>
         public void Dispose()
+#pragma warning restore CC0029 // Disposables Should Call Suppress Finalize
         {
             // Returning to pool
             HandleReAddingToPool(false);
@@ -122,10 +152,15 @@ namespace CodeProject.ObjectPool
             try
             {
                 // Notifying the pool that this object is ready for re-adding to the pool.
-                ReturnToPool(this, reRegisterForFinalization);
+                Handle.ReturnObjectToPool(this, reRegisterForFinalization);
             }
-            catch
+            catch (Exception ex)
             {
+#if (NET40 || NET45 || NET46)
+                Log.Log(Logging.LogLevel.Warn, () => "[ObjectPool] An error occurred while re-adding to pool", ex);
+#else
+                Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
                 Disposed = true;
                 ReleaseResources();
             }
@@ -174,7 +209,6 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The resource wrapped inside this class.
         /// </summary>
-        [Pure]
         public T InternalResource { get; }
 
         /// <summary>
@@ -182,11 +216,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         protected override void OnReleaseResources()
         {
-            var safeAction = WrapperReleaseResourcesAction;
-            if (safeAction != null)
-            {
-                safeAction(InternalResource);
-            }
+            WrapperReleaseResourcesAction?.Invoke(InternalResource);
         }
 
         /// <summary>
@@ -194,11 +224,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         protected override void OnResetState()
         {
-            var safeAction = WrapperResetStateAction;
-            if (safeAction != null)
-            {
-                safeAction(InternalResource);
-            }
+            WrapperResetStateAction?.Invoke(InternalResource);
         }
     }
 }

@@ -5,7 +5,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 ## Summary ##
 
-* Latest release version: `v2.0.1`
+* Latest release version: `v2.0.2`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
     + [HTML](https://goo.gl/RVA7mV)
@@ -111,22 +111,48 @@ internal sealed class ExternalExpensiveResource
 ```ini
 
 Host Process Environment Information:
-BenchmarkDotNet=v0.9.8.0
+BenchmarkDotNet.Core=v0.9.9.0
 OS=Microsoft Windows NT 6.2.9200.0
 Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
-Frequency=2143569 ticks, Resolution=466.5117 ns, Timer=TSC
+Frequency=14318180 ticks, Resolution=69.8413 ns, Timer=HPET
 CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
 GC=Concurrent Workstation
 JitModules=clrjit-v4.6.1586.0
 
-Type=RetrieveOneObject  Mode=Throughput  GarbageCollection=Concurrent Workstation  
+Type=RetrieveOneObject  Mode=Throughput  
 
 ```
-                  Method |      Median |     StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------- |------------ |----------- |------ |------ |------ |------------------- |
-        SimpleObjectPool | 271.0199 ns | 15.1334 ns | 22.52 |     - |     - |               3,12 |
- ParameterizedObjectPool | 320.7931 ns | 22.6953 ns | 22.00 |     - |     - |               2,98 |
-     MicrosoftObjectPool |  74.9782 ns |  4.1367 ns |     - |     - |     - |               0,00 |
+                  Method |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------------ |---------- |------ |------ |------ |------------------- |
+        SimpleObjectPool | 137.7914 ns | 5.7873 ns | 21.00 | 18.00 | 18.00 |               2,99 |
+ ParameterizedObjectPool | 202.5664 ns | 2.1918 ns | 43.80 |     - |     - |               3,40 |
+     MicrosoftObjectPool |  60.5100 ns | 1.5422 ns |     - |     - |     - |               0,00 |
+
+```ini
+
+Host Process Environment Information:
+BenchmarkDotNet.Core=v0.9.9.0
+OS=Microsoft Windows NT 6.2.9200.0
+Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
+Frequency=14318180 ticks, Resolution=69.8413 ns, Timer=HPET
+CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
+GC=Concurrent Workstation
+JitModules=clrjit-v4.6.1586.0
+
+Type=RetrieveObjectsConcurrently  Mode=Throughput  Affinity=2  
+
+```
+                  Method | Count |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------ |------------ |---------- |------ |------ |------ |------------------- |
+        **SimpleObjectPool** |    **10** |   **5.8370 us** | **0.1055 us** |  **1.27** |  **1.15** |     **-** |             **275,84** |
+ ParameterizedObjectPool |    10 |   6.5972 us | 0.4267 us |  1.46 |  1.17 |     - |             299,46 |
+     MicrosoftObjectPool |    10 |   4.3874 us | 0.2575 us |  1.33 |  1.06 |     - |             267,88 |
+        **SimpleObjectPool** |   **100** |  **20.2330 us** | **0.8434 us** |  **2.64** |  **1.98** |  **0.66** |             **562,87** |
+ ParameterizedObjectPool |   100 |  27.6820 us | 1.1765 us |  2.43 |  2.17 |     - |             490,65 |
+     MicrosoftObjectPool |   100 |  10.9720 us | 1.3934 us |  1.34 |  0.97 |     - |             226,68 |
+        **SimpleObjectPool** |  **1000** | **165.2282 us** | **5.9998 us** | **10.50** | **12.75** |  **6.00** |           **3.107,34** |
+ ParameterizedObjectPool |  1000 | 221.2623 us | 1.8009 us | 19.00 |     - |     - |           2.872,10 |
+     MicrosoftObjectPool |  1000 |  77.0221 us | 5.2310 us |  4.71 |  0.24 |     - |             251,05 |
 
 ## About this repository and its maintainer ##
 

@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,8 +18,11 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Library for .NET Standard 1.1.
-* Updated NUnit to 3.x branch.
+* Added LibLog to .NET 4.x projects.
+* Added a DLL compiled for .NET 3.5.
+* Added a DLL compiled for .NET Standard 1.3.
+* Performance have been improved by 30%.
+* Added a StringBuilder pool in the "Specialized" namespace.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -31,6 +34,9 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
         <licenseUrl>http://www.codeproject.com/info/cpol10.aspx</licenseUrl>
         <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
         <dependencies>
+            <group targetFramework="net35">
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
             <group targetFramework="net40">
                 <dependency id="Thrower" version="3.0.1" />
             </group>
@@ -41,12 +47,13 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
                 <dependency id="Thrower" version="3.0.1" />
             </group>
             <group targetFramework="netstandard1.1">
-                <dependency id="System.Collections.Concurrent" version="4.0.12" />
-                <dependency id="System.Diagnostics.Contracts" version="4.0.1" />
                 <dependency id="Thrower" version="3.0.1" />
             </group>
-            <group targetFramework="portable-net45+win8+wpa81">
-                <dependency id="System.Collections.Concurrent" version="4.0.12" />
+            <group targetFramework="netstandard1.3">
+                <dependency id="System.Collections.NonGeneric" version="4.0.1" />
+                <dependency id="Thrower" version="3.0.1" />
+            </group>
+            <group targetFramework="portable-net45+win8+wp8+wpa81">
                 <dependency id="Thrower" version="3.0.1" />
             </group>
         </dependencies>

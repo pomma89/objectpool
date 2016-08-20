@@ -3,7 +3,10 @@
 open Fake
 open Fake.Testing
 
-RestorePackages()
+directExec (fun info ->
+  info.FileName <- ".nuget/NuGet.exe"
+  info.Arguments <- "restore"
+  info.WorkingDirectory <- ".")
 
 // Properties
 let solutionFile = "./ObjectPool.sln"
@@ -78,6 +81,7 @@ Target "PerfRelease" (fun _ ->
     trace "Testing performance..."
     let ok = directExec (fun info ->
       info.FileName <- perfExe
+      info.Arguments <- "*"
       info.WorkingDirectory <- perfDir)
     if ok then CopyDir perfResDst perfResSrc (fun s -> true)
 )

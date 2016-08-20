@@ -9,7 +9,10 @@
     <Import_RootNamespace>CodeProject.ObjectPool</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AdjustMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CannotResetStateException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\IObjectPoolHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IParameterizedObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ObjectPool.cs" />
@@ -17,6 +20,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ObjectPoolDiagnostics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParameterizedObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PooledObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\PooledStringBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\StringBuilderPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
