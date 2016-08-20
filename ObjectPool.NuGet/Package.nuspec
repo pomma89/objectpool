@@ -18,11 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Added LibLog to .NET 4.x projects.
-* Added a DLL compiled for .NET 3.5.
-* Added a DLL compiled for .NET Standard 1.3.
-* Performance have been improved by 30%.
-* Added a StringBuilder pool in the "Specialized" namespace.
+* Added a MemoryStream pool in the "Specialized" namespace.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
