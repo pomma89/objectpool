@@ -122,11 +122,11 @@ JitModules=clrjit-v4.6.1586.0
 Type=RetrieveOneObject  Mode=Throughput  
 
 ```
-                  Method |      Median |     StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------- |------------ |----------- |------ |------ |------ |------------------- |
-        SimpleObjectPool | 146.9644 ns |  0.9799 ns |     - |     - |     - |               0,01 |
- ParameterizedObjectPool | 188.6387 ns | 20.6769 ns |     - |     - |     - |               0,02 |
-     MicrosoftObjectPool |  61.3727 ns |  0.4544 ns |     - |     - |     - |               0,00 |
+                  Method |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------------ |---------- |------ |------ |------ |------------------- |
+        SimpleObjectPool | 137.7914 ns | 5.7873 ns | 21.00 | 18.00 | 18.00 |               2,99 |
+ ParameterizedObjectPool | 202.5664 ns | 2.1918 ns | 43.80 |     - |     - |               3,40 |
+     MicrosoftObjectPool |  60.5100 ns | 1.5422 ns |     - |     - |     - |               0,00 |
 
 ```ini
 
@@ -142,18 +142,17 @@ JitModules=clrjit-v4.6.1586.0
 Type=RetrieveObjectsConcurrently  Mode=Throughput  Affinity=2  
 
 ```
-                  Method | Count |      Median |     StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------- |------ |------------ |----------- |------ |------ |------ |------------------- |
-        **SimpleObjectPool** |    **10** |   **5.5709 us** |  **0.5235 us** |  **1.31** |  **0.89** |     **-** |             **253,02** |
- ParameterizedObjectPool |    10 |   6.1806 us |  0.8222 us |  1.33 |  0.85 |     - |             256,88 |
-     MicrosoftObjectPool |    10 |   4.5049 us |  0.1040 us |  1.34 |  1.01 |     - |             265,63 |
-        **SimpleObjectPool** |   **100** |  **20.6157 us** |  **0.3253 us** |  **2.02** |  **0.98** |     **-** |             **227,29** |
- ParameterizedObjectPool |   100 |  24.9703 us |  0.4560 us |  2.45 |  0.71 |     - |             212,77 |
-     MicrosoftObjectPool |   100 |  10.6723 us |  1.4771 us |  1.71 |  0.75 |     - |             222,04 |
-        **SimpleObjectPool** |  **1000** | **172.4054 us** |  **6.2569 us** |     **-** |     **-** |     **-** |             **243,02** |
- ParameterizedObjectPool |  1000 | 221.2160 us | 10.0503 us |     - |     - |     - |             233,67 |
-     MicrosoftObjectPool |  1000 |  76.3451 us |  1.4845 us |  4.78 |  0.20 |     - |             255,94 |
-
+                  Method | Count |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
+------------------------ |------ |------------ |---------- |------ |------ |------ |------------------- |
+        **SimpleObjectPool** |    **10** |   **5.8370 us** | **0.1055 us** |  **1.27** |  **1.15** |     **-** |             **275,84** |
+ ParameterizedObjectPool |    10 |   6.5972 us | 0.4267 us |  1.46 |  1.17 |     - |             299,46 |
+     MicrosoftObjectPool |    10 |   4.3874 us | 0.2575 us |  1.33 |  1.06 |     - |             267,88 |
+        **SimpleObjectPool** |   **100** |  **20.2330 us** | **0.8434 us** |  **2.64** |  **1.98** |  **0.66** |             **562,87** |
+ ParameterizedObjectPool |   100 |  27.6820 us | 1.1765 us |  2.43 |  2.17 |     - |             490,65 |
+     MicrosoftObjectPool |   100 |  10.9720 us | 1.3934 us |  1.34 |  0.97 |     - |             226,68 |
+        **SimpleObjectPool** |  **1000** | **165.2282 us** | **5.9998 us** | **10.50** | **12.75** |  **6.00** |           **3.107,34** |
+ ParameterizedObjectPool |  1000 | 221.2623 us | 1.8009 us | 19.00 |     - |     - |           2.872,10 |
+     MicrosoftObjectPool |  1000 |  77.0221 us | 5.2310 us |  4.71 |  0.24 |     - |             251,05 |
 
 ## About this repository and its maintainer ##
 
