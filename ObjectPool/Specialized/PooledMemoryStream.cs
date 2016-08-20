@@ -31,30 +31,38 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public class PooledMemoryStream : PooledObject
     {
-#pragma warning disable CC0022 // Should dispose object
+#pragma warning disable CC0033 // Dispose Fields Properly
+        private readonly TrackedMemoryStream _trackedMemoryStream = new TrackedMemoryStream(MemoryStreamPool.MinimumMemoryStreamCapacity);
+#pragma warning restore CC0033 // Dispose Fields Properly
 
         /// <summary>
         ///   The memory stream.
         /// </summary>
-        public MemoryStream MemoryStream { get; } = new MemoryStream(MemoryStreamPool.MinimumMemoryStreamCapacity);
+        public MemoryStream MemoryStream => _trackedMemoryStream;
 
-#pragma warning restore CC0022 // Should dispose object
+        /// <summary>
+        ///   Builds a pooled memory stream.
+        /// </summary>
+        public PooledMemoryStream()
+        {
+            _trackedMemoryStream.Parent = this;
+        }
 
         /// <summary>
         ///   Reset the object state to allow this object to be re-used by other parts of the application.
         /// </summary>
         protected override void OnResetState()
         {
-            if (!MemoryStream.CanWrite)
+            if (!_trackedMemoryStream.CanWrite)
             {
                 throw new CannotResetStateException("Memory stream has already been disposed");
             }
-            if (MemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
+            if (_trackedMemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {MemoryStream.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
             }
-            MemoryStream.Position = 0L;
-            MemoryStream.SetLength(0L);
+            _trackedMemoryStream.Position = 0L;
+            _trackedMemoryStream.SetLength(0L);
             base.OnResetState();
         }
 
@@ -63,8 +71,31 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnReleaseResources()
         {
-            MemoryStream.Dispose();
+            _trackedMemoryStream.Parent = null;
+            _trackedMemoryStream.Dispose();
             base.OnReleaseResources();
+        }
+
+        private sealed class TrackedMemoryStream : MemoryStream
+        {
+            public TrackedMemoryStream(int capacity)
+                : base(capacity)
+            {
+            }
+
+            internal PooledMemoryStream Parent { get; set; }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing && Parent != null)
+                {
+                    Parent.Dispose();
+                }
+                else
+                {
+                    base.Dispose(disposing);
+                }
+            }
         }
     }
 }

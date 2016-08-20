@@ -19,6 +19,7 @@ Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
 * Added a MemoryStream pool in the "Specialized" namespace.
+* Fixes for new MemoryStream pool.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.

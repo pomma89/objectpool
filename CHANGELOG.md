@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.0.4 (2016-08-20) ###
+
+* Fixes for new MemoryStream pool.
+
 ### v2.0.3 (2016-08-20) ###
 
 * Added a MemoryStream pool in the "Specialized" namespace.

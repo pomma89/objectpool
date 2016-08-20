@@ -122,6 +122,83 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
+        [TestCase("a&b")]
+        [TestCase("SNAU ORSO birretta")]
+        [TestCase("PU <3 PI")]
+        [TestCase("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eget ante risus. In rhoncus mattis leo, in tincidunt felis euismod sed. Pellentesque rhoncus elementum lacus tincidunt feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. --> Aliquam scelerisque, SNAU.")]
+        [TestCase("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eget ante risus. In rhoncus mattis leo, in tincidunt felis euismod sed. Pellentesque rhoncus elementum lacus tincidunt feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam scelerisque, lorem ac pretium luctus, nunc dui tincidunt sem, id rutrum nibh urna a neque. Maecenas lacus tellus, scelerisque nec faucibus ac, dignissim non justo. Vivamus volutpat at metus hendrerit feugiat. Donec imperdiet lobortis est a efficitur. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.")]
+        public void ShouldReturnToPoolWhenStreamIsSmallAndStreamIsManuallyDisposed(string text)
+        {
+            string result;
+#pragma warning disable CC0022 // Should dispose object
+            var pms = MemoryStreamPool.Instance.GetObject();
+
+            var sw = new StreamWriter(pms.MemoryStream);
+            sw.Write(text);
+            sw.Flush();
+
+            pms.MemoryStream.Position = 0L;
+
+            var sr = new StreamReader(pms.MemoryStream);
+            result = sr.ReadToEnd();
+
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Dispose();
+#pragma warning restore CC0022 // Should dispose object
+
+            result.ShouldBe(text);
+
+            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
+            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+        }
+
+        [TestCase("a&b")]
+        [TestCase("SNAU ORSO birretta")]
+        [TestCase("PU <3 PI")]
+        [TestCase("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eget ante risus. In rhoncus mattis leo, in tincidunt felis euismod sed. Pellentesque rhoncus elementum lacus tincidunt feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. --> Aliquam scelerisque, SNAU.")]
+        [TestCase("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eget ante risus. In rhoncus mattis leo, in tincidunt felis euismod sed. Pellentesque rhoncus elementum lacus tincidunt feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam scelerisque, lorem ac pretium luctus, nunc dui tincidunt sem, id rutrum nibh urna a neque. Maecenas lacus tellus, scelerisque nec faucibus ac, dignissim non justo. Vivamus volutpat at metus hendrerit feugiat. Donec imperdiet lobortis est a efficitur. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.")]
+        public void ShouldReturnToPoolWhenStreamIsSmallAndStreamIsManuallyDisposed_TwoTimes(string text)
+        {
+            string result;
+#pragma warning disable CC0022 // Should dispose object
+            // First
+            var pms = MemoryStreamPool.Instance.GetObject();
+            var sw = new StreamWriter(pms.MemoryStream);
+            sw.Write(text);
+            sw.Flush();
+
+            pms.MemoryStream.Position = 0L;
+
+            var sr = new StreamReader(pms.MemoryStream);
+            result = sr.ReadToEnd();
+
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Dispose();
+            result.ShouldBe(text);
+
+            // Second
+            pms = MemoryStreamPool.Instance.GetObject();
+            sw = new StreamWriter(pms.MemoryStream);
+            sw.Write(text);
+            sw.Write(text);
+            sw.Flush();
+
+            pms.MemoryStream.Position = 0L;
+
+            sr = new StreamReader(pms.MemoryStream);
+            result = sr.ReadToEnd();
+
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Dispose();
+            result.ShouldBe(text + text);
+#pragma warning restore CC0022 // Should dispose object
+
+            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
+            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
+            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+        }
+
         [Test]
         public void ShouldNotReturnToPoolWhenStreamIsLarge()
         {
@@ -144,6 +221,36 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
                 pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
             }
+
+            result.ShouldBe(text + text);
+
+            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(0);
+            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void ShouldNotReturnToPoolWhenStreamIsLargeAndStreamIsManuallyDisposed()
+        {
+            var text = LipsumGenerator.Generate(1000);
+
+            string result;
+#pragma warning disable CC0022 // Should dispose object
+            var pms = MemoryStreamPool.Instance.GetObject();
+
+            var sw = new StreamWriter(pms.MemoryStream);
+            sw.Write(text);
+            sw.Write(text);
+            sw.Flush();
+
+            pms.MemoryStream.Position = 0L;
+
+            var sr = new StreamReader(pms.MemoryStream);
+            result = sr.ReadToEnd();
+
+            pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Dispose();
+#pragma warning restore CC0022 // Should dispose object
 
             result.ShouldBe(text + text);
 
