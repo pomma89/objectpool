@@ -108,7 +108,9 @@ internal sealed class ExternalExpensiveResource
 
 ## Benchmarks ##
 
-### Retrieve one object ###
+All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](https://github.com/PerfDotNet/BenchmarkDotNet) library.
+
+### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveOneObject.cs) ###
 
 ```ini
 
@@ -130,7 +132,7 @@ Type=RetrieveOneObject  Mode=Throughput
  ParameterizedObjectPool | 199.7968 ns | 4.4435 ns | 21.00 |     - |     - |               3,08 |
      MicrosoftObjectPool |  60.7935 ns | 1.8593 ns |     - |     - |     - |               0,00 |
 
-### Retrieve objects concurrently ###
+### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
 
 ```ini
 
@@ -158,7 +160,7 @@ Type=RetrieveObjectsConcurrently  Mode=Throughput  Affinity=2
  ParameterizedObjectPool |  1000 | 223.4054 us | 7.6698 us | 20.00 |     - |     - |           2.697,82 |
      MicrosoftObjectPool |  1000 |  76.3736 us | 0.8204 us |  5.17 |  0.29 |     - |             247,38 |
 
-### Memory stream pooling ###
+### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
 
 ```ini
 
