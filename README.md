@@ -114,9 +114,9 @@ All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](ht
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using a single thread. We compare three implementations:
 
-* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs).
-* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs).
-* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/).
+* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
+* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
+* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 
 ```ini
 
@@ -142,9 +142,9 @@ Type=RetrieveOneObject  Mode=Throughput
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using `Count` threads. We compare three implementations:
 
-* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs).
-* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs).
-* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/).
+* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
+* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
+* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 
 ```ini
 
@@ -176,8 +176,8 @@ Type=RetrieveObjectsConcurrently  Mode=Throughput  Affinity=2
 
 In this benchmark we evaluate how long it takes to extract and return a memory stream stored into the pool, using a single thread. We compare three implementations:
 
-* [This project's MemoryStreamPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/Specialized/MemoryStreamPool.cs).
-* [Microsoft's RecyclableMemoryStreamManager](http://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream/).
+* [This project's MemoryStreamPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/Specialized/MemoryStreamPool.cs)
+* [Microsoft's RecyclableMemoryStreamManager](http://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream/)
 
 ```ini
 
