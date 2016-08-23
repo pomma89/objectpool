@@ -25,6 +25,7 @@ using CodeProject.ObjectPool.Specialized;
 using NLipsum.Core;
 using NUnit.Framework;
 using Shouldly;
+using System;
 using System.IO;
 using System.Text;
 
@@ -257,6 +258,46 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(0);
             MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void IdPropertyShouldRemainConstantUsageAfterUsage()
+        {
+            // First usage.
+            Guid id;
+            using (var pms = MemoryStreamPool.Instance.GetObject())
+            {
+                id = pms.Id;
+                id.ShouldNotBe(Guid.Empty);
+            }
+
+            // Second usage.
+            using (var pms = MemoryStreamPool.Instance.GetObject())
+            {
+                pms.Id.ShouldBe(id);
+            }
+        }
+
+        [Test]
+        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            // First usage.
+            DateTime createdAt;
+            using (var pms = MemoryStreamPool.Instance.GetObject())
+            {
+                createdAt = pms.CreatedAt;
+                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
+
+            // Second usage.
+            using (var pms = MemoryStreamPool.Instance.GetObject())
+            {
+                pms.CreatedAt.ShouldBe(createdAt);
+                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
         }
     }
 }

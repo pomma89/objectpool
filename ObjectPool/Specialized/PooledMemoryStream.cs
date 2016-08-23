@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
+using System;
 using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -41,12 +42,28 @@ namespace CodeProject.ObjectPool.Specialized
         public MemoryStream MemoryStream => _trackedMemoryStream;
 
         /// <summary>
+        ///   Unique identifier.
+        /// </summary>
+        public Guid Id { get; } = Guid.NewGuid();
+
+        /// <summary>
+        ///   When the pooled object was created (UTC).
+        /// </summary>
+        public DateTime CreatedAt { get; } = DateTime.UtcNow;
+
+        /// <summary>
         ///   Builds a pooled memory stream.
         /// </summary>
         public PooledMemoryStream()
         {
             _trackedMemoryStream.Parent = this;
         }
+
+        /// <summary>
+        ///   Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => _trackedMemoryStream.ToString();
 
         /// <summary>
         ///   Reset the object state to allow this object to be re-used by other parts of the application.

@@ -25,6 +25,7 @@ using CodeProject.ObjectPool.Specialized;
 using NLipsum.Core;
 using NUnit.Framework;
 using Shouldly;
+using System;
 
 namespace CodeProject.ObjectPool.UnitTests.Specialized
 {
@@ -86,6 +87,46 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             StringBuilderPool.Instance.ObjectsInPoolCount.ShouldBe(0);
             StringBuilderPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             StringBuilderPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void IdPropertyShouldRemainConstantUsageAfterUsage()
+        {
+            // First usage.
+            Guid id;
+            using (var psb = StringBuilderPool.Instance.GetObject())
+            {
+                id = psb.Id;
+                id.ShouldNotBe(Guid.Empty);
+            }
+
+            // Second usage.
+            using (var psb = StringBuilderPool.Instance.GetObject())
+            {
+                psb.Id.ShouldBe(id);
+            }
+        }
+
+        [Test]
+        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            // First usage.
+            DateTime createdAt;
+            using (var psb = StringBuilderPool.Instance.GetObject())
+            {
+                createdAt = psb.CreatedAt;
+                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
+
+            // Second usage.
+            using (var psb = StringBuilderPool.Instance.GetObject())
+            {
+                psb.CreatedAt.ShouldBe(createdAt);
+                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
         }
     }
 }
