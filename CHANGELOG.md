@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.0.5 (2016-08-23) ###
+
+* Fixed wrong in an exception string.
+* Added Id and CreatedAt properties to PooledMemoryStream and PooledStringBuilder.
+
 ### v2.0.4 (2016-08-20) ###
 
 * Fixes for new MemoryStream pool.

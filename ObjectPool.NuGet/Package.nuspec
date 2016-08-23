@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>CodeProject.ObjectPool</id>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
         <title>Generic and concurrent Object Pool</title>
         <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
