@@ -18,8 +18,8 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
         </description>
         <releaseNotes>
-* Added a MemoryStream pool in the "Specialized" namespace.
-* Fixes for new MemoryStream pool.
+* Fixed wrong name in an exception string.
+* Added Id and CreatedAt properties to PooledMemoryStream and PooledStringBuilder.
         </releaseNotes>
         <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
