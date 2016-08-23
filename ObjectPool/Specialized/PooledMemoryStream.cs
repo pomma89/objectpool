@@ -59,7 +59,7 @@ namespace CodeProject.ObjectPool.Specialized
             }
             if (_trackedMemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {MemoryStreamPool.MaximumMemoryStreamCapacity}");
             }
             _trackedMemoryStream.Position = 0L;
             _trackedMemoryStream.SetLength(0L);
