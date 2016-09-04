@@ -38,14 +38,14 @@ namespace CodeProject.ObjectPool.Specialized
         public static IObjectPool<PooledStringBuilder> Instance { get; } = new ObjectPool<PooledStringBuilder>();
 
         /// <summary>
-        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created. Defaults to 64 characters.
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created. Defaults to 4 * 1024 characters.
         /// </summary>
-        public static int MinimumStringBuilderCapacity { get; set; } = 64;
+        public static int MinimumStringBuilderCapacity { get; set; } = 4 * 1024;
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
-        ///   to pool. Defaults to 4096 characters.
+        ///   to pool. Defaults to 512 * 1024 characters.
         /// </summary>
-        public static int MaximumStringBuilderCapacity { get; set; } = 4 * 1024;
+        public static int MaximumStringBuilderCapacity { get; set; } = 512 * 1024;
     }
 }

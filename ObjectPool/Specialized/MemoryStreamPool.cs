@@ -44,8 +44,8 @@ namespace CodeProject.ObjectPool.Specialized
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to 1MB.
+        ///   to pool. Defaults to 512KB.
         /// </summary>
-        public static int MaximumMemoryStreamCapacity { get; set; } = 1024 * 1024;
+        public static int MaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
     }
 }

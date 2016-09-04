@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.0.6 (2016-09-??) ###
+
+* Changed default min and max size for MemoryStreamPool: 4KB min, 512KB max.
+* Changed default min and max size for StringBuilderPool: 4K char min, 512K char max.
+
 ### v2.0.5 (2016-08-23) ###
 
 * Fixed wrong name in an exception string.
