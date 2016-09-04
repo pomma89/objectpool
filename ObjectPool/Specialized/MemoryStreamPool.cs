@@ -48,6 +48,9 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         public int MaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
 
+        /// <summary>
+        ///   Builds the specialized pool.
+        /// </summary>
         public MemoryStreamPool()
         {
             FactoryMethod = () => new PooledMemoryStream(this);

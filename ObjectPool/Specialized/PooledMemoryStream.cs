@@ -45,6 +45,7 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   Builds a pooled memory stream.
         /// </summary>
+        /// <param name="pool">The pool to which this object belongs.</param>
         public PooledMemoryStream(IMemoryStreamPool pool)
             : this(pool, new TrackedMemoryStream(pool.MinimumMemoryStreamCapacity))
         {
@@ -53,6 +54,7 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   Builds a pooled memory stream using given buffer.
         /// </summary>
+        /// <param name="pool">The pool to which this object belongs.</param>
         /// <param name="buffer">The buffer.</param>
         public PooledMemoryStream(IMemoryStreamPool pool, byte[] buffer)
             : this(pool, new TrackedMemoryStream(buffer))
@@ -62,6 +64,7 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   Builds a pooled memory stream using given stream.
         /// </summary>
+        /// <param name="pool">The pool to which this object belongs.</param>
         /// <param name="trackedMemoryStream">The backing stream.</param>
         private PooledMemoryStream(IMemoryStreamPool pool, TrackedMemoryStream trackedMemoryStream)
         {
@@ -96,9 +99,13 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnResetState()
         {
-            if (!_trackedMemoryStream.CanWrite)
+            if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
             {
-                throw new CannotResetStateException("Memory stream has already been disposed");
+                throw new CannotResetStateException($"Memory stream has already been disposed");
+            }
+            if (_trackedMemoryStream.Capacity < _pool.MinimumMemoryStreamCapacity)
+            {
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {_pool.MinimumMemoryStreamCapacity}");
             }
             if (_trackedMemoryStream.Capacity > _pool.MaximumMemoryStreamCapacity)
             {
@@ -131,7 +138,7 @@ namespace CodeProject.ObjectPool.Specialized
             {
             }
 
-            internal PooledMemoryStream Parent { get; set; }
+            public PooledMemoryStream Parent { get; set; }
 
             protected override void Dispose(bool disposing)
             {

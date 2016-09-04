@@ -65,7 +65,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             }
 
             result.ShouldBe(text);
@@ -96,7 +96,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             }
             result.ShouldBe(text);
 
@@ -114,7 +114,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             }
             result.ShouldBe(text + text);
 
@@ -143,7 +143,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
 #pragma warning restore CC0022 // Should dispose object
 
@@ -174,7 +174,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
             result.ShouldBe(text);
 
@@ -190,7 +190,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
             result.ShouldBe(text + text);
 #pragma warning restore CC0022 // Should dispose object
@@ -220,7 +220,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             }
 
             result.ShouldBe(text + text);
@@ -249,7 +249,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.Instance.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
 #pragma warning restore CC0022 // Should dispose object
 
