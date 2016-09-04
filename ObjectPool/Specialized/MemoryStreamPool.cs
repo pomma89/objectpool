@@ -40,12 +40,32 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to 4KB.
         /// </summary>
-        public static int MinimumMemoryStreamCapacity { get; set; } = 4 * 1024;
+        public int MinimumMemoryStreamCapacity { get; set; } = 4 * 1024;
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
         ///   to pool. Defaults to 512KB.
         /// </summary>
-        public static int MaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
+        public int MaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
+
+        public MemoryStreamPool()
+        {
+            FactoryMethod = () => new PooledMemoryStream(this);
+        }
+
+#pragma warning disable CC0022 // Should dispose object
+
+        /// <summary>
+        ///   Returns a pooled memory stream using given byte array as stream buffer. Once the object
+        ///   is returned to the pool, the pool itself might take ownership of given buffer.
+        /// </summary>
+        /// <param name="buffer">The byte array that will be used as stream buffer.</param>
+        /// <returns>A pooled memory stream.</returns>
+        public PooledMemoryStream GetObject(byte[] buffer) => new PooledMemoryStream(this, buffer)
+        {
+            Handle = this
+        };
+
+#pragma warning restore CC0022 // Should dispose object
     }
 }

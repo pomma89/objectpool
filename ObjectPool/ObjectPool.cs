@@ -50,7 +50,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        public Func<T> FactoryMethod { get; }
+        public Func<T> FactoryMethod { get; protected set; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in

@@ -32,9 +32,43 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public class PooledMemoryStream : PooledObject
     {
-#pragma warning disable CC0033 // Dispose Fields Properly
-        private readonly TrackedMemoryStream _trackedMemoryStream = new TrackedMemoryStream(MemoryStreamPool.MinimumMemoryStreamCapacity);
-#pragma warning restore CC0033 // Dispose Fields Properly
+        /// <summary>
+        ///   The pool to which this object belongs.
+        /// </summary>
+        private readonly IMemoryStreamPool _pool;
+
+        /// <summary>
+        ///   The memory stream.
+        /// </summary>
+        private readonly TrackedMemoryStream _trackedMemoryStream;
+
+        /// <summary>
+        ///   Builds a pooled memory stream.
+        /// </summary>
+        public PooledMemoryStream(IMemoryStreamPool pool)
+            : this(pool, new TrackedMemoryStream(pool.MinimumMemoryStreamCapacity))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled memory stream using given buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        public PooledMemoryStream(IMemoryStreamPool pool, byte[] buffer)
+            : this(pool, new TrackedMemoryStream(buffer))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled memory stream using given stream.
+        /// </summary>
+        /// <param name="trackedMemoryStream">The backing stream.</param>
+        private PooledMemoryStream(IMemoryStreamPool pool, TrackedMemoryStream trackedMemoryStream)
+        {
+            _pool = pool;
+            _trackedMemoryStream = trackedMemoryStream;
+            _trackedMemoryStream.Parent = this;
+        }
 
         /// <summary>
         ///   The memory stream.
@@ -52,14 +86,6 @@ namespace CodeProject.ObjectPool.Specialized
         public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
         /// <summary>
-        ///   Builds a pooled memory stream.
-        /// </summary>
-        public PooledMemoryStream()
-        {
-            _trackedMemoryStream.Parent = this;
-        }
-
-        /// <summary>
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
@@ -74,9 +100,9 @@ namespace CodeProject.ObjectPool.Specialized
             {
                 throw new CannotResetStateException("Memory stream has already been disposed");
             }
-            if (_trackedMemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
+            if (_trackedMemoryStream.Capacity > _pool.MaximumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {MemoryStreamPool.MaximumMemoryStreamCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {_pool.MaximumMemoryStreamCapacity}");
             }
             _trackedMemoryStream.Position = 0L;
             _trackedMemoryStream.SetLength(0L);
@@ -97,6 +123,11 @@ namespace CodeProject.ObjectPool.Specialized
         {
             public TrackedMemoryStream(int capacity)
                 : base(capacity)
+            {
+            }
+
+            public TrackedMemoryStream(byte[] buffer)
+                : base(buffer)
             {
             }
 
