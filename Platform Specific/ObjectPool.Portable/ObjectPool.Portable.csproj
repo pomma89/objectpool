@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PommaLabs.Thrower, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.3.0.3\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.3.0.4\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
