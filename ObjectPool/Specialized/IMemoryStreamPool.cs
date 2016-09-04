@@ -1,4 +1,4 @@
-﻿// File name: StringBuilderPool.cs
+﻿// File name: IMemoryStreamPool.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,31 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Text;
+using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   An <see cref="IObjectPool{PooledStringBuilder}"/> ready to be used.
-    ///   <see cref="StringBuilder"/> management can be further configured using the
-    ///   <see cref="MinimumStringBuilderCapacity"/> and <see cref="MaximumStringBuilderCapacity"/> properties.
+    ///   An object pool specialized in <see cref="MemoryStream"/> management.
     /// </summary>
-    public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
+    public interface IMemoryStreamPool : IObjectPool<PooledMemoryStream>
     {
-        /// <summary>
-        ///   Thread-safe pool instance.
-        /// </summary>
-        public static IStringBuilderPool Instance { get; } = new StringBuilderPool();
-
-        /// <summary>
-        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created. Defaults to 4 * 1024 characters.
-        /// </summary>
-        public static int MinimumStringBuilderCapacity { get; set; } = 4 * 1024;
-
-        /// <summary>
-        ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
-        ///   to pool. Defaults to 512 * 1024 characters.
-        /// </summary>
-        public static int MaximumStringBuilderCapacity { get; set; } = 512 * 1024;
     }
 }

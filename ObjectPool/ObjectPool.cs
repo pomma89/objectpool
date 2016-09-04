@@ -21,7 +21,7 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
+    public class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
         where T : PooledObject
     {
         #region Fields

@@ -30,12 +30,12 @@ namespace CodeProject.ObjectPool.Specialized
     ///   <see cref="MemoryStream"/> management can be further configured using the
     ///   <see cref="MinimumMemoryStreamCapacity"/> and <see cref="MaximumMemoryStreamCapacity"/> properties.
     /// </summary>
-    public static class MemoryStreamPool
+    public sealed class MemoryStreamPool : ObjectPool<PooledMemoryStream>, IMemoryStreamPool
     {
         /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
-        public static IObjectPool<PooledMemoryStream> Instance { get; } = new ObjectPool<PooledMemoryStream>();
+        public static IMemoryStreamPool Instance { get; } = new MemoryStreamPool();
 
         /// <summary>
         ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to 4KB.
