@@ -6,7 +6,7 @@
     "NETStandard.Library": "1.6.0",
     "Stamp.Fody": "1.2.5",
     "System.Collections.Concurrent": "4.0.12",
-    "Thrower": "3.0.1"
+    "Thrower": "3.0.3"
   },
   "frameworks": {
     "netstandard1.1": {}

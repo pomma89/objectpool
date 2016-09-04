@@ -6,6 +6,7 @@
 * Changed default min and max size for StringBuilderPool: 4K char min, 512K char max.
 * Created two ad-hoc interfaces for specialized pools.
 * BREAKING CHANGE: Moved static properties which controlled specialized pool sizes to the new interfaces.
+* Updated Thrower.
 
 ### v2.0.5 (2016-08-23) ###
 
