@@ -42,27 +42,11 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <param name="capacity">The capacity of the backing stream.</param>
         public PooledMemoryStream(int capacity)
-            : this(new TrackedMemoryStream(capacity))
         {
-        }
-
-        /// <summary>
-        ///   Builds a pooled memory stream using given buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public PooledMemoryStream(byte[] buffer)
-            : this(new TrackedMemoryStream(buffer))
-        {
-        }
-
-        /// <summary>
-        ///   Builds a pooled memory stream using given stream.
-        /// </summary>
-        /// <param name="trackedMemoryStream">The backing stream.</param>
-        private PooledMemoryStream(TrackedMemoryStream trackedMemoryStream)
-        {
-            _trackedMemoryStream = trackedMemoryStream;
-            _trackedMemoryStream.Parent = this;
+            _trackedMemoryStream = new TrackedMemoryStream(capacity)
+            {
+                Parent = this
+            };
         }
 
         /// <summary>
@@ -125,11 +109,6 @@ namespace CodeProject.ObjectPool.Specialized
         {
             public TrackedMemoryStream(int capacity)
                 : base(capacity)
-            {
-            }
-
-            public TrackedMemoryStream(byte[] buffer)
-                : base(buffer)
             {
             }
 

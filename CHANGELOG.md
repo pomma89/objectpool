@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.1.1 (2016-09-18) ###
+
+* BREAKING CHANGE: Removed a feature added by mistake in v2.1.0.
+
 ### v2.1.0 (2016-09-18) ###
 
 * Changed default min and max size for MemoryStreamPool: 4KB min, 512KB max.
