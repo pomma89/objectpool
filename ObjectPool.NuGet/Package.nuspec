@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>CodeProject.ObjectPool</id>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
     <title>Generic and concurrent Object Pool</title>
     <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,13 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
     </description>
     <releaseNotes>
-* Changed default min and max size for MemoryStreamPool: 4KB min, 512KB max.
-* Changed default min and max size for StringBuilderPool: 4K char min, 512K char max.
-* Created two ad-hoc interfaces for specialized pools.
-* BREAKING CHANGE: Moved static properties which controlled specialized pool sizes to the new interfaces.
-* Updated Thrower.
-* ObjectPool did not respect min pool size bound. Now it does.
-* When min or max capacity of specialized pools is changed, pool is cleared, if necessary.
+* BREAKING CHANGE: Removed a feature added by mistake in v2.1.1.
     </releaseNotes>
     <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
