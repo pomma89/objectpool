@@ -1,4 +1,4 @@
-﻿// File name: AdjustMode.cs
+﻿// File name: SpecializedPoolConstants.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,23 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-
-namespace CodeProject.ObjectPool.Core
+namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   This exception can be used to signal that the object whose state is being reset cannot be
-    ///   added back to the pool for some reason.
+    ///   Constants for specialized Object Pools.
     /// </summary>
-    public sealed class CannotResetStateException : Exception
+    public static class SpecializedPoolConstants
     {
         /// <summary>
-        ///   Builds the exception using given message.
+        ///   Default minimum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 4KB.
         /// </summary>
-        /// <param name="message">The message.</param>
-        public CannotResetStateException(string message)
-            : base(message)
-        {
-        }
+        public const int DefaultMinimumMemoryStreamCapacity = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 512KB.
+        /// </summary>
+        public const int DefaultMaximumMemoryStreamCapacity = 512 * 1024;
+
+        /// <summary>
+        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 4096 characters.
+        /// </summary>
+        public const int DefaultMinimumStringBuilderCapacity = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 524288 characters.
+        /// </summary>
+        public const int DefaultMaximumStringBuilderCapacity = 512 * 1024;
     }
 }

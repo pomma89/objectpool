@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Core;
 using System.Text;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -30,22 +31,76 @@ namespace CodeProject.ObjectPool.Specialized
     ///   <see cref="StringBuilder"/> management can be further configured using the
     ///   <see cref="MinimumStringBuilderCapacity"/> and <see cref="MaximumStringBuilderCapacity"/> properties.
     /// </summary>
-    public static class StringBuilderPool
+    public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
+        private int _minimumItemCapacity = SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity;
+        private int _maximumItemCapacity = SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity;
+
         /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
-        public static IObjectPool<PooledStringBuilder> Instance { get; } = new ObjectPool<PooledStringBuilder>();
+        public static IStringBuilderPool Instance { get; } = new StringBuilderPool();
 
         /// <summary>
-        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created. Defaults to 64 characters.
+        ///   Builds the specialized pool.
         /// </summary>
-        public static int MinimumStringBuilderCapacity { get; set; } = 64;
+        public StringBuilderPool()
+            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, false)
+        {
+            FactoryMethod = () => new PooledStringBuilder(MinimumStringBuilderCapacity);
+            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
+        }
+
+        /// <summary>
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity"/>.
+        /// </summary>
+        public int MinimumStringBuilderCapacity
+        {
+            get { return _minimumItemCapacity; }
+            set
+            {
+                var oldValue = _minimumItemCapacity;
+                _minimumItemCapacity = value;
+                if (oldValue < value)
+                {
+                    Clear();
+                }
+            }
+        }
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
-        ///   to pool. Defaults to 4096 characters.
+        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity"/>.
         /// </summary>
-        public static int MaximumStringBuilderCapacity { get; set; } = 4 * 1024;
+        public int MaximumStringBuilderCapacity
+        {
+            get { return _maximumItemCapacity; }
+            set
+            {
+                var oldValue = _maximumItemCapacity;
+                _maximumItemCapacity = value;
+                if (oldValue > value)
+                {
+                    Clear();
+                }
+            }
+        }
+
+#pragma warning disable CC0022 // Should dispose object
+
+        /// <summary>
+        ///   Returns a pooled string builder using given string as initial value.
+        /// </summary>
+        /// <param name="value">The string used to initialize the value of the instance.</param>
+        /// <returns>A pooled string builder.</returns>
+        public PooledStringBuilder GetObject(string value)
+        {
+            var psb = GetObject();
+            psb.StringBuilder.Append(value);
+            return psb;
+        }
+
+#pragma warning restore CC0022 // Should dispose object
     }
 }

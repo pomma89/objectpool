@@ -1,4 +1,4 @@
-﻿// File name: AdjustMode.cs
+﻿// File name: IStringBuilderPool.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,23 +21,32 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
+using System.Text;
 
-namespace CodeProject.ObjectPool.Core
+namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   This exception can be used to signal that the object whose state is being reset cannot be
-    ///   added back to the pool for some reason.
+    ///   An object pool specialized in <see cref="StringBuilder"/> management.
     /// </summary>
-    public sealed class CannotResetStateException : Exception
+    public interface IStringBuilderPool : IObjectPool<PooledStringBuilder>
     {
         /// <summary>
-        ///   Builds the exception using given message.
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity"/>.
         /// </summary>
-        /// <param name="message">The message.</param>
-        public CannotResetStateException(string message)
-            : base(message)
-        {
-        }
+        int MinimumStringBuilderCapacity { get; set; }
+
+        /// <summary>
+        ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
+        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity"/>.
+        /// </summary>
+        int MaximumStringBuilderCapacity { get; set; }
+
+        /// <summary>
+        ///   Returns a pooled string builder using given string as initial value.
+        /// </summary>
+        /// <param name="value">The string used to initialize the value of the instance.</param>
+        /// <returns>A pooled string builder.</returns>
+        PooledStringBuilder GetObject(string value);
     }
 }

@@ -168,7 +168,7 @@ namespace UnitTests
 
             pool.Clear();
 
-            pool.ObjectsInPoolCount.ShouldBe(0);
+            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
 
         [Test]
@@ -182,7 +182,7 @@ namespace UnitTests
 
             pool.Clear();
 
-            pool.ObjectsInPoolCount.ShouldBe(0);
+            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
 
         [Test]
@@ -200,7 +200,7 @@ namespace UnitTests
             {
             }
 
-            pool.ObjectsInPoolCount.ShouldBe(1);
+            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
 
         [Test]
@@ -230,8 +230,8 @@ namespace UnitTests
             {
             }
 
-            // Despite usage #B, count always be one, caused by #A.
-            pool.ObjectsInPoolCount.ShouldBe(1);
+            // Despite usage #B, count should always be fixed.
+            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
     }
 }

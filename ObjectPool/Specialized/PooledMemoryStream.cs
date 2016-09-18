@@ -32,9 +32,38 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public class PooledMemoryStream : PooledObject
     {
-#pragma warning disable CC0033 // Dispose Fields Properly
-        private readonly TrackedMemoryStream _trackedMemoryStream = new TrackedMemoryStream(MemoryStreamPool.MinimumMemoryStreamCapacity);
-#pragma warning restore CC0033 // Dispose Fields Properly
+        /// <summary>
+        ///   The tracked memory stream.
+        /// </summary>
+        private readonly TrackedMemoryStream _trackedMemoryStream;
+
+        /// <summary>
+        ///   Builds a pooled memory stream.
+        /// </summary>
+        /// <param name="capacity">The capacity of the backing stream.</param>
+        public PooledMemoryStream(int capacity)
+            : this(new TrackedMemoryStream(capacity))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled memory stream using given buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        public PooledMemoryStream(byte[] buffer)
+            : this(new TrackedMemoryStream(buffer))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled memory stream using given stream.
+        /// </summary>
+        /// <param name="trackedMemoryStream">The backing stream.</param>
+        private PooledMemoryStream(TrackedMemoryStream trackedMemoryStream)
+        {
+            _trackedMemoryStream = trackedMemoryStream;
+            _trackedMemoryStream.Parent = this;
+        }
 
         /// <summary>
         ///   The memory stream.
@@ -52,14 +81,6 @@ namespace CodeProject.ObjectPool.Specialized
         public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
         /// <summary>
-        ///   Builds a pooled memory stream.
-        /// </summary>
-        public PooledMemoryStream()
-        {
-            _trackedMemoryStream.Parent = this;
-        }
-
-        /// <summary>
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
@@ -70,14 +91,21 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnResetState()
         {
-            if (!_trackedMemoryStream.CanWrite)
+            if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
             {
-                throw new CannotResetStateException("Memory stream has already been disposed");
+                throw new CannotResetStateException($"Memory stream has already been disposed");
             }
-            if (_trackedMemoryStream.Capacity > MemoryStreamPool.MaximumMemoryStreamCapacity)
+
+            var memoryStreamPool = Handle as IMemoryStreamPool;
+            if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {MemoryStreamPool.MaximumMemoryStreamCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
             }
+            if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
+            {
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
+            }
+
             _trackedMemoryStream.Position = 0L;
             _trackedMemoryStream.SetLength(0L);
             base.OnResetState();
@@ -100,7 +128,12 @@ namespace CodeProject.ObjectPool.Specialized
             {
             }
 
-            internal PooledMemoryStream Parent { get; set; }
+            public TrackedMemoryStream(byte[] buffer)
+                : base(buffer)
+            {
+            }
+
+            public PooledMemoryStream Parent { get; set; }
 
             protected override void Dispose(bool disposing)
             {

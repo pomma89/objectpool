@@ -34,11 +34,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
     [TestFixture]
     internal sealed class MemoryStreamPoolTests
     {
+        private IMemoryStreamPool _memoryStreamPool;
+
         [SetUp]
         public void SetUp()
         {
-            MemoryStreamPool.Instance.Clear();
-            MemoryStreamPool.Instance.Diagnostics = new ObjectPoolDiagnostics
+            _memoryStreamPool = MemoryStreamPool.Instance;
+            _memoryStreamPool.Clear();
+            _memoryStreamPool.Diagnostics = new ObjectPoolDiagnostics
             {
                 Enabled = true
             };
@@ -52,7 +55,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void ShouldReturnToPoolWhenStreamIsSmall(string text)
         {
             string result;
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
 #pragma warning disable CC0022 // Should dispose object
                 var sw = new StreamWriter(pms.MemoryStream);
@@ -65,14 +68,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             }
 
             result.ShouldBe(text);
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [TestCase("a&b")]
@@ -83,7 +86,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void ShouldReturnToPoolWhenStreamIsSmall_TwoTimes(string text)
         {
             string result;
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
 #pragma warning disable CC0022 // Should dispose object
                 var sw = new StreamWriter(pms.MemoryStream);
@@ -96,11 +99,11 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             }
             result.ShouldBe(text);
 
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
 #pragma warning disable CC0022 // Should dispose object
                 var sw = new StreamWriter(pms.MemoryStream);
@@ -114,13 +117,13 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             }
             result.ShouldBe(text + text);
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [TestCase("a&b")]
@@ -132,7 +135,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         {
             string result;
 #pragma warning disable CC0022 // Should dispose object
-            var pms = MemoryStreamPool.Instance.GetObject();
+            var pms = _memoryStreamPool.GetObject();
 
             var sw = new StreamWriter(pms.MemoryStream);
             sw.Write(text);
@@ -143,15 +146,15 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
 #pragma warning restore CC0022 // Should dispose object
 
             result.ShouldBe(text);
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [TestCase("a&b")]
@@ -164,7 +167,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             string result;
 #pragma warning disable CC0022 // Should dispose object
             // First
-            var pms = MemoryStreamPool.Instance.GetObject();
+            var pms = _memoryStreamPool.GetObject();
             var sw = new StreamWriter(pms.MemoryStream);
             sw.Write(text);
             sw.Flush();
@@ -174,12 +177,12 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
             result.ShouldBe(text);
 
             // Second
-            pms = MemoryStreamPool.Instance.GetObject();
+            pms = _memoryStreamPool.GetObject();
             sw = new StreamWriter(pms.MemoryStream);
             sw.Write(text);
             sw.Write(text);
@@ -190,14 +193,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeLessThanOrEqualTo(_memoryStreamPool.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
             result.ShouldBe(text + text);
 #pragma warning restore CC0022 // Should dispose object
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [Test]
@@ -206,7 +209,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var text = LipsumGenerator.Generate(1000);
 
             string result;
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
 #pragma warning disable CC0022 // Should dispose object
                 var sw = new StreamWriter(pms.MemoryStream);
@@ -220,14 +223,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 result = sr.ReadToEnd();
 #pragma warning restore CC0022 // Should dispose object
 
-                pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
             }
 
             result.ShouldBe(text + text);
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(0);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
@@ -237,7 +240,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             string result;
 #pragma warning disable CC0022 // Should dispose object
-            var pms = MemoryStreamPool.Instance.GetObject();
+            var pms = _memoryStreamPool.GetObject();
 
             var sw = new StreamWriter(pms.MemoryStream);
             sw.Write(text);
@@ -249,54 +252,241 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var sr = new StreamReader(pms.MemoryStream);
             result = sr.ReadToEnd();
 
-            pms.MemoryStream.Capacity.ShouldBeGreaterThan(MemoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
             pms.MemoryStream.Dispose();
 #pragma warning restore CC0022 // Should dispose object
 
             result.ShouldBe(text + text);
 
-            MemoryStreamPool.Instance.ObjectsInPoolCount.ShouldBe(0);
-            MemoryStreamPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            MemoryStreamPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
-        public void IdPropertyShouldRemainConstantUsageAfterUsage()
+        public void IdPropertyShouldChangeUsageAfterUsage()
         {
             // First usage.
             Guid id;
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
                 id = pms.Id;
                 id.ShouldNotBe(Guid.Empty);
             }
 
-            // Second usage.
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            // Second usage is different, pool uses a queue, not a stack.
+            using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.Id.ShouldBe(id);
+                pms.Id.ShouldNotBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
         {
             var beforeCreation = DateTime.UtcNow;
 
             // First usage.
             DateTime createdAt;
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            using (var pms = _memoryStreamPool.GetObject())
             {
                 createdAt = pms.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
-            // Second usage.
-            using (var pms = MemoryStreamPool.Instance.GetObject())
+            // Second usage is different, pool uses a queue, not a stack.
+            using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBe(createdAt);
+                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
+        }
+
+        [TestCase("a&b")]
+        [TestCase("SNAU ORSO birretta")]
+        [TestCase("PU <3 PI")]
+        public void ShouldNotReturnToPoolWhenInitialBufferIsSmall(string text)
+        {
+            string result;
+            using (var pms = _memoryStreamPool.GetObject(Encoding.Default.GetBytes(text)))
+            {
+#pragma warning disable CC0022 // Should dispose object
+
+                var sr = new StreamReader(pms.MemoryStream);
+                result = sr.ReadToEnd();
+
+#pragma warning restore CC0022 // Should dispose object
+
+                pms.MemoryStream.Capacity.ShouldBeLessThan(_memoryStreamPool.MinimumMemoryStreamCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [TestCase(1000)]
+        [TestCase(2000)]
+        public void ShouldNotReturnToPoolWhenInitialBufferIsLarge(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var pms = _memoryStreamPool.GetObject(Encoding.Default.GetBytes(text)))
+            {
+#pragma warning disable CC0022 // Should dispose object
+
+                var sr = new StreamReader(pms.MemoryStream);
+                result = sr.ReadToEnd();
+
+#pragma warning restore CC0022 // Should dispose object
+
+                pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [TestCase(100)]
+        [TestCase(200)]
+        [TestCase(300)]
+        public void ShouldReturnToPoolWhenInitialBufferIsRight(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var pms = _memoryStreamPool.GetObject(Encoding.Default.GetBytes(text)))
+            {
+#pragma warning disable CC0022 // Should dispose object
+
+                var sr = new StreamReader(pms.MemoryStream);
+                result = sr.ReadToEnd();
+
+#pragma warning restore CC0022 // Should dispose object
+
+                pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MinimumMemoryStreamCapacity);
+                pms.MemoryStream.Capacity.ShouldBeLessThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize + 1);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+        }
+
+        [TestCase(100)]
+        [TestCase(200)]
+        [TestCase(300)]
+        public void ManyBuffersShouldReturnToPoolWhenInitialBufferIsRightButPoolShouldNotOverflow(int count)
+        {
+            for (var i = 0; i < count; ++i)
+            {
+                var text = LipsumGenerator.Generate(300);
+
+                string result;
+                using (var pms = _memoryStreamPool.GetObject(Encoding.Default.GetBytes(text)))
+                {
+#pragma warning disable CC0022 // Should dispose object
+
+                    var sr = new StreamReader(pms.MemoryStream);
+                    result = sr.ReadToEnd();
+
+#pragma warning restore CC0022 // Should dispose object
+
+                    pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MinimumMemoryStreamCapacity);
+                    pms.MemoryStream.Capacity.ShouldBeLessThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
+                }
+
+                result.ShouldBe(text);
+            }
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MaximumPoolSize);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(_memoryStreamPool.MaximumPoolSize - _memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.Diagnostics.PoolOverflowCount.ShouldBe(count - (_memoryStreamPool.MaximumPoolSize - _memoryStreamPool.MinimumPoolSize));
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity / 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(initialCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMinCapacityIsIncreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity * 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCreatedAt = pms.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCreatedAt = pms.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
             }
         }
     }

@@ -32,11 +32,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
     [TestFixture]
     internal sealed class StringBuilderPoolTests
     {
+        private IStringBuilderPool _stringBuilderPool;
+
         [SetUp]
         public void SetUp()
         {
-            StringBuilderPool.Instance.Clear();
-            StringBuilderPool.Instance.Diagnostics = new ObjectPoolDiagnostics
+            _stringBuilderPool = StringBuilderPool.Instance;
+            _stringBuilderPool.Clear();
+            _stringBuilderPool.Diagnostics = new ObjectPoolDiagnostics
             {
                 Enabled = true
             };
@@ -50,43 +53,43 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void ShouldReturnToPoolWhenStringIsSmall(string text1, string text2)
         {
             string result;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.StringBuilder.Append(text1);
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(StringBuilderPool.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(_stringBuilderPool.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
 
-            StringBuilderPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            StringBuilderPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
-            StringBuilderPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [Test]
         public void ShouldNotReturnToPoolWhenStringIsLarge()
         {
-            var text1 = LipsumGenerator.Generate(10);
-            var text2 = LipsumGenerator.Generate(10);
+            var text1 = LipsumGenerator.Generate(500);
+            var text2 = LipsumGenerator.Generate(500);
 
             string result;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.StringBuilder.Append(text1);
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeGreaterThan(StringBuilderPool.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeGreaterThan(_stringBuilderPool.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
 
-            StringBuilderPool.Instance.ObjectsInPoolCount.ShouldBe(0);
-            StringBuilderPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            StringBuilderPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
@@ -94,38 +97,160 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         {
             // First usage.
             Guid id;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 id = psb.Id;
                 id.ShouldNotBe(Guid.Empty);
             }
 
-            // Second usage.
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            // Second usage is different, pool uses a queue, not a stack.
+            using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.Id.ShouldBe(id);
+                psb.Id.ShouldNotBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
         {
             var beforeCreation = DateTime.UtcNow;
 
             // First usage.
             DateTime createdAt;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 createdAt = psb.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
-            // Second usage.
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            // Second usage is different, pool uses a queue, not a stack.
+            using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBe(createdAt);
+                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+            }
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        [TestCase(8)]
+        [TestCase(16)]
+        public void ShouldReturnToPoolEvenWhenCustomInitialStringIsSmall(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var psb = _stringBuilderPool.GetObject(text))
+            {
+                result = psb.StringBuilder.ToString();
+
+                psb.StringBuilder.Capacity.ShouldBeLessThan(_stringBuilderPool.MaximumStringBuilderCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+        }
+
+        [TestCase(1000)]
+        [TestCase(2000)]
+        public void ShouldNotReturnToPoolWhenCustomInitialStringIsLarge(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var psb = _stringBuilderPool.GetObject(text))
+            {
+                result = psb.StringBuilder.ToString();
+
+                psb.StringBuilder.Capacity.ShouldBeGreaterThan(_stringBuilderPool.MaximumStringBuilderCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
+        {
+            int initialCapacity;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCapacity = psb.StringBuilder.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+
+            _stringBuilderPool.MinimumStringBuilderCapacity = initialCapacity / 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.StringBuilder.Capacity.ShouldBe(initialCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMinCapacityIsIncreased()
+        {
+            int initialCapacity;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCapacity = psb.StringBuilder.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+
+            _stringBuilderPool.MinimumStringBuilderCapacity = initialCapacity * 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.StringBuilder.Capacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCreatedAt = psb.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _stringBuilderPool.MaximumStringBuilderCapacity *= 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCreatedAt = psb.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _stringBuilderPool.MaximumStringBuilderCapacity /= 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
             }
         }
     }

@@ -7,7 +7,7 @@
     "Stamp.Fody": "1.2.5",
     "System.Collections.Concurrent": "4.0.12",
     "System.Collections.NonGeneric": "4.0.1",
-    "Thrower": "3.0.1"
+    "Thrower": "3.0.4"
   },
   "frameworks": {
     "netstandard1.3": {}

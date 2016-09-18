@@ -35,7 +35,16 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   The string builder.
         /// </summary>
-        public StringBuilder StringBuilder { get; } = new StringBuilder(StringBuilderPool.MinimumStringBuilderCapacity);
+        public StringBuilder StringBuilder { get; }
+
+        /// <summary>
+        ///   Builds a pooled string builder.
+        /// </summary>
+        /// <param name="capacity">The capacity of the string builder.</param>
+        public PooledStringBuilder(int capacity)
+        {
+            StringBuilder = new StringBuilder(capacity);
+        }
 
         /// <summary>
         ///   Unique identifier.
@@ -58,10 +67,12 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnResetState()
         {
-            if (StringBuilder.Capacity > StringBuilderPool.MaximumStringBuilderCapacity)
+            var stringBuilderPool = Handle as IStringBuilderPool;
+            if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
             {
-                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
             }
+
             ClearStringBuilder();
             base.OnResetState();
         }

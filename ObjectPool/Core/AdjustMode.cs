@@ -29,7 +29,7 @@ namespace CodeProject.ObjectPool.Core
     ///   Determines which bounds should be checked when adjusting pool size.
     /// </summary>
     [Flags]
-    internal enum AdjustMode
+    public enum AdjustMode
     {
         /// <summary>
         ///   Ensure that the lower bound is OK.

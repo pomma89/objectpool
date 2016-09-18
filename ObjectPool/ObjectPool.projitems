@@ -20,9 +20,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ObjectPoolDiagnostics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParameterizedObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PooledObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\IStringBuilderPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\IMemoryStreamPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\PooledMemoryStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\PooledStringBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\MemoryStreamPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\SpecializedPoolConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\StringBuilderPool.cs" />
   </ItemGroup>
   <ItemGroup>
