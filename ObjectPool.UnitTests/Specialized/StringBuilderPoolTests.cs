@@ -70,7 +70,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void ShouldNotReturnToPoolWhenStringIsLarge()
         {
             var text1 = LipsumGenerator.Generate(500);
-            var text2 = LipsumGenerator.Generate(50);
+            var text2 = LipsumGenerator.Generate(500);
 
             string result;
             using (var psb = StringBuilderPool.Instance.GetObject())
