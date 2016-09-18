@@ -413,5 +413,81 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(_memoryStreamPool.MaximumPoolSize - _memoryStreamPool.MinimumPoolSize);
             _memoryStreamPool.Diagnostics.PoolOverflowCount.ShouldBe(count - (_memoryStreamPool.MaximumPoolSize - _memoryStreamPool.MinimumPoolSize));
         }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity / 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(initialCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMinCapacityIsIncreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity * 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCreatedAt = pms.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCreatedAt = pms.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+            }
+        }
     }
 }

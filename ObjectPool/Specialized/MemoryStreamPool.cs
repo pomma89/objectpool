@@ -60,11 +60,12 @@ namespace CodeProject.ObjectPool.Specialized
             get { return _minimumItemCapacity; }
             set
             {
-                if (_minimumItemCapacity < value)
+                var oldValue = _minimumItemCapacity;
+                _minimumItemCapacity = value;
+                if (oldValue < value)
                 {
                     Clear();
                 }
-                _minimumItemCapacity = value;
             }
         }
 
@@ -77,11 +78,12 @@ namespace CodeProject.ObjectPool.Specialized
             get { return _maximumItemCapacity; }
             set
             {
-                if (_maximumItemCapacity > value)
+                var oldValue = _maximumItemCapacity;
+                _maximumItemCapacity = value;
+                if (oldValue > value)
                 {
                     Clear();
                 }
-                _maximumItemCapacity = value;
             }
         }
 

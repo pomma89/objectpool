@@ -177,5 +177,81 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
+        {
+            int initialCapacity;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCapacity = psb.StringBuilder.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+
+            _stringBuilderPool.MinimumStringBuilderCapacity = initialCapacity / 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.StringBuilder.Capacity.ShouldBe(initialCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMinCapacityIsIncreased()
+        {
+            int initialCapacity;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCapacity = psb.StringBuilder.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+
+            _stringBuilderPool.MinimumStringBuilderCapacity = initialCapacity * 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.StringBuilder.Capacity.ShouldBe(_stringBuilderPool.MinimumStringBuilderCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCreatedAt = psb.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _stringBuilderPool.MaximumStringBuilderCapacity *= 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
+        {
+            var beforeCreation = DateTime.UtcNow;
+
+            DateTime initialCreatedAt;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                initialCreatedAt = psb.CreatedAt;
+            }
+
+            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+
+            _stringBuilderPool.MaximumStringBuilderCapacity /= 2;
+            using (var psb = _stringBuilderPool.GetObject())
+            {
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+            }
+        }
     }
 }
