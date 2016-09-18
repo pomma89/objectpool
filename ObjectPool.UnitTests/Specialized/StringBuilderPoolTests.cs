@@ -156,5 +156,26 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
+
+        [TestCase(1000)]
+        [TestCase(2000)]
+        public void ShouldNotReturnToPoolWhenCustomInitialStringIsLarge(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var psb = _stringBuilderPool.GetObject(text))
+            {
+                result = psb.StringBuilder.ToString();
+
+                psb.StringBuilder.Capacity.ShouldBeGreaterThan(_stringBuilderPool.MaximumStringBuilderCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
     }
 }
