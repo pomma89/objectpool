@@ -33,6 +33,9 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
+        private int _minimumItemCapacity = SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity;
+        private int _maximumItemCapacity = SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity;
+
         /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
@@ -52,13 +55,35 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
         ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity"/>.
         /// </summary>
-        public int MinimumStringBuilderCapacity { get; set; } = SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity;
+        public int MinimumStringBuilderCapacity
+        {
+            get { return _minimumItemCapacity; }
+            set
+            {
+                if (_minimumItemCapacity < value)
+                {
+                    Clear();
+                }
+                _minimumItemCapacity = value;
+            }
+        }
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
         ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity"/>.
         /// </summary>
-        public int MaximumStringBuilderCapacity { get; set; } = SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity;
+        public int MaximumStringBuilderCapacity
+        {
+            get { return _maximumItemCapacity; }
+            set
+            {
+                if (_maximumItemCapacity > value)
+                {
+                    Clear();
+                }
+                _maximumItemCapacity = value;
+            }
+        }
 
 #pragma warning disable CC0022 // Should dispose object
 

@@ -8,6 +8,7 @@
 * BREAKING CHANGE: Moved static properties which controlled specialized pool sizes to the new interfaces.
 * Updated Thrower.
 * ObjectPool did not respect minimum pool size bound. Now it does.
+* When min or max capacity of specialized pools is changed, pool is cleared, if necessary.
 
 ### v2.0.5 (2016-08-23) ###
 

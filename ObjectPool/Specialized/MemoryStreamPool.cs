@@ -33,6 +33,9 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public sealed class MemoryStreamPool : ObjectPool<PooledMemoryStream>, IMemoryStreamPool
     {
+        private int _minimumItemCapacity = SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity;
+        private int _maximumItemCapacity = SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity;
+
         /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
@@ -52,13 +55,35 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Minimum capacity a <see cref="MemoryStream"/> should have when created and this is the
         ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity"/>.
         /// </summary>
-        public int MinimumMemoryStreamCapacity { get; set; } = SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity;
+        public int MinimumMemoryStreamCapacity
+        {
+            get { return _minimumItemCapacity; }
+            set
+            {
+                if (_minimumItemCapacity < value)
+                {
+                    Clear();
+                }
+                _minimumItemCapacity = value;
+            }
+        }
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
         ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity"/>.
         /// </summary>
-        public int MaximumMemoryStreamCapacity { get; set; } = SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity;
+        public int MaximumMemoryStreamCapacity
+        {
+            get { return _maximumItemCapacity; }
+            set
+            {
+                if (_maximumItemCapacity > value)
+                {
+                    Clear();
+                }
+                _maximumItemCapacity = value;
+            }
+        }
 
 #pragma warning disable CC0022 // Should dispose object
 
