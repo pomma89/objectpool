@@ -36,7 +36,7 @@ namespace CodeProject.ObjectPool.Specialized
         ///   The string builder.
         /// </summary>
         public StringBuilder StringBuilder { get; }
-        
+
         /// <summary>
         ///   Builds a pooled string builder.
         /// </summary>

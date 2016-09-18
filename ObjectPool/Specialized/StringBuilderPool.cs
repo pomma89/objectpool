@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
-using System;
 using System.Text;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -34,7 +33,6 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
-
         /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>

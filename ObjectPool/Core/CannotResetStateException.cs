@@ -26,8 +26,8 @@ using System;
 namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
-    ///   This exception can be used to signal that the object whose state is being reset cannot
-    ///   be added back to the pool for some reason.
+    ///   This exception can be used to signal that the object whose state is being reset cannot be
+    ///   added back to the pool for some reason.
     /// </summary>
     public sealed class CannotResetStateException : Exception
     {
