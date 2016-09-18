@@ -30,5 +30,23 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public interface IStringBuilderPool : IObjectPool<PooledStringBuilder>
     {
+        /// <summary>
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="StringBuilderPool.DefaultMinimumStringBuilderCapacity"/>.
+        /// </summary>
+        int MinimumStringBuilderCapacity { get; set; }
+
+        /// <summary>
+        ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
+        ///   to pool. Defaults to <see cref="StringBuilderPool.DefaultMaximumStringBuilderCapacity"/>.
+        /// </summary>
+        int MaximumStringBuilderCapacity { get; set; }
+
+        /// <summary>
+        ///   Returns a pooled string builder using given string as initial value.
+        /// </summary>
+        /// <param name="value">The string used to initialize the value of the instance.</param>
+        /// <returns>A pooled string builder.</returns>
+        PooledStringBuilder GetObject(string value);
     }
 }

@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Text;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -33,19 +34,54 @@ namespace CodeProject.ObjectPool.Specialized
     public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
         /// <summary>
+        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 4096 characters.
+        /// </summary>
+        public static int DefaultMinimumStringBuilderCapacity { get; set; } = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 524288 characters.
+        /// </summary>
+        public static int DefaultMaximumStringBuilderCapacity { get; set; } = 512 * 1024;
+
+        /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
         public static IStringBuilderPool Instance { get; } = new StringBuilderPool();
 
         /// <summary>
-        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created. Defaults to 4 * 1024 characters.
+        ///   Builds the specialized pool.
         /// </summary>
-        public static int MinimumStringBuilderCapacity { get; set; } = 4 * 1024;
+        public StringBuilderPool()
+        {
+            FactoryMethod = () => new PooledStringBuilder(MinimumStringBuilderCapacity);
+        }
+
+        /// <summary>
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="DefaultMinimumStringBuilderCapacity"/>.
+        /// </summary>
+        public int MinimumStringBuilderCapacity { get; set; } = DefaultMinimumStringBuilderCapacity;
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
-        ///   to pool. Defaults to 512 * 1024 characters.
+        ///   to pool. Defaults to <see cref="DefaultMaximumStringBuilderCapacity"/>.
         /// </summary>
-        public static int MaximumStringBuilderCapacity { get; set; } = 512 * 1024;
+        public int MaximumStringBuilderCapacity { get; set; } = DefaultMaximumStringBuilderCapacity;
+
+#pragma warning disable CC0022 // Should dispose object
+
+        /// <summary>
+        ///   Returns a pooled string builder using given string as initial value.
+        /// </summary>
+        /// <param name="value">The string used to initialize the value of the instance.</param>
+        /// <returns>A pooled string builder.</returns>
+        public PooledStringBuilder GetObject(string value) => new PooledStringBuilder(value)
+        {
+            Handle = this
+        };
+
+#pragma warning restore CC0022 // Should dispose object
     }
 }

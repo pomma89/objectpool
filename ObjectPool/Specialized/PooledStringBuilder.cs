@@ -35,7 +35,34 @@ namespace CodeProject.ObjectPool.Specialized
         /// <summary>
         ///   The string builder.
         /// </summary>
-        public StringBuilder StringBuilder { get; } = new StringBuilder(StringBuilderPool.MinimumStringBuilderCapacity);
+        public StringBuilder StringBuilder { get; }
+        
+        /// <summary>
+        ///   Builds a pooled string builder.
+        /// </summary>
+        /// <param name="capacity">The capacity of the string builder.</param>
+        public PooledStringBuilder(int capacity)
+            : this(new StringBuilder(capacity))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled string builder.
+        /// </summary>
+        /// <param name="value">The string used to initialize the value of the instance.</param>
+        public PooledStringBuilder(string value)
+            : this(new StringBuilder(value))
+        {
+        }
+
+        /// <summary>
+        ///   Builds a pooled string builder using given builder.
+        /// </summary>
+        /// <param name="stringBuilder">The backing builder.</param>
+        private PooledStringBuilder(StringBuilder stringBuilder)
+        {
+            StringBuilder = stringBuilder;
+        }
 
         /// <summary>
         ///   Unique identifier.
@@ -58,10 +85,16 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnResetState()
         {
-            if (StringBuilder.Capacity > StringBuilderPool.MaximumStringBuilderCapacity)
+            var stringBuilderPool = Handle as IStringBuilderPool;
+            if (StringBuilder.Capacity < stringBuilderPool.MinimumStringBuilderCapacity)
             {
-                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {StringBuilderPool.MaximumStringBuilderCapacity}");
+                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while minimum allowed capacity is {stringBuilderPool.MinimumStringBuilderCapacity}");
             }
+            if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
+            {
+                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
+            }
+
             ClearStringBuilder();
             base.OnResetState();
         }

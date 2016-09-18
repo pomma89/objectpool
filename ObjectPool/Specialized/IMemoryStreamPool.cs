@@ -31,13 +31,14 @@ namespace CodeProject.ObjectPool.Specialized
     public interface IMemoryStreamPool : IObjectPool<PooledMemoryStream>
     {
         /// <summary>
-        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to <see cref="MemoryStreamPool.DefaultMinimumStreamCapacity"/>.
+        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created and this is the
+        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="MemoryStreamPool.DefaultMinimumMemoryStreamCapacity"/>.
         /// </summary>
         int MinimumMemoryStreamCapacity { get; set; }
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to <see cref="MemoryStreamPool.DefaultMaximumStreamCapacity"/>.
+        ///   to pool. Defaults to <see cref="MemoryStreamPool.DefaultMaximumMemoryStreamCapacity"/>.
         /// </summary>
         int MaximumMemoryStreamCapacity { get; set; }
 

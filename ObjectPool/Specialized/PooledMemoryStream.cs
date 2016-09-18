@@ -108,7 +108,6 @@ namespace CodeProject.ObjectPool.Specialized
 
             _trackedMemoryStream.Position = 0L;
             _trackedMemoryStream.SetLength(0L);
-
             base.OnResetState();
         }
 

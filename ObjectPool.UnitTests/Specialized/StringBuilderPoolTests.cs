@@ -56,7 +56,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(StringBuilderPool.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(StringBuilderPool.Instance.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
@@ -79,7 +79,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeGreaterThan(StringBuilderPool.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeGreaterThan(StringBuilderPool.Instance.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
