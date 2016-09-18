@@ -252,6 +252,9 @@ namespace CodeProject.ObjectPool
                     Diagnostics.IncrementResetStateFailedCount();
                 }
                 DestroyPooledObject(returnedObject);
+
+                // Ensure that the bounds are correct before returning.
+                AdjustPoolSizeToBounds(AdjustMode.Minimum);
                 return;
             }
 

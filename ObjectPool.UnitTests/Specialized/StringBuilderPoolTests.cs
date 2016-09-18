@@ -103,15 +103,15 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 id.ShouldNotBe(Guid.Empty);
             }
 
-            // Second usage.
+            // Second usage is different, pool uses a queue, not a stack.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.Id.ShouldBe(id);
+                psb.Id.ShouldNotBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
         {
             var beforeCreation = DateTime.UtcNow;
 
@@ -120,14 +120,15 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             using (var psb = _stringBuilderPool.GetObject())
             {
                 createdAt = psb.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
-            // Second usage.
+            // Second usage is different, pool uses a queue, not a stack.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBe(createdAt);
+                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }

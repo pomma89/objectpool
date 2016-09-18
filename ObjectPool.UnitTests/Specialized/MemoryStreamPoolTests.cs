@@ -264,7 +264,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         }
 
         [Test]
-        public void IdPropertyShouldRemainConstantUsageAfterUsage()
+        public void IdPropertyShouldChangeUsageAfterUsage()
         {
             // First usage.
             Guid id;
@@ -274,15 +274,15 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 id.ShouldNotBe(Guid.Empty);
             }
 
-            // Second usage.
+            // Second usage is different, pool uses a queue, not a stack.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.Id.ShouldBe(id);
+                pms.Id.ShouldNotBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldRemainConstantUsageAfterUsage()
+        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
         {
             var beforeCreation = DateTime.UtcNow;
 
@@ -291,14 +291,15 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             using (var pms = _memoryStreamPool.GetObject())
             {
                 createdAt = pms.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
-            // Second usage.
+            // Second usage is different, pool uses a queue, not a stack.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBe(createdAt);
+                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }
