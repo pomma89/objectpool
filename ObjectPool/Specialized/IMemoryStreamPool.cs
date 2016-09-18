@@ -31,13 +31,13 @@ namespace CodeProject.ObjectPool.Specialized
     public interface IMemoryStreamPool : IObjectPool<PooledMemoryStream>
     {
         /// <summary>
-        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to 4KB.
+        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to <see cref="MemoryStreamPool.DefaultMinimumStreamCapacity"/>.
         /// </summary>
         int MinimumMemoryStreamCapacity { get; set; }
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to 512KB.
+        ///   to pool. Defaults to <see cref="MemoryStreamPool.DefaultMaximumStreamCapacity"/>.
         /// </summary>
         int MaximumMemoryStreamCapacity { get; set; }
 
@@ -47,6 +47,10 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <param name="buffer">The byte array that will be used as stream buffer.</param>
         /// <returns>A pooled memory stream.</returns>
+        /// <remarks>
+        ///   When you pass a buffer to this method, you lose the ownership of the buffer, since it
+        ///   might be claimed by the pool itself.
+        /// </remarks>
         PooledMemoryStream GetObject(byte[] buffer);
     }
 }

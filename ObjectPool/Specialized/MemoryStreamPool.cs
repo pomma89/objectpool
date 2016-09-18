@@ -33,27 +33,39 @@ namespace CodeProject.ObjectPool.Specialized
     public sealed class MemoryStreamPool : ObjectPool<PooledMemoryStream>, IMemoryStreamPool
     {
         /// <summary>
+        ///   Default minimum stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 4KB.
+        /// </summary>
+        public static int DefaultMinimumStreamCapacity { get; set; } = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 512KB.
+        /// </summary>
+        public static int DefaultMaximumStreamCapacity { get; set; } = 512 * 1024;
+
+        /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
         public static IMemoryStreamPool Instance { get; } = new MemoryStreamPool();
 
         /// <summary>
-        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to 4KB.
+        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created. Defaults to <see cref="DefaultMinimumStreamCapacity"/>.
         /// </summary>
-        public int MinimumMemoryStreamCapacity { get; set; } = 4 * 1024;
+        public int MinimumMemoryStreamCapacity { get; set; } = DefaultMinimumStreamCapacity;
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to 512KB.
+        ///   to pool. Defaults to <see cref="DefaultMaximumStreamCapacity"/>.
         /// </summary>
-        public int MaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
+        public int MaximumMemoryStreamCapacity { get; set; } = DefaultMaximumStreamCapacity;
 
         /// <summary>
         ///   Builds the specialized pool.
         /// </summary>
         public MemoryStreamPool()
         {
-            FactoryMethod = () => new PooledMemoryStream(this);
+            FactoryMethod = () => new PooledMemoryStream(MinimumMemoryStreamCapacity);
         }
 
 #pragma warning disable CC0022 // Should dispose object
@@ -64,7 +76,11 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <param name="buffer">The byte array that will be used as stream buffer.</param>
         /// <returns>A pooled memory stream.</returns>
-        public PooledMemoryStream GetObject(byte[] buffer) => new PooledMemoryStream(this, buffer)
+        /// <remarks>
+        ///   When you pass a buffer to this method, you lose the ownership of the buffer, since it
+        ///   might be claimed by the pool itself.
+        /// </remarks>
+        public PooledMemoryStream GetObject(byte[] buffer) => new PooledMemoryStream(buffer)
         {
             Handle = this
         };

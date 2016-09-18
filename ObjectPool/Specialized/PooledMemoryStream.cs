@@ -33,42 +33,34 @@ namespace CodeProject.ObjectPool.Specialized
     public class PooledMemoryStream : PooledObject
     {
         /// <summary>
-        ///   The pool to which this object belongs.
-        /// </summary>
-        private readonly IMemoryStreamPool _pool;
-
-        /// <summary>
-        ///   The memory stream.
+        ///   The tracked memory stream.
         /// </summary>
         private readonly TrackedMemoryStream _trackedMemoryStream;
 
         /// <summary>
         ///   Builds a pooled memory stream.
         /// </summary>
-        /// <param name="pool">The pool to which this object belongs.</param>
-        public PooledMemoryStream(IMemoryStreamPool pool)
-            : this(pool, new TrackedMemoryStream(pool.MinimumMemoryStreamCapacity))
+        /// <param name="capacity">The capacity of the backing stream.</param>
+        public PooledMemoryStream(int capacity)
+            : this(new TrackedMemoryStream(capacity))
         {
         }
 
         /// <summary>
         ///   Builds a pooled memory stream using given buffer.
         /// </summary>
-        /// <param name="pool">The pool to which this object belongs.</param>
         /// <param name="buffer">The buffer.</param>
-        public PooledMemoryStream(IMemoryStreamPool pool, byte[] buffer)
-            : this(pool, new TrackedMemoryStream(buffer))
+        public PooledMemoryStream(byte[] buffer)
+            : this(new TrackedMemoryStream(buffer))
         {
         }
 
         /// <summary>
         ///   Builds a pooled memory stream using given stream.
         /// </summary>
-        /// <param name="pool">The pool to which this object belongs.</param>
         /// <param name="trackedMemoryStream">The backing stream.</param>
-        private PooledMemoryStream(IMemoryStreamPool pool, TrackedMemoryStream trackedMemoryStream)
+        private PooledMemoryStream(TrackedMemoryStream trackedMemoryStream)
         {
-            _pool = pool;
             _trackedMemoryStream = trackedMemoryStream;
             _trackedMemoryStream.Parent = this;
         }
@@ -103,16 +95,20 @@ namespace CodeProject.ObjectPool.Specialized
             {
                 throw new CannotResetStateException($"Memory stream has already been disposed");
             }
-            if (_trackedMemoryStream.Capacity < _pool.MinimumMemoryStreamCapacity)
+
+            var memoryStreamPool = Handle as IMemoryStreamPool;
+            if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {_pool.MinimumMemoryStreamCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
             }
-            if (_trackedMemoryStream.Capacity > _pool.MaximumMemoryStreamCapacity)
+            if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
             {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {_pool.MaximumMemoryStreamCapacity}");
+                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
             }
+
             _trackedMemoryStream.Position = 0L;
             _trackedMemoryStream.SetLength(0L);
+
             base.OnResetState();
         }
 
