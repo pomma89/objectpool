@@ -407,7 +407,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 }
 
                 result.ShouldBe(text);
-            }            
+            }
 
             _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MaximumPoolSize);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(_memoryStreamPool.MaximumPoolSize - _memoryStreamPool.MinimumPoolSize);
