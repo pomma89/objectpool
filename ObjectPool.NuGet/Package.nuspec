@@ -18,7 +18,7 @@ Of course, all modified source code is freely available at the project URL of th
 Many thanks to Ofir Makmal for his great work.
     </description>
     <releaseNotes>
-* BREAKING CHANGE: Removed a feature added by mistake in v2.1.1.
+* BREAKING CHANGE: Removed a feature added by mistake in v2.1.0.
     </releaseNotes>
     <summary>
 A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
