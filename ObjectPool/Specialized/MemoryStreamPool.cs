@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Core;
 using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -33,18 +34,6 @@ namespace CodeProject.ObjectPool.Specialized
     public sealed class MemoryStreamPool : ObjectPool<PooledMemoryStream>, IMemoryStreamPool
     {
         /// <summary>
-        ///   Default minimum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
-        ///   instances, defaults to 4KB.
-        /// </summary>
-        public static int DefaultMinimumMemoryStreamCapacity { get; set; } = 4 * 1024;
-
-        /// <summary>
-        ///   Default maximum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
-        ///   instances, defaults to 512KB.
-        /// </summary>
-        public static int DefaultMaximumMemoryStreamCapacity { get; set; } = 512 * 1024;
-
-        /// <summary>
         ///   Thread-safe pool instance.
         /// </summary>
         public static IMemoryStreamPool Instance { get; } = new MemoryStreamPool();
@@ -53,21 +42,23 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Builds the specialized pool.
         /// </summary>
         public MemoryStreamPool()
+            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, false)
         {
             FactoryMethod = () => new PooledMemoryStream(MinimumMemoryStreamCapacity);
+            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
         }
 
         /// <summary>
         ///   Minimum capacity a <see cref="MemoryStream"/> should have when created and this is the
-        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="DefaultMinimumMemoryStreamCapacity"/>.
+        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity"/>.
         /// </summary>
-        public int MinimumMemoryStreamCapacity { get; set; } = DefaultMinimumMemoryStreamCapacity;
+        public int MinimumMemoryStreamCapacity { get; set; } = SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity;
 
         /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to <see cref="DefaultMaximumMemoryStreamCapacity"/>.
+        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity"/>.
         /// </summary>
-        public int MaximumMemoryStreamCapacity { get; set; } = DefaultMaximumMemoryStreamCapacity;
+        public int MaximumMemoryStreamCapacity { get; set; } = SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity;
 
 #pragma warning disable CC0022 // Should dispose object
 

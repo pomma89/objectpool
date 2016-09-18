@@ -10,7 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
-using System;
 
 namespace CodeProject.ObjectPool
 {
@@ -48,6 +47,5 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Validation
-
     }
 }

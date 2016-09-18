@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\PooledMemoryStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\PooledStringBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\MemoryStreamPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Specialized\SpecializedPoolConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Specialized\StringBuilderPool.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿// File name: IMemoryStreamPool.cs
+﻿// File name: SpecializedPoolConstants.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,37 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.IO;
-
 namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   An object pool specialized in <see cref="MemoryStream"/> management.
+    ///   Constants for specialized Object Pools.
     /// </summary>
-    public interface IMemoryStreamPool : IObjectPool<PooledMemoryStream>
+    public static class SpecializedPoolConstants
     {
         /// <summary>
-        ///   Minimum capacity a <see cref="MemoryStream"/> should have when created and this is the
-        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity"/>.
+        ///   Default minimum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 4KB.
         /// </summary>
-        int MinimumMemoryStreamCapacity { get; set; }
+        public const int DefaultMinimumMemoryStreamCapacity = 4 * 1024;
 
         /// <summary>
-        ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity"/>.
+        ///   Default maximum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 512KB.
         /// </summary>
-        int MaximumMemoryStreamCapacity { get; set; }
+        public const int DefaultMaximumMemoryStreamCapacity = 512 * 1024;
 
         /// <summary>
-        ///   Returns a pooled memory stream using given byte array as stream buffer. Once the object
-        ///   is returned to the pool, the pool itself might take ownership of given buffer.
+        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 4096 characters.
         /// </summary>
-        /// <param name="buffer">The byte array that will be used as stream buffer.</param>
-        /// <returns>A pooled memory stream.</returns>
-        /// <remarks>
-        ///   When you pass a buffer to this method, you lose the ownership of the buffer, since it
-        ///   might be claimed by the pool itself.
-        /// </remarks>
-        PooledMemoryStream GetObject(byte[] buffer);
+        public const int DefaultMinimumStringBuilderCapacity = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 524288 characters.
+        /// </summary>
+        public const int DefaultMaximumStringBuilderCapacity = 512 * 1024;
     }
 }

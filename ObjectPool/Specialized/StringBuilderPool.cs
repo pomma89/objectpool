@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Core;
 using System;
 using System.Text;
 
@@ -33,17 +34,6 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
-        /// <summary>
-        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
-        ///   instances, defaults to 4096 characters.
-        /// </summary>
-        public static int DefaultMinimumStringBuilderCapacity { get; set; } = 4 * 1024;
-
-        /// <summary>
-        ///   Default maximum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
-        ///   instances, defaults to 524288 characters.
-        /// </summary>
-        public static int DefaultMaximumStringBuilderCapacity { get; set; } = 512 * 1024;
 
         /// <summary>
         ///   Thread-safe pool instance.
@@ -54,21 +44,23 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Builds the specialized pool.
         /// </summary>
         public StringBuilderPool()
+            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, false)
         {
             FactoryMethod = () => new PooledStringBuilder(MinimumStringBuilderCapacity);
+            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
         }
 
         /// <summary>
         ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
-        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="DefaultMinimumStringBuilderCapacity"/>.
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity"/>.
         /// </summary>
-        public int MinimumStringBuilderCapacity { get; set; } = DefaultMinimumStringBuilderCapacity;
+        public int MinimumStringBuilderCapacity { get; set; } = SpecializedPoolConstants.DefaultMinimumStringBuilderCapacity;
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
-        ///   to pool. Defaults to <see cref="DefaultMaximumStringBuilderCapacity"/>.
+        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity"/>.
         /// </summary>
-        public int MaximumStringBuilderCapacity { get; set; } = DefaultMaximumStringBuilderCapacity;
+        public int MaximumStringBuilderCapacity { get; set; } = SpecializedPoolConstants.DefaultMaximumStringBuilderCapacity;
 
 #pragma warning disable CC0022 // Should dispose object
 

@@ -100,7 +100,7 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, true)
         {
         }
 
@@ -115,7 +115,7 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
         /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize)
-            : this(minimumPoolSize, maximumPoolSize, null)
+            : this(minimumPoolSize, maximumPoolSize, null, true)
         {
         }
 
@@ -124,7 +124,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod, true)
         {
         }
 
@@ -140,20 +140,43 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
         /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
+            : this(minimumPoolSize, maximumPoolSize, factoryMethod, true)
         {
-            // Validating pool limits, exception is thrown if invalid
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method and minimum and maximum size.
+        /// </summary>
+        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
+        /// <param name="maximumPoolSize">The maximum pool size limit</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="adjustPoolSizeToBounds">
+        ///   True if this constructor should perform initial pool adjustment, false if it will be
+        ///   performed by another constructor.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="minimumPoolSize"/> is less than zero,
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
+        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
+        /// </exception>
+        protected ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod, bool adjustPoolSizeToBounds)
+        {
+            // Validating pool limits, exception is thrown if invalid.
             ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
 
-            // Assigning properties
+            // Assigning properties.
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
             _minimumPoolSize = minimumPoolSize;
 
-            // Creating a new instance for the Diagnostics class
+            // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
 
-            // Initilizing objects in pool
-            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
+            // Initilizing objects in pool.
+            if (adjustPoolSizeToBounds)
+            {
+                AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
+            }
         }
 
         #endregion C'tor and Initialization code
@@ -371,7 +394,7 @@ namespace CodeProject.ObjectPool
 
         #region Private Methods
 
-        internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
+        protected internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
             // Adjusting lower bound.
             if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
