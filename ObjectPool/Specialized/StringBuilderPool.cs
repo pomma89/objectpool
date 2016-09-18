@@ -67,10 +67,12 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <param name="value">The string used to initialize the value of the instance.</param>
         /// <returns>A pooled string builder.</returns>
-        public PooledStringBuilder GetObject(string value) => new PooledStringBuilder(value)
+        public PooledStringBuilder GetObject(string value)
         {
-            Handle = this
-        };
+            var psb = GetObject();
+            psb.StringBuilder.Append(value);
+            return psb;
+        }
 
 #pragma warning restore CC0022 // Should dispose object
     }

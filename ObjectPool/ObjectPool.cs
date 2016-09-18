@@ -203,6 +203,9 @@ namespace CodeProject.ObjectPool
         {
             // Destroy all objects.
             ClearQueue();
+
+            // Restore pool bounds.
+            AdjustPoolSizeToBounds(AdjustMode.Minimum);
         }
 
         /// <summary>
@@ -394,6 +397,11 @@ namespace CodeProject.ObjectPool
 
         #region Private Methods
 
+        /// <summary>
+        ///   Ensures that the pool respects the bounds described by <see cref="MinimumPoolSize"/>
+        ///   and <see cref="MaximumPoolSize"/>.
+        /// </summary>
+        /// <param name="adjustMode"></param>
         protected internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
             // Adjusting lower bound.

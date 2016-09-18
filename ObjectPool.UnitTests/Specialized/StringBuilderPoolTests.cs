@@ -32,11 +32,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
     [TestFixture]
     internal sealed class StringBuilderPoolTests
     {
+        private IStringBuilderPool _stringBuilderPool;
+
         [SetUp]
         public void SetUp()
         {
-            StringBuilderPool.Instance.Clear();
-            StringBuilderPool.Instance.Diagnostics = new ObjectPoolDiagnostics
+            _stringBuilderPool = StringBuilderPool.Instance;
+            _stringBuilderPool.Clear();
+            _stringBuilderPool.Diagnostics = new ObjectPoolDiagnostics
             {
                 Enabled = true
             };
@@ -50,20 +53,20 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void ShouldReturnToPoolWhenStringIsSmall(string text1, string text2)
         {
             string result;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.StringBuilder.Append(text1);
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(StringBuilderPool.Instance.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeLessThanOrEqualTo(_stringBuilderPool.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
 
-            StringBuilderPool.Instance.ObjectsInPoolCount.ShouldBe(1);
-            StringBuilderPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
-            StringBuilderPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
 
         [Test]
@@ -73,20 +76,20 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             var text2 = LipsumGenerator.Generate(500);
 
             string result;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.StringBuilder.Append(text1);
                 psb.StringBuilder.Append(text2);
                 result = psb.StringBuilder.ToString();
 
-                psb.StringBuilder.Capacity.ShouldBeGreaterThan(StringBuilderPool.Instance.MaximumStringBuilderCapacity);
+                psb.StringBuilder.Capacity.ShouldBeGreaterThan(_stringBuilderPool.MaximumStringBuilderCapacity);
             }
 
             result.ShouldBe(text1 + text2);
 
-            StringBuilderPool.Instance.ObjectsInPoolCount.ShouldBe(0);
-            StringBuilderPool.Instance.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            StringBuilderPool.Instance.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
@@ -94,14 +97,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         {
             // First usage.
             Guid id;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 id = psb.Id;
                 id.ShouldNotBe(Guid.Empty);
             }
 
             // Second usage.
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.Id.ShouldBe(id);
             }
@@ -114,7 +117,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             // First usage.
             DateTime createdAt;
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 createdAt = psb.CreatedAt;
                 createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
@@ -122,11 +125,35 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             }
 
             // Second usage.
-            using (var psb = StringBuilderPool.Instance.GetObject())
+            using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.CreatedAt.ShouldBe(createdAt);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        [TestCase(8)]
+        [TestCase(16)]
+        public void ShouldReturnToPoolEvenWhenCustomInitialStringIsSmall(int count)
+        {
+            var text = LipsumGenerator.Generate(count);
+
+            string result;
+            using (var psb = _stringBuilderPool.GetObject(text))
+            {
+                result = psb.StringBuilder.ToString();
+
+                psb.StringBuilder.Capacity.ShouldBeLessThan(_stringBuilderPool.MaximumStringBuilderCapacity);
+            }
+
+            result.ShouldBe(text);
+
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
+            _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
     }
 }
