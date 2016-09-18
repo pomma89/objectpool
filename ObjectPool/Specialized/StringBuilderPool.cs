@@ -87,8 +87,6 @@ namespace CodeProject.ObjectPool.Specialized
             }
         }
 
-#pragma warning disable CC0022 // Should dispose object
-
         /// <summary>
         ///   Returns a pooled string builder using given string as initial value.
         /// </summary>
@@ -100,7 +98,5 @@ namespace CodeProject.ObjectPool.Specialized
             psb.StringBuilder.Append(value);
             return psb;
         }
-
-#pragma warning restore CC0022 // Should dispose object
     }
 }

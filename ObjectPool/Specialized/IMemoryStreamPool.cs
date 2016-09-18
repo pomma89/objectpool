@@ -41,17 +41,5 @@ namespace CodeProject.ObjectPool.Specialized
         ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity"/>.
         /// </summary>
         int MaximumMemoryStreamCapacity { get; set; }
-
-        /// <summary>
-        ///   Returns a pooled memory stream using given byte array as stream buffer. Once the object
-        ///   is returned to the pool, the pool itself might take ownership of given buffer.
-        /// </summary>
-        /// <param name="buffer">The byte array that will be used as stream buffer.</param>
-        /// <returns>A pooled memory stream.</returns>
-        /// <remarks>
-        ///   When you pass a buffer to this method, you lose the ownership of the buffer, since it
-        ///   might be claimed by the pool itself.
-        /// </remarks>
-        PooledMemoryStream GetObject(byte[] buffer);
     }
 }
