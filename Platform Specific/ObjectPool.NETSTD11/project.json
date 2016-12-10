@@ -3,9 +3,9 @@
   "dependencies": {
     "Fody": "1.30.0-beta01",
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "Stamp.Fody": "1.2.5",
-    "System.Collections.Concurrent": "4.0.12",
+    "System.Collections.Concurrent": "4.3.0",
     "Thrower": "3.0.4"
   },
   "frameworks": {

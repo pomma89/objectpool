@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.1.2 (2016-12-??) ###
+
+* Updated all dependencies.
+
 ### v2.1.1 (2016-09-18) ###
 
 * BREAKING CHANGE: Removed a feature added by mistake in v2.1.0.
