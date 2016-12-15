@@ -90,7 +90,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => Math.Min(_poolSize, MaximumPoolSize); // We do this because the queue might be slightly larger, for performance reasons.
+        public int ObjectsInPoolCount => _poolSize < MaximumPoolSize ? _poolSize : MaximumPoolSize; // We do this because the queue might be slightly larger, for performance reasons.
 
         #endregion Public Properties
 
