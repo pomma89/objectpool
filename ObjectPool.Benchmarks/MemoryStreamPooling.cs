@@ -24,11 +24,11 @@
 using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Diagnostics.Windows;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
 using CodeProject.ObjectPool.Specialized;
-using System.Linq;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
@@ -42,9 +42,8 @@ namespace CodeProject.ObjectPool.Benchmarks
         {
             public Config()
             {
-                Add(Job.Default);
-                Add(GetColumns().ToArray());
-                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default);
+                Add(Job.LegacyJitX86);
+                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
                 Add(new MemoryDiagnoser());
                 Add(EnvironmentAnalyser.Default);
             }

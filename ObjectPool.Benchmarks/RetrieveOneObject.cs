@@ -24,11 +24,11 @@
 using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Diagnostics.Windows;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
 using System;
-using System.Linq;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
@@ -43,9 +43,8 @@ namespace CodeProject.ObjectPool.Benchmarks
         {
             public Config()
             {
-                Add(Job.Default);
-                Add(GetColumns().ToArray());
-                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default);
+                Add(Job.LegacyJitX86);
+                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
                 Add(new MemoryDiagnoser());
                 Add(EnvironmentAnalyser.Default);
             }
@@ -58,7 +57,9 @@ namespace CodeProject.ObjectPool.Benchmarks
             public sealed class Policy : Microsoft.Extensions.ObjectPool.IPooledObjectPolicy<MyResource>
             {
 #pragma warning disable CC0022 // Should dispose object
+
                 public MyResource Create() => new MyResource { Value = DateTime.UtcNow.ToString() };
+
 #pragma warning restore CC0022 // Should dispose object
 
                 public bool Return(MyResource obj) => true;
