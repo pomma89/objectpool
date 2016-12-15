@@ -26,16 +26,9 @@ using BenchmarkDotNet.Running;
 namespace CodeProject.ObjectPool.Benchmarks
 {
     public static class Program
-    {   
+    {
         public static void Main(string[] args)
         {
-            //var p = new RetrieveOneObject();
-            //for (var i = 0; i < 1000000; ++i)
-            //{
-            //    var x = p.SimpleObjectPool();
-            //    PommaLabs.Thrower.Raise.ArgumentException.IfIsNullOrWhiteSpace(x);
-            //}
-
             new BenchmarkSwitcher(new[]
             {
                 typeof(MemoryStreamPooling),
