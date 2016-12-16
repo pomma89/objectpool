@@ -39,7 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.htm" />
-    <None Include="NuGet.exe" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Package.nuspec">
@@ -58,8 +57,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(ProjectDir)
-nuget.exe update -self
-nuget.exe pack Package.nuspec -symbol
+..\.nuget\nuget.exe update -self
+..\.nuget\nuget.exe pack Package.nuspec -symbol
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
