@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.2.1 (2016-09-18) ###
+
+* Updated Thrower to v4.
+* Fixed some mistakes inside nuspec dependencies.
+
 ### v2.1.1 (2016-09-18) ###
 
 * BREAKING CHANGE: Removed a feature added by mistake in v2.1.0.
