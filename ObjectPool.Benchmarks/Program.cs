@@ -21,12 +21,29 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using BenchmarkDotNet.Analysers;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Exporters.Csv;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
     public static class Program
     {
+        public class Config : ManualConfig
+        {
+            public Config()
+            {
+                Add(Job.LegacyJitX86);
+                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
+                Add(new MemoryDiagnoser());
+                Add(EnvironmentAnalyser.Default);
+            }
+        }
+
         public static void Main(string[] args)
         {
             new BenchmarkSwitcher(new[]
