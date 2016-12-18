@@ -202,4 +202,6 @@ Type=MemoryStreamPooling  Mode=Throughput
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
 
+I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
+
 Development of this project is sponsored by [Finsa SpA](https://www.finsa.it), my current employer.
