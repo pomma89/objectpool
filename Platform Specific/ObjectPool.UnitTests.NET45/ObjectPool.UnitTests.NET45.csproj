@@ -64,7 +64,6 @@
     <None Include="..\..\pomma89.snk">
       <Link>pomma89.snk</Link>
     </None>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
-### v2.1.2 (2016-12-??) ###
+### v2.2.1 (2016-12-17) ###
 
-* Updated all dependencies.
+* Updated Thrower to v4.
+* Fixed some mistakes inside nuspec dependencies.
 
 ### v2.1.1 (2016-09-18) ###
 
