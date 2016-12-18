@@ -38,9 +38,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.htm" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Package.nuspec">
       <SubType>Designer</SubType>
     </None>
