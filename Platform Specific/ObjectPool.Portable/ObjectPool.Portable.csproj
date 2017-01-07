@@ -58,7 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.4.0.4\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.4.0.6\lib\portable-net45+win8+wp8+wpa81\PommaLabs.Thrower.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Portable.DataAnnotations, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f21be3d5ccff8cd, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Portable-Strong.DataAnnotations.1.0.1\lib\portable-net40+netcore45+sl5+wp8+wpa81\Portable.DataAnnotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
