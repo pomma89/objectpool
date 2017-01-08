@@ -9,7 +9,7 @@
 #---------------------------------#
 
 # version format
-version: 2.2.1.{build}
+version: 2.2.2.{build}
 
 # branches to build
 branches:
@@ -25,7 +25,7 @@ branches:
 assembly_info:
   patch: true
   file: AssemblyInfo.*
-  assembly_version: "2.2.1.{build}"
+  assembly_version: "2.2.2.{build}"
   assembly_file_version: "{version}"
   assembly_informational_version: "{version}"
 
