@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NETSTD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NETSTD13", "Platform Specific\ObjectPool.UnitTests.NETSTD13\ObjectPool.UnitTests.NETSTD13.csproj", "{B848AA68-76E3-492A-A64C-9968A27A6430}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.Portable", "Platform Specific\ObjectPool.UnitTests.Portable\ObjectPool.UnitTests.Portable.csproj", "{7349EAAE-5682-47EF-8D50-463F905B4901}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ObjectPool\ObjectPool.projitems*{0031c03a-a007-4844-a8e6-ddaaf90dd4fc}*SharedItemsImports = 4
@@ -81,6 +83,7 @@ Global
 		ObjectPool\ObjectPool.projitems*{4044415e-cef6-4a0d-a675-5aede6fdadda}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{5ab13e6f-960e-4688-86ff-5a1a1bd2a935}*SharedItemsImports = 13
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{64e981e2-a63d-479e-a59e-ec4cb9acc4e7}*SharedItemsImports = 13
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{7349eaae-5682-47ef-8d50-463f905b4901}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{978e9899-e43f-4a53-ab06-33bcb0471c84}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{b5106212-8593-4599-b966-113dcb9f8f35}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{b848aa68-76e3-492a-a64c-9968a27a6430}*SharedItemsImports = 4
@@ -159,6 +162,10 @@ Global
 		{B848AA68-76E3-492A-A64C-9968A27A6430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B848AA68-76E3-492A-A64C-9968A27A6430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B848AA68-76E3-492A-A64C-9968A27A6430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -177,5 +184,6 @@ Global
 		{DAE3E722-DAF5-4E35-BFD0-F2E9C2D403C3} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{B848AA68-76E3-492A-A64C-9968A27A6430} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{7349EAAE-5682-47EF-8D50-463F905B4901} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 	EndGlobalSection
 EndGlobal
