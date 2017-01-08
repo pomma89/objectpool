@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>CodeProject.ObjectPool</id>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <title>Generic and concurrent Object Pool</title>
     <authors>Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -18,8 +18,7 @@
       Many thanks to Ofir Makmal for his great work.
     </description>
     <releaseNotes>
-      * Updated Thrower to v4.
-      * Fixed some mistakes inside nuspec dependencies.
+      Please visit project site to find updated release notes.
     </releaseNotes>
     <summary>
       A generic, concurrent, portable and flexible Object Pool for the .NET Framework.
@@ -32,41 +31,41 @@
     <copyright>Copyright (c) 2013 Ofir Makmal &lt;Ofir.Makmal@gmail.com&gt;</copyright>
     <dependencies>
       <group targetFramework="net35">
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="net40">
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="net45">
         <dependency id="System.Collections.Concurrent" version="4.3.0" />
         <dependency id="System.Diagnostics.Debug" version="4.3.0" />
         <dependency id="System.Threading" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="net46">
         <dependency id="System.Collections.Concurrent" version="4.3.0" />
         <dependency id="System.Collections.NonGeneric" version="4.3.0" />
         <dependency id="System.Diagnostics.Debug" version="4.3.0" />
         <dependency id="System.Threading" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="netstandard1.1">
         <dependency id="System.Collections.Concurrent" version="4.3.0" />
         <dependency id="System.Diagnostics.Debug" version="4.3.0" />
         <dependency id="System.Threading" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="netstandard1.3">
         <dependency id="System.Collections.Concurrent" version="4.3.0" />
         <dependency id="System.Collections.NonGeneric" version="4.3.0" />
         <dependency id="System.Diagnostics.Debug" version="4.3.0" />
         <dependency id="System.Threading" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
       <group targetFramework="portable-net45+win8+wp8+wpa81">
         <dependency id="System.Diagnostics.Debug" version="4.3.0" />
         <dependency id="System.Threading" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.4" />
+        <dependency id="Thrower" version="4.0.6" />
       </group>
     </dependencies>
     <references></references>
@@ -75,6 +74,6 @@
   </metadata>
   <files>
     <file src="lib\" target="lib" />
-    <file src="LICENSE.htm" target="LICENSE.htm" />
+    <file src="..\LICENSE.htm" target="LICENSE.htm" />
   </files>
 </package>

@@ -5,7 +5,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 ## Summary ##
 
-* Latest release version: `v2.2.1`
+* Latest release version: `v2.2.2`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
     + [HTML](https://goo.gl/RVA7mV)
@@ -201,3 +201,7 @@ Type=MemoryStreamPooling  Mode=Throughput
 ## About this repository and its maintainer ##
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
+
+I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
+
+Development of this project is sponsored by [Finsa SpA](https://www.finsa.it), my current employer.

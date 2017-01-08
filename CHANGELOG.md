@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.2.2 (2017-01-08) ###
+
+* Updated Thrower to v4.0.6.
+* Added unit tests for Portable and .NET Standard 1.1/1.3.
+
 ### v2.2.1 (2016-12-17) ###
 
 * Updated Thrower to v4.

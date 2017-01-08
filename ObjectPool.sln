@@ -69,15 +69,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NuGet", "ObjectP
 		{E5A900A0-0564-489D-AEF0-2C4FB9928614} = {E5A900A0-0564-489D-AEF0-2C4FB9928614}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NETSTD11", "Platform Specific\ObjectPool.UnitTests.NETSTD11\ObjectPool.UnitTests.NETSTD11.csproj", "{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.NETSTD13", "Platform Specific\ObjectPool.UnitTests.NETSTD13\ObjectPool.UnitTests.NETSTD13.csproj", "{B848AA68-76E3-492A-A64C-9968A27A6430}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.UnitTests.Portable", "Platform Specific\ObjectPool.UnitTests.Portable\ObjectPool.UnitTests.Portable.csproj", "{7349EAAE-5682-47EF-8D50-463F905B4901}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ObjectPool\ObjectPool.projitems*{0031c03a-a007-4844-a8e6-ddaaf90dd4fc}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{2296c5f1-406c-4fd7-bf21-8bf6163baa47}*SharedItemsImports = 4
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{3e3654e5-8049-4d6b-b8b5-cef85d0b999c}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{4044415e-cef6-4a0d-a675-5aede6fdadda}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{5ab13e6f-960e-4688-86ff-5a1a1bd2a935}*SharedItemsImports = 13
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{64e981e2-a63d-479e-a59e-ec4cb9acc4e7}*SharedItemsImports = 13
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{7349eaae-5682-47ef-8d50-463f905b4901}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{978e9899-e43f-4a53-ab06-33bcb0471c84}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{b5106212-8593-4599-b966-113dcb9f8f35}*SharedItemsImports = 4
+		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{b848aa68-76e3-492a-a64c-9968a27a6430}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{bb805911-63dd-4e2e-a03c-963da1c72738}*SharedItemsImports = 4
 		ObjectPool.UnitTests\ObjectPool.UnitTests.projitems*{c7654d29-c033-4ffa-8346-6e0d0081bf63}*SharedItemsImports = 4
 		ObjectPool\ObjectPool.projitems*{dae3e722-daf5-4e35-bfd0-f2e9c2d403c3}*SharedItemsImports = 4
@@ -145,6 +154,18 @@ Global
 		{A84167E1-0C65-48C2-A3AD-932080D50407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A84167E1-0C65-48C2-A3AD-932080D50407}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A84167E1-0C65-48C2-A3AD-932080D50407}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B848AA68-76E3-492A-A64C-9968A27A6430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B848AA68-76E3-492A-A64C-9968A27A6430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B848AA68-76E3-492A-A64C-9968A27A6430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B848AA68-76E3-492A-A64C-9968A27A6430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7349EAAE-5682-47EF-8D50-463F905B4901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,5 +182,8 @@ Global
 		{4044415E-CEF6-4A0D-A675-5AEDE6FDADDA} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{978E9899-E43F-4A53-AB06-33BCB0471C84} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 		{DAE3E722-DAF5-4E35-BFD0-F2E9C2D403C3} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{3E3654E5-8049-4D6B-B8B5-CEF85D0B999C} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{B848AA68-76E3-492A-A64C-9968A27A6430} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
+		{7349EAAE-5682-47EF-8D50-463F905B4901} = {DA7B6E03-9A11-413E-809D-7D4B3467FA10}
 	EndGlobalSection
 EndGlobal
