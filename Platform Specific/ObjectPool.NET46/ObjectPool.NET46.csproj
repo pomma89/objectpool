@@ -45,7 +45,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.4.0.7\lib\net46\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.4.0.8\lib\net46\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

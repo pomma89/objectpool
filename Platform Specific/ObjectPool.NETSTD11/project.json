@@ -6,7 +6,7 @@
     "System.Collections.Concurrent": "4.3.0",
     "System.Diagnostics.Debug": "4.3.0",
     "System.Threading": "4.3.0",
-    "Thrower": "4.0.7"
+    "Thrower": "4.0.8"
   },
   "frameworks": {
     "netstandard1.1": {}
