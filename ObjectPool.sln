@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.NETSTD11", "Plat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPool.Examples", "ObjectPool.Examples\ObjectPool.Examples.csproj", "{AAE3C3EB-A29B-44C1-8CFE-2B7745ED5F7D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
