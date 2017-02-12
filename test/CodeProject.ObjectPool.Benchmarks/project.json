@@ -1,19 +1,18 @@
 ﻿{
   "version": "1.0.0-*",
+
   "buildOptions": {
     "emitEntryPoint": true
   },
 
   "dependencies": {
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.1"
-    }
+    "BenchmarkDotNet": "0.10.2",
+    "CodeProject.ObjectPool": "2.2.2-*",
+    "Microsoft.Extensions.ObjectPool": "1.1.0",
+    "Microsoft.IO.RecyclableMemoryStream": "1.2.1"
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
-      "imports": "dnxcore50"
-    }
+    "net46": {}
   }
 }

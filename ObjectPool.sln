@@ -8,12 +8,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{4C2B7C0C-7
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
-		build.fsx = build.fsx
+		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
+		global.json = global.json
 		LICENSE.htm = LICENSE.htm
 		pomma89.snk = pomma89.snk
 		README.md = README.md
-		VERSION.md = VERSION.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logo", "logo", "{3939E662-6059-40BF-AD4E-B2D5C11F3DE5}"

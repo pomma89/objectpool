@@ -1,13 +1,44 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "2.2.2-*",
+
+  "buildOptions": {
+    "keyFile": "../../pomma89.snk",
+    "xmlDoc": true
+  },
 
   "dependencies": {
-    "NETStandard.Library": "1.6.0"
+    "NETStandard.Library": "1.6.1",
+    "Thrower": "4.0.11"
   },
 
   "frameworks": {
-    "netstandard1.6": {
-      "imports": "dnxcore50"
+    "netstandard1.0": {
+      "imports": "dnxcore50",
+      "buildOptions": { "define": [ "NETSTD10" ] }
+    },
+    "netstandard1.1": {
+      "imports": "dnxcore50",
+      "buildOptions": { "define": [ "NETSTD11" ] }
+    },
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "buildOptions": { "define": [ "NETSTD13" ] }
+    },
+    "net35": {
+      "buildOptions": { "define": [ "NET35" ] }
+    },
+    "net40": {
+      "buildOptions": { "define": [ "NET40" ] }
+    },
+    "net45": {
+      "buildOptions": { "define": [ "NET45" ] }
+    },
+    ".NETPortable,Version=v4.5,Profile=Profile259": {
+      "buildOptions": { "define": [ "PORTABLE", "LIBLOG_PORTABLE" ] },
+      "frameworkAssemblies": {
+        "Microsoft.CSharp": "4.0.0.0",
+        "System.Dynamic.Runtime": "4.0.0.0"
+      }
     }
   }
 }

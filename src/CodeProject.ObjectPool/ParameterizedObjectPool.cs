@@ -193,7 +193,7 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if (PORTABLE || NETSTD11)
+#if (PORTABLE || NETSTD10 || NETSTD11)
         private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
 #else
         private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
@@ -219,7 +219,7 @@ namespace CodeProject.ObjectPool
 
         private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
         {
-#if (PORTABLE || NETSTD11)
+#if (PORTABLE || NETSTD10 || NETSTD11)
             // Dictionary requires locking even for readers.
             lock (_pools)
             {
