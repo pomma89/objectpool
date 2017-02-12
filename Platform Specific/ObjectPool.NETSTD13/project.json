@@ -8,7 +8,7 @@
     "System.Collections.NonGeneric": "4.3.0",
     "System.Diagnostics.Debug": "4.3.0",
     "System.Threading": "4.3.0",
-    "Thrower": "4.0.8"
+    "Thrower": "4.0.10"
   },
   "frameworks": {
     "netstandard1.3": {}
