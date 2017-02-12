@@ -28,7 +28,6 @@ local.properties
 # PDT-specific
 .buildpath
 
-
 #################
 ## Visual Studio
 #################
@@ -55,10 +54,6 @@ build/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
-
-# NUnit test Results
-[Tt]est[Rr]esults.xml
-.artifacts
 
 *_i.c
 *_p.c
@@ -135,13 +130,6 @@ publish/
 *.pubxml
 *.publishproj
 
-# NuGet Packages Directory
-## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-packages/
-*NuGet*/lib/
-*NuGet*/*.nupkg
-*NuGet*/*.nupkg.bak
-
 # Windows Azure Build Output
 csx
 *.build.csdef
@@ -176,8 +164,9 @@ UpgradeLog*.htm
 App_Data/*.mdf
 App_Data/*.ldf
 
-# FAKE
-.fake
+# CAKE
+artifacts
+tools
 
 #############
 ## Windows detritus
@@ -195,7 +184,6 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
-
 
 #############
 ## Python
