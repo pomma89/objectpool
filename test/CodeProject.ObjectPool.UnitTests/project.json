@@ -1,11 +1,11 @@
-﻿{
+{
   "version": "1.0.0-*",
 
   "dependencies": {
     "CodeProject.ObjectPool": "2.2.2-*",
     "NETStandard.Library": "1.6.1",
     "NLipsum": "1.0.1",
-    "NUnit": "3.6.0",
+    "NUnit": "3.6.1",
     "Shouldly": "2.8.2"
   },
 

@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "2.2.2-*",
 
   "buildOptions": {
@@ -8,7 +8,7 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.1",
-    "Thrower": "4.0.11"
+    "Thrower": "4.0.15"
   },
 
   "frameworks": {
