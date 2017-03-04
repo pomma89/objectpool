@@ -13,7 +13,7 @@ using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
 
 using CodeProject.ObjectPool.Logging;
 
@@ -29,7 +29,7 @@ namespace CodeProject.ObjectPool
     {
         #region Logging
 
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
         private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledObject));
 #endif
 
@@ -69,7 +69,7 @@ namespace CodeProject.ObjectPool
             }
             catch (Exception ex)
             {
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
                 if (Log.IsWarnEnabled())
                 {
                     Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
@@ -97,7 +97,7 @@ namespace CodeProject.ObjectPool
             }
             catch (CannotResetStateException crsex)
             {
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
                 if (Log.IsDebugEnabled())
                 {
                     Log.DebugException("[ObjectPool] Object state could not be reset", crsex);
@@ -109,7 +109,7 @@ namespace CodeProject.ObjectPool
             }
             catch (Exception ex)
             {
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
                 if (Log.IsWarnEnabled())
                 {
                     Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
@@ -173,7 +173,7 @@ namespace CodeProject.ObjectPool
             }
             catch (Exception ex)
             {
-#if !(NETSTD10 || NETSTD13 || NET35)
+#if !NET35
                 if (Log.IsWarnEnabled())
                 {
                     Log.WarnException("[ObjectPool] An error occurred while re-adding to pool", ex);

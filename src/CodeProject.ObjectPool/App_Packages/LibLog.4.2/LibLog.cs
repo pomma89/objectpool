@@ -1,4 +1,4 @@
-#if !(NETSTD10 || NET35)
+#if !NET35
 
 //===============================================================================
 // LibLog
@@ -50,19 +50,27 @@ using System.Diagnostics.CodeAnalysis;
 #if LIBLOG_PROVIDERS_ONLY
 namespace CodeProject.ObjectPool.LibLog
 #else
+
 namespace CodeProject.ObjectPool.Logging
 #endif
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+
 #if LIBLOG_PROVIDERS_ONLY
     using CodeProject.ObjectPool.LibLog.LogProviders;
 #else
+
     using CodeProject.ObjectPool.Logging.LogProviders;
+
 #endif
+
     using System;
+
 #if !LIBLOG_PROVIDERS_ONLY
+
     using System.Diagnostics;
+
 #if !LIBLOG_PORTABLE
     using System.Runtime.CompilerServices;
 #endif
@@ -71,6 +79,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     internal
 #else
+
     public
 #endif
     delegate bool Logger(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
@@ -82,6 +91,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PUBLIC
     public
 #else
+
     internal
 #endif
     interface ILog
@@ -105,6 +115,7 @@ namespace CodeProject.ObjectPool.Logging
         /// </remarks>
         bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
     }
+
 #endif
 
     /// <summary>
@@ -113,6 +124,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     internal
 #else
+
     public
 #endif
     enum LogLevel
@@ -129,6 +141,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PUBLIC
     public
 #else
+
     internal
 #endif
     static partial class LogExtensions
@@ -381,6 +394,7 @@ namespace CodeProject.ObjectPool.Logging
             return value;
         }
     }
+
 #endif
 
     /// <summary>
@@ -389,6 +403,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     internal
 #else
+
     public
 #endif
     interface ILogProvider
@@ -422,13 +437,16 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     internal
 #else
+
     public
 #endif
     static class LogProvider
     {
 #if !LIBLOG_PROVIDERS_ONLY
+
         private const string NullLogProvider = "Current Log Provider is not set. Call SetCurrentLogProvider " +
                                                "with a non-null value first.";
+
         private static dynamic s_currentLogProvider;
         private static Action<ILogProvider> s_onCurrentLogProviderSet;
 
@@ -486,6 +504,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PUBLIC
         public
 #else
+
         internal
 #endif
         static ILog For<T>()
@@ -522,6 +541,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PUBLIC
         public
 #else
+
         internal
 #endif
         static ILog GetLogger(Type type, string fallbackTypeName = "System.Object")
@@ -538,6 +558,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PUBLIC
         public
 #else
+
         internal
 #endif
         static ILog GetLogger(string name)
@@ -588,11 +609,13 @@ namespace CodeProject.ObjectPool.Logging
                 ? new DisposableAction(() => { })
                 : logProvider.OpenMappedContext(key, value);
         }
+
 #endif
 
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
+
         internal
 #endif
     delegate bool IsLoggerAvailable();
@@ -600,6 +623,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
+
         internal
 #endif
     delegate ILogProvider CreateLogProvider();
@@ -607,6 +631,7 @@ namespace CodeProject.ObjectPool.Logging
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
+
         internal
 #endif
     static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
@@ -620,6 +645,7 @@ namespace CodeProject.ObjectPool.Logging
             };
 
 #if !LIBLOG_PROVIDERS_ONLY
+
         private static void RaiseOnCurrentLogProviderSet()
         {
             if (s_onCurrentLogProviderSet != null)
@@ -627,6 +653,7 @@ namespace CodeProject.ObjectPool.Logging
                 s_onCurrentLogProviderSet(s_currentLogProvider);
             }
         }
+
 #endif
 
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)")]
@@ -658,6 +685,7 @@ namespace CodeProject.ObjectPool.Logging
         }
 
 #if !LIBLOG_PROVIDERS_ONLY
+
         internal class NoOpLogger : ILog
         {
             internal static readonly NoOpLogger Instance = new NoOpLogger();
@@ -667,10 +695,12 @@ namespace CodeProject.ObjectPool.Logging
                 return false;
             }
         }
+
 #endif
     }
 
 #if !LIBLOG_PROVIDERS_ONLY
+
     internal class LoggerExecutionWrapper : ILog
     {
         private readonly Logger _logger;
@@ -715,33 +745,40 @@ namespace CodeProject.ObjectPool.Logging
             return _logger(logLevel, wrappedMessageFunc, exception, formatParameters);
         }
     }
+
 #endif
 }
 
 #if LIBLOG_PROVIDERS_ONLY
 namespace CodeProject.ObjectPool.LibLog.LogProviders
 #else
+
 namespace CodeProject.ObjectPool.Logging.LogProviders
 #endif
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+
 #if !LIBLOG_PORTABLE
     using System.Diagnostics;
 #endif
+
     using System.Globalization;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+
 #if !LIBLOG_PORTABLE
     using System.Text;
 #endif
+
     using System.Text.RegularExpressions;
 
     internal abstract class LogProviderBase : ILogProvider
     {
         protected delegate IDisposable OpenNdc(string message);
+
         protected delegate IDisposable OpenMdc(string key, string value);
 
         private readonly Lazy<OpenNdc> _lazyOpenNdcMethod;
@@ -1450,7 +1487,7 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
                             }
                         }
 #else
-                        s_callerStackBoundaryType = typeof (LoggerExecutionWrapper);
+                        s_callerStackBoundaryType = typeof(LoggerExecutionWrapper);
 #endif
                     }
                 }
@@ -2264,6 +2301,7 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
         }
 
 #if LIBLOG_PORTABLE
+
         internal static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
         {
             return propertyInfo.GetMethod;
@@ -2273,6 +2311,7 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
         {
             return propertyInfo.SetMethod;
         }
+
 #endif
 
 #if !LIBLOG_PORTABLE
