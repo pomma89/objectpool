@@ -6,7 +6,7 @@
   },
 
   "dependencies": {
-    "CodeProject.ObjectPool": "2.2.2-*",
+    "CodeProject.ObjectPool": "2.2.3-*",
     "NETStandard.Library": "1.6.1",
     "Newtonsoft.Json": "9.0.1",
     "NLipsum": "1.0.1",
