@@ -16,24 +16,15 @@
       "imports": "dnxcore50",
       "buildOptions": { "define": [ "NETSTD10" ] }
     },
-    "netstandard1.1": {
-      "imports": "dnxcore50",
-      "buildOptions": { "define": [ "NETSTD11" ] }
-    },
     "netstandard1.3": {
       "imports": "dnxcore50",
-      "buildOptions": { "define": [ "NETSTD13" ] }
+      "buildOptions": { "define": [ "NETSTD13", "LIBLOG_PORTABLE" ] }
     },
     "net35": {
       "buildOptions": { "define": [ "NET35" ] }
     },
     "net40": {
-      "buildOptions": { "define": [ "NET40" ] },
-      "dependencies": {
-        "Microsoft.Bcl": "1.1.10",
-        "Microsoft.Bcl.Build": "1.0.21",
-        "Microsoft.Bcl.Async": "1.0.168"
-      }
+      "buildOptions": { "define": [ "NET40" ] }
     },
     "net45": {
       "buildOptions": { "define": [ "NET45" ] }
