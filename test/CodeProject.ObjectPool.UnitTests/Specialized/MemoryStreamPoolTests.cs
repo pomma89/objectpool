@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Newtonsoft.Json;
 using NLipsum.Core;
 using NUnit.Framework;
 using Shouldly;
@@ -377,6 +378,58 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             using (var pms = _memoryStreamPool.GetObject())
             {
                 pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+            }
+        }
+
+        [TestCase(2)]
+        [TestCase(4)]
+        [TestCase(8)]
+        public void ShouldAllowCommonUsingPattern_ManyTimesWithStringReaderAndWriter(int count)
+        {
+            for (var i = 1; i <= count; ++i)
+            {
+                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
+                using (var sw = new StreamWriter(ms))
+                {
+                    var text = LipsumGenerator.Generate(i);
+
+                    sw.Write(text);
+                    sw.Flush();
+
+                    ms.Position = 0L;
+                    using (var sr = new StreamReader(ms))
+                    {
+                        sr.ReadToEnd().ShouldBe(text);
+                    }
+                }
+            }
+        }
+
+        [TestCase(2)]
+        [TestCase(4)]
+        [TestCase(8)]
+        public void ShouldAllowCommonUsingPattern_ManyTimesWithJsonReaderAndWriter(int count)
+        {
+            var jsonSerializer = new JsonSerializer();
+
+            for (var i = 1; i <= count; ++i)
+            {
+                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
+                using (var sw = new StreamWriter(ms))
+                using (var jw = new JsonTextWriter(sw))
+                {
+                    var text = LipsumGenerator.Generate(i);
+
+                    jsonSerializer.Serialize(jw, text);
+                    jw.Flush();
+
+                    ms.Position = 0L;
+                    using (var sr = new StreamReader(ms))
+                    using (var jr = new JsonTextReader(sr))
+                    {
+                        jsonSerializer.Deserialize<string>(jr).ShouldBe(text);
+                    }
+                }
             }
         }
     }
