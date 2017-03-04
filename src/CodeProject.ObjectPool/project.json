@@ -49,11 +49,7 @@
       "buildOptions": { "define": [ "NET45" ] }
     },
     ".NETPortable,Version=v4.5,Profile=Profile259": {
-      "buildOptions": { "define": [ "PORTABLE", "LIBLOG_PORTABLE" ] },
-      "frameworkAssemblies": {
-        "Microsoft.CSharp": "4.0.0.0",
-        "System.Dynamic.Runtime": "4.0.0.0"
-      }
+      "buildOptions": { "define": [ "PORTABLE" ] }
     }
   }
 }

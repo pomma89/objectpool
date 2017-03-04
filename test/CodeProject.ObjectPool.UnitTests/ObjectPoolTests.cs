@@ -28,7 +28,7 @@ using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
 using Shouldly;
 
-#if !NET35
+#if !(NET35 || NET40)
 
 using System.Threading.Tasks;
 
