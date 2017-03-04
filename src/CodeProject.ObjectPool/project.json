@@ -1,5 +1,5 @@
 {
-  "version": "2.2.3-*",
+  "version": "2.2.4-*",
   "title": "Generic and concurrent Object Pool",
   "description": "A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T). Library is production ready and it is successfully working in real life systems. Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. Moreover, a few unit tests have been added, in order to improve code reliability, and a lot of other small changes have also been applied. Of course, all modified source code is freely available at the project URL of this package. Many thanks to Ofir Makmal for his great work.",
   "copyright": "Copyright (c) 2013 Ofir Makmal <ofir.makmal@gmail.com>",
