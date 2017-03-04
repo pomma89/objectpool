@@ -106,7 +106,7 @@ namespace UnitTests
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
-#if !NET35
+#if !(NET35 || NET40)
 
         [TestCase(1)]
         [TestCase(5)]
@@ -126,11 +126,9 @@ namespace UnitTests
             {
                 objects[i].Dispose();
             });
-#if !NET40
+
             await Task.Delay(1000);
-#else
-            await TaskEx.Delay(1000);
-#endif
+
             pool.AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }

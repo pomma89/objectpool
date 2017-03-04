@@ -70,7 +70,7 @@ namespace UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
-#if !NET35
+#if !(NET35 || NET40)
 
         [TestCase(1)]
         [TestCase(5)]
@@ -91,11 +91,9 @@ namespace UnitTests
             {
                 objects[i].Dispose();
             });
-#if !NET40
+
             await Task.Delay(1000);
-#else
-            await TaskEx.Delay(1000);
-#endif
+
             Assert.AreEqual(keyCount, pool.KeysInPoolCount);
         }
 
