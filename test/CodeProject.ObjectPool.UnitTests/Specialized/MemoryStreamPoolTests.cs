@@ -381,9 +381,9 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             }
         }
 
-        [TestCase(2)]
-        [TestCase(4)]
-        [TestCase(8)]
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
         public void ShouldAllowCommonUsingPattern_ManyTimesWithStringReaderAndWriter(int count)
         {
             for (var i = 1; i <= count; ++i)
@@ -391,7 +391,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 using (var ms = _memoryStreamPool.GetObject().MemoryStream)
                 using (var sw = new StreamWriter(ms))
                 {
-                    var text = LipsumGenerator.Generate(i);
+                    var text = LipsumGenerator.Generate((i % 10) + 1);
 
                     sw.Write(text);
                     sw.Flush();
@@ -405,9 +405,9 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             }
         }
 
-        [TestCase(2)]
-        [TestCase(4)]
-        [TestCase(8)]
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
         public void ShouldAllowCommonUsingPattern_ManyTimesWithJsonReaderAndWriter(int count)
         {
             var jsonSerializer = new JsonSerializer();
@@ -418,7 +418,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 using (var sw = new StreamWriter(ms))
                 using (var jw = new JsonTextWriter(sw))
                 {
-                    var text = LipsumGenerator.Generate(i);
+                    var text = LipsumGenerator.Generate((i % 10) + 1);
 
                     jsonSerializer.Serialize(jw, text);
                     jw.Flush();

@@ -44,10 +44,11 @@ namespace CodeProject.ObjectPool
         internal IObjectPoolHandle Handle { get; set; }
 
         /// <summary>
-        ///   Internal flag that is being managed by the pool to describe the object state - primary
+        ///   Enumeration that is being managed by the pool to describe the object state - primary
         ///   used to void cases where the resources are being releases twice.
         /// </summary>
-        internal bool Disposed { get; set; }
+        /// <remarks>Default value for pooled object state is <see cref="PooledObjectState.Available"/>.</remarks>
+        public PooledObjectState State { get; internal set; } = PooledObjectState.Available;
 
         #endregion Internal Properties
 
@@ -158,7 +159,8 @@ namespace CodeProject.ObjectPool
 
         private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
-            if (Disposed)
+            // Only when the object is reserved it can be readded to the pool.
+            if (State == PooledObjectState.Disposed || State == PooledObjectState.Available)
             {
                 return;
             }
@@ -179,7 +181,7 @@ namespace CodeProject.ObjectPool
 #else
                 Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                Disposed = true;
+                State = PooledObjectState.Disposed;
                 ReleaseResources();
             }
         }

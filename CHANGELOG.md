@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v2.2.3 (2017-03-05) ###
+
+* Fixed a bug which could produce closed pooled memory streams.
+* Converted the project to .NET Core format.
+
 ### v2.2.2 (2017-01-08) ###
 
 * Updated Thrower to v4.0.6.

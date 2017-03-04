@@ -222,16 +222,24 @@ namespace CodeProject.ObjectPool
                 {
                     Diagnostics.IncrementPoolObjectHitCount();
                 }
-                return pooledObject;
+            }
+            else
+            {
+                // This should not happen normally, but could be happening when there is stress on
+                // the pool. No available objects in pool, create a new one and return it to the caller.
+                if (Diagnostics.Enabled)
+                {
+                    Diagnostics.IncrementPoolObjectMissCount();
+                }
+
+                pooledObject = CreatePooledObject();
             }
 
-            // This should not happen normally, but could be happening when there is stress on the
-            // pool. No available objects in pool, create a new one and return it to the caller.
-            if (Diagnostics.Enabled)
-            {
-                Diagnostics.IncrementPoolObjectMissCount();
-            }
-            return CreatePooledObject();
+            // Change the state of the pooled object, marking it as reserved. We will mark it as
+            // available as soon as the object will return to the pool.
+            pooledObject.State = PooledObjectState.Reserved;
+
+            return pooledObject;
         }
 
         void IObjectPoolHandle.ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
@@ -271,6 +279,9 @@ namespace CodeProject.ObjectPool
                 {
                     Diagnostics.IncrementReturnedToPoolCount();
                 }
+
+                // While adding the object back to the pool, we mark it as available.
+                returnedObject.State = PooledObjectState.Available;
             }
             else
             {
@@ -451,7 +462,7 @@ namespace CodeProject.ObjectPool
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
-            if (!objectToDestroy.Disposed)
+            if (objectToDestroy.State != PooledObjectState.Disposed)
             {
                 if (Diagnostics.Enabled)
                 {
@@ -461,7 +472,7 @@ namespace CodeProject.ObjectPool
                 // Deterministically release object resources, nevermind the result, we are
                 // destroying the object.
                 objectToDestroy.ReleaseResources();
-                objectToDestroy.Disposed = true;
+                objectToDestroy.State = PooledObjectState.Disposed;
             }
 
             // The object is being destroyed, resources have been already released deterministically,

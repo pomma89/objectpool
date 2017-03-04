@@ -233,5 +233,49 @@ namespace UnitTests
             // Despite usage #B, count should always be fixed.
             pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
+
+        #region Pooled object state
+
+        [Test]
+        public void PooledObjectStateShouldBecomeReservedWhenRetrievedFromThePool()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            using (var obj = pool.GetObject())
+            {
+                obj.State.ShouldBe(PooledObjectState.Reserved);
+            }
+        }
+
+        [Test]
+        public void PooledObjectStateShouldBecomeAvailableWhenReturnedToThePool()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            MyPooledObject obj;
+            using (obj = pool.GetObject())
+            {
+            }
+
+            obj.State.ShouldBe(PooledObjectState.Available);
+        }
+
+        [Test]
+        public void PooledObjectStateShouldBecomeDisposedWhenCannotReturnToThePool()
+        {
+            var pool = new ObjectPool<MyPooledObject>(1, 2);
+
+            var obj = pool.GetObject();
+
+            using (var tmp1 = pool.GetObject())
+            using (var tmp2 = pool.GetObject())
+            {
+            }
+
+            obj.Dispose();
+            obj.State.ShouldBe(PooledObjectState.Disposed);
+        }
+
+        #endregion Pooled object state
     }
 }
