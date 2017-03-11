@@ -175,7 +175,7 @@ namespace CodeProject.ObjectPool
             // Initilizing objects in pool.
             if (adjustPoolSizeToBounds)
             {
-                AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
+                AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
         }
 
@@ -347,7 +347,7 @@ namespace CodeProject.ObjectPool
         {
             lock (_pooledObjects)
             {
-                if (_pooledObjects.Count == MaximumPoolSize)
+                if (_pooledObjects.Count >= MaximumPoolSize)
                 {
                     return false;
                 }

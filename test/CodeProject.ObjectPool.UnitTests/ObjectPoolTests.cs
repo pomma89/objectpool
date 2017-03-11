@@ -232,6 +232,13 @@ namespace UnitTests
             pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
         }
 
+        [Test]
+        public void ShouldEnforceLowerBoundOnPoolConstruction()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+        }
+
         #region Pooled object state
 
         [Test]
