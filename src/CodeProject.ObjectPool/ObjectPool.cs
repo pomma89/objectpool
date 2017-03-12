@@ -9,6 +9,7 @@
  */
 
 using CodeProject.ObjectPool.Core;
+using CodeProject.ObjectPool.Extensibility;
 using System;
 
 namespace CodeProject.ObjectPool
@@ -90,6 +91,15 @@ namespace CodeProject.ObjectPool
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
         public int ObjectsInPoolCount => _poolSize;
+
+        /// <summary>
+        ///   Gets the clock used by the cache.
+        /// </summary>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        /// </remarks>
+        public IClock Clock { get; }
 
         #endregion Public Properties
 
@@ -176,6 +186,9 @@ namespace CodeProject.ObjectPool
             {
                 AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
+
+            // Initialize all services.
+            Clock = SystemClock.Instance;
         }
 
         #endregion C'tor and Initialization code
