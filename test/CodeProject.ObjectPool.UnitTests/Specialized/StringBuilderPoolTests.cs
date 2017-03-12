@@ -93,7 +93,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         }
 
         [Test]
-        public void IdPropertyShouldRemainConstantUsageAfterUsage()
+        public void IdPropertyShouldChangeUsageAfterUsage()
         {
             // First usage.
             Guid id;

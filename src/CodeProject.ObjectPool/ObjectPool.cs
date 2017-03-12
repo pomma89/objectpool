@@ -10,7 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Threading;
 
 namespace CodeProject.ObjectPool
 {
@@ -90,7 +89,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _poolSize < MaximumPoolSize ? _poolSize : MaximumPoolSize; // We do this because the queue might be slightly larger, for performance reasons.
+        public int ObjectsInPoolCount => _poolSize;
 
         #endregion Public Properties
 
@@ -222,6 +221,9 @@ namespace CodeProject.ObjectPool
                 {
                     Diagnostics.IncrementPoolObjectHitCount();
                 }
+
+                // Make sure that the lower bound is respected.
+                //AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
             else
             {
@@ -388,7 +390,7 @@ namespace CodeProject.ObjectPool
         {
             if (_pooledObjects.TryDequeue(out pooledObject))
             {
-                Interlocked.Decrement(ref _poolSize);
+                System.Threading.Interlocked.Decrement(ref _poolSize);
                 return true;
             }
             return false;
@@ -396,12 +398,13 @@ namespace CodeProject.ObjectPool
 
         private bool TryEnqueue(T pooledObject)
         {
-            if (_poolSize >= MaximumPoolSize)
+            System.Threading.Interlocked.Increment(ref _poolSize);
+            if (_poolSize > MaximumPoolSize)
             {
+                System.Threading.Interlocked.Decrement(ref _poolSize);
                 return false;
             }
             _pooledObjects.Enqueue(pooledObject);
-            Interlocked.Increment(ref _poolSize);
             return true;
         }
 
@@ -416,7 +419,7 @@ namespace CodeProject.ObjectPool
         ///   and <see cref="MaximumPoolSize"/>.
         /// </summary>
         /// <param name="adjustMode"></param>
-        protected internal void AdjustPoolSizeToBounds(AdjustMode adjustMode)
+        protected void AdjustPoolSizeToBounds(AdjustMode adjustMode)
         {
             // Adjusting lower bound.
             if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))

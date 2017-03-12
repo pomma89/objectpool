@@ -129,7 +129,6 @@ namespace UnitTests
 
             await Task.Delay(1000);
 
-            pool.AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
