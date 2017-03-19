@@ -64,7 +64,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text1 + text2);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize + ObjectPoolTests.OneUsage);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -152,7 +152,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(_stringBuilderPool.MinimumPoolSize + ObjectPoolTests.OneUsage);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }

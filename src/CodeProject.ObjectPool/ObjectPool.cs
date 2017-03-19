@@ -236,7 +236,7 @@ namespace CodeProject.ObjectPool
                 }
 
                 // Make sure that the lower bound is respected.
-                //AdjustPoolSizeToBounds(AdjustMode.Minimum);
+                AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
             else
             {

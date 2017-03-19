@@ -74,7 +74,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize + ObjectPoolTests.OneUsage);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -122,7 +122,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             }
             result.ShouldBe(text + text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize + ObjectPoolTests.OneUsage);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -153,7 +153,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(_memoryStreamPool.MinimumPoolSize + ObjectPoolTests.OneUsage);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }

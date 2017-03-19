@@ -23,7 +23,7 @@
 
 using CodeProject.ObjectPool;
 
-namespace UnitTests
+namespace CodeProject.ObjectPool.UnitTests
 {
     internal sealed class MyPooledObject : PooledObject
     {

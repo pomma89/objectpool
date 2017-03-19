@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 
 #endif
 
-namespace UnitTests
+namespace CodeProject.ObjectPool.UnitTests
 {
     [TestFixture]
     internal sealed class ParameterizedObjectPoolTests

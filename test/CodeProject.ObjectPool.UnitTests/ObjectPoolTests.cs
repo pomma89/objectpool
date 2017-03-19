@@ -34,11 +34,13 @@ using System.Threading.Tasks;
 
 #endif
 
-namespace UnitTests
+namespace CodeProject.ObjectPool.UnitTests
 {
     [TestFixture]
     internal sealed class ObjectPoolTests
     {
+        public const int OneUsage = 1;
+
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]

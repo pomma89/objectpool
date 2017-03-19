@@ -1,4 +1,4 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.6.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.6.1
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -86,7 +86,7 @@ RunTarget(target);
 
 private void Build(string cfg)
 {
-    foreach(var project in GetFiles("./**/project.json"))
+    foreach(var project in GetFiles("./**/*.csproj"))
     {
         DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
         {
@@ -107,7 +107,7 @@ private void Test(string cfg)
 
 private void Pack(string cfg)
 {
-    foreach (var project in GetFiles("./src/**/project.json"))
+    foreach (var project in GetFiles("./src/**/*.csproj"))
     {
         DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         {
