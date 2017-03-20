@@ -86,14 +86,20 @@ RunTarget(target);
 
 private void Build(string cfg)
 {
-    foreach(var project in GetFiles("./**/*.csproj"))
-    {
-        DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
-        {
-            Configuration = cfg,
-            NoIncremental = true
-        });
-    }
+    //foreach(var project in GetFiles("./**/*.csproj"))
+    //{
+    //    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
+    //    {
+    //        Configuration = cfg,
+    //        NoIncremental = true
+    //    });
+    //}
+	
+	MSBuild(solutionFile, settings =>
+	{
+        settings.SetConfiguration(cfg);
+		settings.SetMaxCpuCount(0);
+	});
 }
 
 private void Test(string cfg)
@@ -109,11 +115,19 @@ private void Pack(string cfg)
 {
     foreach (var project in GetFiles("./src/**/*.csproj"))
     {
-        DotNetCorePack(project.FullPath, new DotNetCorePackSettings
-        {
-            Configuration = cfg,
-            OutputDirectory = artifactsDir,
-            NoBuild = true
-        });
+        //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
+        //{
+        //    Configuration = cfg,
+        //    OutputDirectory = artifactsDir,
+        //    NoBuild = true
+        //});
+
+		MSBuild(project, settings =>
+		{
+			settings.SetConfiguration(cfg);
+			settings.SetMaxCpuCount(0);
+			settings.WithTarget("pack");
+			settings.WithProperty("IncludeSymbols", new[] { "true" });
+		});
     }    
 }
