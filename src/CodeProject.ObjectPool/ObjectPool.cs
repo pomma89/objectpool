@@ -314,7 +314,7 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if (NETSTD10 || NET35 || PORTABLE)
+#if (NET35 || NETSTD10 || NETSTD11)
 
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
