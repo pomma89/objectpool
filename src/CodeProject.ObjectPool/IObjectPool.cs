@@ -47,7 +47,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets or sets the minimum number of objects in the pool.
         /// </summary>
-        int MinimumPoolSize { get; set; }
+        int MinimumPoolSize { get; }
 
         /// <summary>
         ///   Gets the count of the objects currently in the pool.

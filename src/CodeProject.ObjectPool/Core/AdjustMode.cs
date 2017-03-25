@@ -32,11 +32,6 @@ namespace CodeProject.ObjectPool.Core
     public enum AdjustMode
     {
         /// <summary>
-        ///   Ensure that the lower bound is OK.
-        /// </summary>
-        Minimum = 1,
-
-        /// <summary>
         ///   Ensure that the upper bound is OK.
         /// </summary>
         Maximum = 2

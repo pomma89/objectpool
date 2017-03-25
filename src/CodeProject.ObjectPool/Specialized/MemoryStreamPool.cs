@@ -45,10 +45,9 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Builds the specialized pool.
         /// </summary>
         public MemoryStreamPool()
-            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, false)
+            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
         {
             FactoryMethod = () => new PooledMemoryStream(MinimumMemoryStreamCapacity);
-            AdjustPoolSizeToBounds(AdjustMode.Minimum | AdjustMode.Maximum);
         }
 
         /// <summary>

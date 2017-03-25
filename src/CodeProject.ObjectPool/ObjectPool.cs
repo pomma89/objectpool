@@ -11,6 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Extensibility;
 using System;
+using System.Threading;
 
 namespace CodeProject.ObjectPool
 {
@@ -24,20 +25,6 @@ namespace CodeProject.ObjectPool
     public class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
         where T : PooledObject
     {
-        #region Fields
-
-        /// <summary>
-        ///   Backing field for <see cref="MaximumPoolSize"/>.
-        /// </summary>
-        private int _maximumPoolSize;
-
-        /// <summary>
-        ///   Backing field for <see cref="MinimumPoolSize"/>.
-        /// </summary>
-        private int _minimumPoolSize;
-
-        #endregion Fields
-
         #region Public Properties
 
         /// <summary>
@@ -60,13 +47,20 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                return _maximumPoolSize;
+                return _pooledObjects.Length;
             }
             set
             {
                 ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
-                _maximumPoolSize = value;
-                AdjustPoolSizeToBounds(AdjustMode.Maximum);
+
+                if (_pooledObjects == null)
+                {
+                    _pooledObjects = new T[value];
+                }
+                else
+                {
+                    Array.Resize(ref _pooledObjects, value);
+                }
             }
         }
 
@@ -77,13 +71,7 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                return _minimumPoolSize;
-            }
-            set
-            {
-                ObjectPoolConstants.ValidatePoolLimits(value, MaximumPoolSize);
-                _minimumPoolSize = value;
-                AdjustPoolSizeToBounds(AdjustMode.Minimum);
+                return 0;
             }
         }
 
@@ -109,7 +97,7 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null, true)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
         {
         }
 
@@ -124,7 +112,7 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
         /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize)
-            : this(minimumPoolSize, maximumPoolSize, null, true)
+            : this(minimumPoolSize, maximumPoolSize, null)
         {
         }
 
@@ -133,7 +121,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod, true)
+            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
         {
         }
 
@@ -149,43 +137,16 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
         /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
-            : this(minimumPoolSize, maximumPoolSize, factoryMethod, true)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new pool with specified factory method and minimum and maximum size.
-        /// </summary>
-        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
-        /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        /// <param name="adjustPoolSizeToBounds">
-        ///   True if this constructor should perform initial pool adjustment, false if it will be
-        ///   performed by another constructor.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="minimumPoolSize"/> is less than zero,
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
-        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
-        /// </exception>
-        protected ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod, bool adjustPoolSizeToBounds)
         {
             // Validating pool limits, exception is thrown if invalid.
             ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
 
             // Assigning properties.
             FactoryMethod = factoryMethod;
-            _maximumPoolSize = maximumPoolSize;
-            _minimumPoolSize = minimumPoolSize;
+            MaximumPoolSize = maximumPoolSize;
 
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
-
-            // Initilizing objects in pool.
-            if (adjustPoolSizeToBounds)
-            {
-                AdjustPoolSizeToBounds(AdjustMode.Minimum);
-            }
 
             // Initialize all services.
             Clock = SystemClock.Instance;
@@ -215,9 +176,6 @@ namespace CodeProject.ObjectPool
         {
             // Destroy all objects.
             ClearQueue();
-
-            // Restore pool bounds.
-            AdjustPoolSizeToBounds(AdjustMode.Minimum);
         }
 
         /// <summary>
@@ -226,17 +184,13 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            T pooledObject;
-            if (TryDequeue(out pooledObject))
+            if (TryDequeue(out T pooledObject))
             {
                 // Object found in pool.
                 if (Diagnostics.Enabled)
                 {
                     Diagnostics.IncrementPoolObjectHitCount();
                 }
-
-                // Make sure that the lower bound is respected.
-                AdjustPoolSizeToBounds(AdjustMode.Minimum);
             }
             else
             {
@@ -275,9 +229,6 @@ namespace CodeProject.ObjectPool
                     Diagnostics.IncrementResetStateFailedCount();
                 }
                 DestroyPooledObject(returnedObject);
-
-                // Ensure that the bounds are correct before returning.
-                AdjustPoolSizeToBounds(AdjustMode.Minimum);
                 return;
             }
 
@@ -314,12 +265,10 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if (NET35 || NETSTD10 || NETSTD11)
-
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        private readonly System.Collections.Generic.Queue<T> _pooledObjects = new System.Collections.Generic.Queue<T>();
+        private T[] _pooledObjects;
 
         /// <summary>
         ///   Local copy of the pool size.
@@ -332,68 +281,7 @@ namespace CodeProject.ObjectPool
             {
                 return;
             }
-            lock (_pooledObjects)
-            {
-                foreach (var pooledObject in _pooledObjects)
-                {
-                    DestroyPooledObject(pooledObject);
-                }
-                _pooledObjects.Clear();
-                _poolSize = 0;
-            }
-        }
-
-        private bool TryDequeue(out T pooledObject)
-        {
-            lock (_pooledObjects)
-            {
-                if (_pooledObjects.Count == 0)
-                {
-                    pooledObject = default(T);
-                    return false;
-                }
-                pooledObject = _pooledObjects.Dequeue();
-                _poolSize--;
-                return true;
-            }
-        }
-
-        private bool TryEnqueue(T pooledObject)
-        {
-            lock (_pooledObjects)
-            {
-                if (_pooledObjects.Count >= MaximumPoolSize)
-                {
-                    return false;
-                }
-                _pooledObjects.Enqueue(pooledObject);
-                _poolSize++;
-                return true;
-            }
-        }
-
-#else
-
-        /// <summary>
-        ///   The concurrent buffer containing pooled objects.
-        /// </summary>
-        private readonly System.Collections.Concurrent.ConcurrentQueue<T> _pooledObjects = new System.Collections.Concurrent.ConcurrentQueue<T>();
-
-        /// <summary>
-        ///   Local copy of the pool size. It seems that accessing the property
-        ///   <see cref="System.Collections.Concurrent.ConcurrentQueue{T}.Count"/> is far slower than
-        ///   keeping a local copy.
-        /// </summary>
-        private int _poolSize;
-
-        private void ClearQueue()
-        {
-            if (_pooledObjects == null)
-            {
-                return;
-            }
-            T dequeuedObjectToDestroy;
-            while (TryDequeue(out dequeuedObjectToDestroy))
+            while (TryDequeue(out T dequeuedObjectToDestroy))
             {
                 DestroyPooledObject(dequeuedObjectToDestroy);
             }
@@ -401,61 +289,37 @@ namespace CodeProject.ObjectPool
 
         private bool TryDequeue(out T pooledObject)
         {
-            if (_pooledObjects.TryDequeue(out pooledObject))
+            for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                System.Threading.Interlocked.Decrement(ref _poolSize);
-                return true;
+                var item = _pooledObjects[i];
+                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
+                {
+                    Interlocked.Decrement(ref _poolSize);
+                    pooledObject = item;
+                    return true;
+                }
             }
+            pooledObject = null;
             return false;
         }
 
         private bool TryEnqueue(T pooledObject)
         {
-            System.Threading.Interlocked.Increment(ref _poolSize);
-            if (_poolSize > MaximumPoolSize)
+            for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                System.Threading.Interlocked.Decrement(ref _poolSize);
-                return false;
+                if (_pooledObjects[i] == null)
+                {
+                    Interlocked.Increment(ref _poolSize);
+                    _pooledObjects[i] = pooledObject;
+                    return true;
+                }
             }
-            _pooledObjects.Enqueue(pooledObject);
-            return true;
+            return false;
         }
-
-#endif
 
         #endregion Low-level Pooling
 
         #region Private Methods
-
-        /// <summary>
-        ///   Ensures that the pool respects the bounds described by <see cref="MinimumPoolSize"/>
-        ///   and <see cref="MaximumPoolSize"/>.
-        /// </summary>
-        /// <param name="adjustMode"></param>
-        protected void AdjustPoolSizeToBounds(AdjustMode adjustMode)
-        {
-            // Adjusting lower bound.
-            if (((adjustMode & AdjustMode.Minimum) == AdjustMode.Minimum))
-            {
-                while (_poolSize < MinimumPoolSize && TryEnqueue(CreatePooledObject()))
-                {
-                }
-            }
-
-            // Adjusting upper bound.
-            if (((adjustMode & AdjustMode.Maximum) == AdjustMode.Maximum))
-            {
-                T dequeuedObjectToDestroy;
-                while (_poolSize > MaximumPoolSize && TryDequeue(out dequeuedObjectToDestroy))
-                {
-                    if (Diagnostics.Enabled)
-                    {
-                        Diagnostics.IncrementPoolOverflowCount();
-                    }
-                    DestroyPooledObject(dequeuedObjectToDestroy);
-                }
-            }
-        }
 
         private T CreatePooledObject()
         {
@@ -464,9 +328,9 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectsCreatedCount();
             }
 
-            // Throws an exception if the type doesn't have default ctor - on purpose! I've could've
-            // add a generic constraint with new (), but I didn't want to limit the user and force a
-            // parameterless c'tor.
+            // Throws an exception if the type does not have default constructor - on purpose! We
+            // could have added a generic constraint with new (), but we did not want to limit the
+            // user and force a parameterless constructor.
             var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
             // Setting the 'return to pool' action in the newly created pooled object.
