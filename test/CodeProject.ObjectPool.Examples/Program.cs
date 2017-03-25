@@ -33,9 +33,9 @@ namespace CodeProject.ObjectPool.Examples
         /// </summary>
         private static void Main()
         {
-            // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
-            // method to create and instance of ExpensiveResource.
-            var pool = new ObjectPool<ExpensiveResource>(5, 25, () => new ExpensiveResource(/* resource specific initialization */));
+            // Creating a pool with a maximum size of 25, using custom Factory method to create and
+            // instance of ExpensiveResource.
+            var pool = new ObjectPool<ExpensiveResource>(25, () => new ExpensiveResource(/* resource specific initialization */));
 
             using (var resource = pool.GetObject())
             {

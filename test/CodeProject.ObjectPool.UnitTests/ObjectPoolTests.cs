@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
 using Shouldly;
@@ -41,21 +40,13 @@ namespace CodeProject.ObjectPool.UnitTests
     {
         public const int OneUsage = 1;
 
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnNegativeMinimumSize(int minSize)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject>(minSize, 1));
-        }
-
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject>(0, maxSize));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject>(maxSize));
         }
 
         [TestCase(0)]
@@ -67,18 +58,6 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(5)]
-        [TestCase(10)]
-        [TestCase(50)]
-        [TestCase(100)]
-        public void ShouldSatisfyMinimumSizeRequirement(int minSize)
-        {
-            var pool = new ObjectPool<MyPooledObject>(minSize, minSize * 2 + 1);
-            Assert.AreEqual(minSize, pool.ObjectsInPoolCount);
-        }
-
         [TestCase(1)]
         [TestCase(5)]
         [TestCase(10)]
@@ -86,7 +65,7 @@ namespace CodeProject.ObjectPool.UnitTests
         [TestCase(100)]
         public void ShouldFillUntilMaximumSize(int maxSize)
         {
-            var pool = new ObjectPool<MyPooledObject>(0, maxSize);
+            var pool = new ObjectPool<MyPooledObject>(maxSize);
             var objects = new List<MyPooledObject>();
             for (var i = 0; i < maxSize * 2; ++i)
             {
@@ -109,7 +88,7 @@ namespace CodeProject.ObjectPool.UnitTests
         [TestCase(100)]
         public async Task ShouldFillUntilMaximumSize_Async(int maxSize)
         {
-            var pool = new ObjectPool<MyPooledObject>(0, maxSize);
+            var pool = new ObjectPool<MyPooledObject>(maxSize);
             var objectCount = maxSize * 4;
             var objects = new MyPooledObject[objectCount];
             Parallel.For(0, objectCount, i =>
@@ -132,10 +111,10 @@ namespace CodeProject.ObjectPool.UnitTests
         public void ShouldChangePoolLimitsIfCorrect()
         {
             var pool = new ObjectPool<MyPooledObject>();
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;
             pool.MaximumPoolSize.ShouldBe(2);
@@ -184,7 +163,7 @@ namespace CodeProject.ObjectPool.UnitTests
         }
 
         [Test]
-        public void ShouldHandleClearAndThenReachMinimumSizeAtLaterUsage()
+        public void ShouldHandleClearAndThenReachCorrectSizeAtLaterUsage()
         {
             var pool = new ObjectPool<MyPooledObject>();
 
@@ -250,7 +229,7 @@ namespace CodeProject.ObjectPool.UnitTests
         [Test]
         public void PooledObjectStateShouldBecomeDisposedWhenCannotReturnToThePool()
         {
-            var pool = new ObjectPool<MyPooledObject>(1, 2);
+            var pool = new ObjectPool<MyPooledObject>(2);
 
             var obj = pool.GetObject();
 

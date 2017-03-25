@@ -17,6 +17,17 @@ using System.Threading;
 namespace CodeProject.ObjectPool
 {
     /// <summary>
+    ///   Constants for all Object Pools.
+    /// </summary>
+    public static class ObjectPool
+    {
+        /// <summary>
+        ///   The default maximum size for the pool. It is set to 10.
+        /// </summary>
+        public const int DefaultPoolMaximumSize = 10;
+    }
+
+    /// <summary>
     ///   Generic object pool.
     /// </summary>
     /// <typeparam name="T">
@@ -88,22 +99,19 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, null)
         {
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified minimum pool size and maximum pool size.
+        ///   Initializes a new pool with specified maximum pool size.
         /// </summary>
-        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="minimumPoolSize"/> is less than zero,
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
-        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int minimumPoolSize, int maximumPoolSize)
-            : this(minimumPoolSize, maximumPoolSize, null)
+        public ObjectPool(int maximumPoolSize)
+            : this(maximumPoolSize, null)
         {
         }
 
@@ -112,22 +120,19 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod)
         {
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified factory method and minimum and maximum size.
+        ///   Initializes a new pool with specified factory method and maximum size.
         /// </summary>
-        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="minimumPoolSize"/> is less than zero,
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero, or
-        ///   <paramref name="minimumPoolSize"/> is greater than <paramref name="maximumPoolSize"/>.
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
         {
             // Preconditions
             Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);

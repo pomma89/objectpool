@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Core;
 using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -33,8 +32,17 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public sealed class MemoryStreamPool : ObjectPool<PooledMemoryStream>, IMemoryStreamPool
     {
-        private int _minimumItemCapacity = SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity;
-        private int _maximumItemCapacity = SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity;
+        /// <summary>
+        ///   Default minimum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 4KB.
+        /// </summary>
+        public const int DefaultMinimumMemoryStreamCapacity = 4 * 1024;
+
+        /// <summary>
+        ///   Default maximum memory stream capacity. Shared by all <see cref="IMemoryStreamPool"/>
+        ///   instances, defaults to 512KB.
+        /// </summary>
+        public const int DefaultMaximumMemoryStreamCapacity = 512 * 1024;
 
         /// <summary>
         ///   Thread-safe pool instance.
@@ -45,14 +53,19 @@ namespace CodeProject.ObjectPool.Specialized
         ///   Builds the specialized pool.
         /// </summary>
         public MemoryStreamPool()
-            : base(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
+            : base(ObjectPool.DefaultPoolMaximumSize, null)
         {
             FactoryMethod = () => new PooledMemoryStream(MinimumMemoryStreamCapacity);
         }
 
         /// <summary>
+        ///   Backing field for <see cref="MinimumMemoryStreamCapacity"/>
+        /// </summary>
+        private int _minimumItemCapacity = DefaultMinimumMemoryStreamCapacity;
+
+        /// <summary>
         ///   Minimum capacity a <see cref="MemoryStream"/> should have when created and this is the
-        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMinimumMemoryStreamCapacity"/>.
+        ///   minimum capacity of all streams stored in the pool. Defaults to <see cref="DefaultMinimumMemoryStreamCapacity"/>.
         /// </summary>
         public int MinimumMemoryStreamCapacity
         {
@@ -69,8 +82,13 @@ namespace CodeProject.ObjectPool.Specialized
         }
 
         /// <summary>
+        ///   Backing field for <see cref="MaximumMemoryStreamCapacity"/>.
+        /// </summary>
+        private int _maximumItemCapacity = DefaultMaximumMemoryStreamCapacity;
+
+        /// <summary>
         ///   Maximum capacity a <see cref="MemoryStream"/> might have in order to be able to return
-        ///   to pool. Defaults to <see cref="SpecializedPoolConstants.DefaultMaximumMemoryStreamCapacity"/>.
+        ///   to pool. Defaults to <see cref="DefaultMaximumMemoryStreamCapacity"/>.
         /// </summary>
         public int MaximumMemoryStreamCapacity
         {

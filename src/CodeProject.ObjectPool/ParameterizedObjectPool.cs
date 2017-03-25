@@ -24,21 +24,12 @@ namespace CodeProject.ObjectPool
     public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
         where TValue : PooledObject
     {
-        #region Fields
+        #region Public Properties
 
         /// <summary>
         ///   Backing field for <see cref="Diagnostics"/>.
         /// </summary>
         private ObjectPoolDiagnostics _diagnostics;
-
-        /// <summary>
-        ///   Backing field for <see cref="MaximumPoolSize"/>.
-        /// </summary>
-        private int _maximumPoolSize;
-
-        #endregion Fields
-
-        #region Public Properties
 
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
@@ -63,16 +54,18 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
+        ///   Backing field for <see cref="MaximumPoolSize"/>.
+        /// </summary>
+        private int _maximumPoolSize;
+
+        /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
         // ReSharper disable once ConvertToAutoProperty
         public int MaximumPoolSize
         {
-            get
-            {
-                return _maximumPoolSize;
-            }
+            get { return _maximumPoolSize; }
             set
             {
                 // Preconditions
@@ -100,17 +93,16 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ParameterizedObjectPool()
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, null)
         {
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified minimum pool size and maximum pool size.
+        ///   Initializes a new pool with specified maximum pool size.
         /// </summary>
-        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize)
-            : this(minimumPoolSize, maximumPoolSize, null)
+        public ParameterizedObjectPool(int maximumPoolSize)
+            : this(maximumPoolSize, null)
         {
         }
 
@@ -119,17 +111,16 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ParameterizedObjectPool(Func<TKey, TValue> factoryMethod)
-            : this(ObjectPoolConstants.DefaultPoolMinimumSize, ObjectPoolConstants.DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod)
         {
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified factory method and minimum and maximum size.
+        ///   Initializes a new pool with specified factory method and maximum size.
         /// </summary>
-        /// <param name="minimumPoolSize">The minimum pool size limit.</param>
         /// <param name="maximumPoolSize">The maximum pool size limit</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize, Func<TKey, TValue> factoryMethod)
+        public ParameterizedObjectPool(int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
             // Preconditions
             Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -221,7 +212,7 @@ namespace CodeProject.ObjectPool
                 ObjectPool<TValue> objectPool;
                 if (!_pools.ContainsKey(key))
                 {
-                    _pools.Add(key, objectPool = new ObjectPool<TValue>(0, MaximumPoolSize, PrepareFactoryMethod(key))
+                    _pools.Add(key, objectPool = new ObjectPool<TValue>(MaximumPoolSize, PrepareFactoryMethod(key))
                     {
                         Diagnostics = _diagnostics
                     });

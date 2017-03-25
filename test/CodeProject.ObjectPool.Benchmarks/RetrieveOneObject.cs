@@ -29,9 +29,9 @@ namespace CodeProject.ObjectPool.Benchmarks
     [Config(typeof(Program.Config))]
     public class RetrieveOneObject
     {
-        private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(9, 21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
-        private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(9, 21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
-        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create<MyResource>(new MyResource.Policy());
+        private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
+        private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
+        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
 
         private sealed class MyResource : PooledObject
         {

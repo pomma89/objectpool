@@ -72,8 +72,7 @@ namespace CodeProject.ObjectPool
 
         /// <summary>
         ///   Gets the total count of unsuccessful accesses. The pool had to create an object in
-        ///   order to satisfy the user request. If the number is high, consider increasing the
-        ///   object minimum limit.
+        ///   order to satisfy the user request.
         /// </summary>
         public long PoolObjectMissCount => _poolObjectMissCount;
 

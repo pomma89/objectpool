@@ -36,21 +36,13 @@ namespace CodeProject.ObjectPool.UnitTests
     [TestFixture]
     internal sealed class ParameterizedObjectPoolTests
     {
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnNegativeMinimumSize(int minSize)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(minSize, 1));
-        }
-
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
         [TestCase(-10)]
         public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(maxSize));
         }
 
         [TestCase(0)]
@@ -72,7 +64,7 @@ namespace CodeProject.ObjectPool.UnitTests
         public async Task ShouldSimplyWork(int maxSize)
         {
             const int keyCount = 4;
-            var pool = new ParameterizedObjectPool<int, MyPooledObject>(0, maxSize);
+            var pool = new ParameterizedObjectPool<int, MyPooledObject>(maxSize);
             var objectCount = maxSize * keyCount;
             var objects = new MyPooledObject[objectCount];
             Parallel.For(0, objectCount, i =>
@@ -95,10 +87,10 @@ namespace CodeProject.ObjectPool.UnitTests
         public void ShouldChangePoolLimitsIfCorrect()
         {
             var pool = new ParameterizedObjectPool<int, MyPooledObject>();
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;
             Assert.AreEqual(2, pool.MaximumPoolSize);
