@@ -8,9 +8,6 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
-
 namespace CodeProject.ObjectPool
 {
     /// <summary>
@@ -31,21 +28,5 @@ namespace CodeProject.ObjectPool
         public const int DefaultPoolMaximumSize = 10;
 
         #endregion Constants
-
-        #region Validation
-
-        /// <summary>
-        ///   Checks the lower and upper bounds for the pool size.
-        /// </summary>
-        /// <param name="minimumPoolSize">The lower bound.</param>
-        /// <param name="maximumPoolSize">The upper bound.</param>
-        public static void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
-        {
-            Raise.ArgumentOutOfRangeException.If(minimumPoolSize < 0, nameof(minimumPoolSize), ErrorMessages.NegativeMinimumPoolSize);
-            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
-            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < minimumPoolSize, nameof(maximumPoolSize), ErrorMessages.WrongCacheBounds);
-        }
-
-        #endregion Validation
     }
 }

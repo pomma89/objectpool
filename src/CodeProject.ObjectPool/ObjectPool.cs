@@ -10,6 +10,7 @@
 
 using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Extensibility;
+using PommaLabs.Thrower;
 using System;
 using System.Threading;
 
@@ -51,7 +52,8 @@ namespace CodeProject.ObjectPool
             }
             set
             {
-                ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
                 if (_pooledObjects == null)
                 {
@@ -61,17 +63,6 @@ namespace CodeProject.ObjectPool
                 {
                     Array.Resize(ref _pooledObjects, value);
                 }
-            }
-        }
-
-        /// <summary>
-        ///   Gets or sets the minimum number of objects in the pool.
-        /// </summary>
-        public int MinimumPoolSize
-        {
-            get
-            {
-                return 0;
             }
         }
 
@@ -138,8 +129,8 @@ namespace CodeProject.ObjectPool
         /// </exception>
         public ObjectPool(int minimumPoolSize, int maximumPoolSize, Func<T> factoryMethod)
         {
-            // Validating pool limits, exception is thrown if invalid.
-            ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
+            // Preconditions
+            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
             // Assigning properties.
             FactoryMethod = factoryMethod;

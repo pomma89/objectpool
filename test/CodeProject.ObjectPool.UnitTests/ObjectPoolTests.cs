@@ -132,15 +132,12 @@ namespace CodeProject.ObjectPool.UnitTests
         public void ShouldChangePoolLimitsIfCorrect()
         {
             var pool = new ObjectPool<MyPooledObject>();
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMinimumSize, pool.MinimumPoolSize);
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize - 5, pool.MinimumPoolSize);
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;
-            pool.MinimumPoolSize.ShouldBe(1);
             pool.MaximumPoolSize.ShouldBe(2);
         }
 
@@ -151,7 +148,7 @@ namespace CodeProject.ObjectPool.UnitTests
 
             pool.Clear();
 
-            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         [Test]
@@ -165,7 +162,7 @@ namespace CodeProject.ObjectPool.UnitTests
 
             pool.Clear();
 
-            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         [Test]
@@ -183,7 +180,7 @@ namespace CodeProject.ObjectPool.UnitTests
             {
             }
 
-            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+            pool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
         }
 
         [Test]
@@ -214,14 +211,14 @@ namespace CodeProject.ObjectPool.UnitTests
             }
 
             // Despite usage #B, count should always be fixed.
-            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+            pool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
         }
 
         [Test]
         public void ShouldEnforceLowerBoundOnPoolConstruction()
         {
             var pool = new ObjectPool<MyPooledObject>();
-            pool.ObjectsInPoolCount.ShouldBe(pool.MinimumPoolSize);
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         #region Pooled object state

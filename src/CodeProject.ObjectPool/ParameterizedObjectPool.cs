@@ -8,6 +8,8 @@
  *
  */
 
+using CodeProject.ObjectPool.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -33,11 +35,6 @@ namespace CodeProject.ObjectPool
         ///   Backing field for <see cref="MaximumPoolSize"/>.
         /// </summary>
         private int _maximumPoolSize;
-
-        /// <summary>
-        ///   Backing field for <see cref="MinimumPoolSize"/>.
-        /// </summary>
-        private int _minimumPoolSize;
 
         #endregion Fields
 
@@ -78,25 +75,10 @@ namespace CodeProject.ObjectPool
             }
             set
             {
-                ObjectPoolConstants.ValidatePoolLimits(MinimumPoolSize, value);
-                _maximumPoolSize = value;
-            }
-        }
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-        /// <summary>
-        ///   Gets or sets the minimum number of objects in the pool.
-        /// </summary>
-        // ReSharper disable once ConvertToAutoProperty
-        public int MinimumPoolSize
-        {
-            get
-            {
-                return _minimumPoolSize;
-            }
-            set
-            {
-                ObjectPoolConstants.ValidatePoolLimits(value, MaximumPoolSize);
-                _minimumPoolSize = value;
+                _maximumPoolSize = value;
             }
         }
 
@@ -149,14 +131,13 @@ namespace CodeProject.ObjectPool
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ParameterizedObjectPool(int minimumPoolSize, int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
-            // Validating pool limits, exception is thrown if invalid
-            ObjectPoolConstants.ValidatePoolLimits(minimumPoolSize, maximumPoolSize);
+            // Preconditions
+            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
             // Assigning properties
             Diagnostics = new ObjectPoolDiagnostics();
             FactoryMethod = factoryMethod;
             _maximumPoolSize = maximumPoolSize;
-            _minimumPoolSize = minimumPoolSize;
         }
 
         #endregion C'tor and Initialization code
@@ -240,7 +221,7 @@ namespace CodeProject.ObjectPool
                 ObjectPool<TValue> objectPool;
                 if (!_pools.ContainsKey(key))
                 {
-                    _pools.Add(key, objectPool = new ObjectPool<TValue>(MinimumPoolSize, MaximumPoolSize, PrepareFactoryMethod(key))
+                    _pools.Add(key, objectPool = new ObjectPool<TValue>(0, MaximumPoolSize, PrepareFactoryMethod(key))
                     {
                         Diagnostics = _diagnostics
                     });

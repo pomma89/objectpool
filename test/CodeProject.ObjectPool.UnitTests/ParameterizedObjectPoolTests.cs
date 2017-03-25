@@ -44,14 +44,6 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(minSize, 1));
         }
 
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnNegativeMinimumSizeOnProperty(int minSize)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MinimumPoolSize = minSize });
-        }
-
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
@@ -103,23 +95,12 @@ namespace CodeProject.ObjectPool.UnitTests
         public void ShouldChangePoolLimitsIfCorrect()
         {
             var pool = new ParameterizedObjectPool<int, MyPooledObject>();
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMinimumSize, pool.MinimumPoolSize);
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
-
-            pool.MinimumPoolSize = pool.MaximumPoolSize - 5;
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize - 5, pool.MinimumPoolSize);
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize - 5, pool.MinimumPoolSize);
-            Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
-
-            pool.MinimumPoolSize = 1;
-            Assert.AreEqual(1, pool.MinimumPoolSize);
             Assert.AreEqual(ObjectPoolConstants.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;
-            Assert.AreEqual(1, pool.MinimumPoolSize);
             Assert.AreEqual(2, pool.MaximumPoolSize);
         }
 
