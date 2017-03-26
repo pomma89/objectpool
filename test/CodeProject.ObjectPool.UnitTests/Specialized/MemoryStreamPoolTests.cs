@@ -364,7 +364,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         [Test]
         public void ShouldClearPoolWhenMaxCapacityIsDecreased()
         {
-            var beforeCreation = DateTime.UtcNow;
+            var beforeCreation = _memoryStreamPool.Clock.UtcNow;
 
             DateTime initialCreatedAt;
             using (var pms = _memoryStreamPool.GetObject())
@@ -372,12 +372,12 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 initialCreatedAt = pms.CreatedAt;
             }
 
-            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            initialCreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
 
             _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(initialCreatedAt);
             }
         }
 
