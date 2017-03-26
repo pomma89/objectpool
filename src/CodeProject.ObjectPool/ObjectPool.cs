@@ -70,11 +70,30 @@ namespace CodeProject.ObjectPool
                 if (_pooledObjects == null)
                 {
                     _pooledObjects = new T[value];
+                    return;
                 }
-                else
+
+                var currentSize = _pooledObjects.Length;
+                if (currentSize == value)
                 {
-                    Array.Resize(ref _pooledObjects, value);
+                    // Nothing to do.
+                    return;
                 }
+
+                if (currentSize > value)
+                {
+                    for (var i = value; i < currentSize; ++i)
+                    {
+                        ref var item = ref _pooledObjects[i];
+                        if (item != null)
+                        {
+                            item.Dispose();
+                            item = null;
+                        }
+                    }
+                }
+
+                Array.Resize(ref _pooledObjects, value);
             }
         }
 
