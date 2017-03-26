@@ -38,8 +38,6 @@ namespace CodeProject.ObjectPool.UnitTests
     [TestFixture]
     internal sealed class ObjectPoolTests
     {
-        public const int OneUsage = 1;
-
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(-5)]
@@ -159,7 +157,7 @@ namespace CodeProject.ObjectPool.UnitTests
             {
             }
 
-            pool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            pool.ObjectsInPoolCount.ShouldBe(1);
         }
 
         [Test]
@@ -190,7 +188,7 @@ namespace CodeProject.ObjectPool.UnitTests
             }
 
             // Despite usage #B, count should always be fixed.
-            pool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            pool.ObjectsInPoolCount.ShouldBe(1);
         }
 
         [Test]

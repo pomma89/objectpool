@@ -64,7 +64,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text1 + text2);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -87,13 +87,13 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text1 + text2);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(0);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
-        public void IdPropertyShouldChangeUsageAfterUsage()
+        public void IdPropertyShouldNotChangeUsageAfterUsage()
         {
             // First usage.
             Guid id;
@@ -106,30 +106,30 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             // Second usage is different, pool uses a queue, not a stack.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.Id.ShouldNotBe(id);
+                psb.Id.ShouldBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
+        public void CreatedAtPropertyShouldNotChangeUsageAfterUsage()
         {
-            var beforeCreation = DateTime.UtcNow;
+            var beforeCreation = _stringBuilderPool.Clock.UtcNow;
 
             // First usage.
             DateTime createdAt;
             using (var psb = _stringBuilderPool.GetObject())
             {
                 createdAt = psb.CreatedAt;
-                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
             // Second usage is different, pool uses a queue, not a stack.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
-                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
-                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                psb.CreatedAt.ShouldBe(createdAt);
+                psb.CreatedAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }
 
@@ -152,7 +152,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -173,7 +173,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _stringBuilderPool.ObjectsInPoolCount.ShouldBe(0);
             _stringBuilderPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             _stringBuilderPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }

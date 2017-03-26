@@ -26,6 +26,11 @@ namespace CodeProject.ObjectPool
         ///   The default maximum size for the pool. It is set to 16.
         /// </summary>
         public const int DefaultPoolMaximumSize = 16;
+
+        /// <summary>
+        ///   The default clock used by all pools. It is set to <see cref="SystemClock.Instance"/>.
+        /// </summary>
+        public static IClock DefaultClock { get; set; } = SystemClock.Instance;
     }
 
     /// <summary>
@@ -107,7 +112,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="ObjectPool.DefaultClock"/>.
         /// </remarks>
         public IClock Clock { get; }
 
@@ -165,7 +170,7 @@ namespace CodeProject.ObjectPool
             Diagnostics = new ObjectPoolDiagnostics();
 
             // Initialize all services.
-            Clock = SystemClock.Instance;
+            Clock = ObjectPool.DefaultClock;
         }
 
         #endregion C'tor and Initialization code

@@ -74,7 +74,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -122,7 +122,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             }
             result.ShouldBe(text + text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -153,7 +153,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -199,7 +199,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             result.ShouldBe(text + text);
 #pragma warning restore CC0022 // Should dispose object
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
         }
@@ -229,7 +229,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text + text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
@@ -259,13 +259,13 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
 
             result.ShouldBe(text + text);
 
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(ObjectPoolTests.OneUsage);
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [Test]
-        public void IdPropertyShouldChangeUsageAfterUsage()
+        public void IdPropertyShouldNotChangeUsageAfterUsage()
         {
             // First usage.
             Guid id;
@@ -278,30 +278,30 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             // Second usage is different, pool uses a queue, not a stack.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.Id.ShouldNotBe(id);
+                pms.Id.ShouldBe(id);
             }
         }
 
         [Test]
-        public void CreatedAtPropertyShouldChangeUsageAfterUsage()
+        public void CreatedAtPropertyShouldNotChangeUsageAfterUsage()
         {
-            var beforeCreation = DateTime.UtcNow;
+            var beforeCreation = _memoryStreamPool.Clock.UtcNow;
 
             // First usage.
             DateTime createdAt;
             using (var pms = _memoryStreamPool.GetObject())
             {
                 createdAt = pms.CreatedAt;
-                createdAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
                 createdAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
 
             // Second usage is different, pool uses a queue, not a stack.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
-                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(createdAt);
-                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
+                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                pms.CreatedAt.ShouldBe(createdAt);
+                pms.CreatedAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }
 

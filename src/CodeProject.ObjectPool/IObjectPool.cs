@@ -8,6 +8,7 @@
  *
  */
 
+using CodeProject.ObjectPool.Extensibility;
 using System;
 
 namespace CodeProject.ObjectPool
@@ -17,7 +18,6 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="T">The type of the objects stored in the pool.</typeparam>
 #if NET35
-
     public interface IObjectPool<T>
 #else
 
@@ -25,6 +25,11 @@ namespace CodeProject.ObjectPool
 #endif
         where T : PooledObject
     {
+        /// <summary>
+        ///   Gets the clock used by the cache.
+        /// </summary>
+        IClock Clock { get; }
+
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
         ///   data about how the pool operates. By default, however, an object pool records anything,
