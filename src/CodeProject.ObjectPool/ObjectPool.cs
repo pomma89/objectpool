@@ -12,6 +12,7 @@ using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Extensibility;
 using PommaLabs.Thrower;
 using System;
+using System.Linq;
 using System.Threading;
 
 namespace CodeProject.ObjectPool
@@ -80,7 +81,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _poolSize;
+        public int ObjectsInPoolCount => _pooledObjects.Count(x => x != null);
 
         /// <summary>
         ///   Gets the clock used by the cache.
@@ -266,11 +267,6 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private T[] _pooledObjects;
 
-        /// <summary>
-        ///   Local copy of the pool size.
-        /// </summary>
-        private int _poolSize;
-
         private void ClearQueue()
         {
             if (_pooledObjects == null)
@@ -290,7 +286,6 @@ namespace CodeProject.ObjectPool
                 var item = _pooledObjects[i];
                 if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
                 {
-                    Interlocked.Decrement(ref _poolSize);
                     pooledObject = item;
                     return true;
                 }
@@ -303,10 +298,9 @@ namespace CodeProject.ObjectPool
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                if (_pooledObjects[i] == null)
+                ref var item = ref _pooledObjects[i];
+                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
                 {
-                    Interlocked.Increment(ref _poolSize);
-                    _pooledObjects[i] = pooledObject;
                     return true;
                 }
             }
