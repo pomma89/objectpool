@@ -12,7 +12,6 @@ var target = Argument("target", "Default");
 
 var solutionFile = "./ObjectPool.sln";
 var artifactsDir = "./artifacts";
-var testResultsDir = artifactsDir + "/test-results";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -22,7 +21,6 @@ Task("Clean")
     .Does(() =>
 {
     CleanDirectory(artifactsDir);
-    CleanDirectory(testResultsDir);
 });
 
 Task("Restore")
@@ -104,17 +102,32 @@ private void Build(string cfg)
 
 private void Test(string cfg)
 {
-    NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings 
-    {
-        NoResults = true,
-        OutputFile = testResultsDir + "/" + cfg.ToLower() + ".xml"
-    });
+    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings 
+    //{
+    //    NoResults = true
+    //});
+
+	const string flags = "--noheader --noresult";
+	const string errMsg = " - Unit test failure - ";
+
+	Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+	{
+		if (StartProcess(netExe, flags) != 0)
+		{
+			throw new Exception(cfg + errMsg + netExe);
+		}
+	});
+
+	Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+	{
+		DotNetCoreExecute(netCoreDll, flags);
+	});
 }
 
 private void Pack(string cfg)
 {
-    foreach (var project in GetFiles("./src/**/*.csproj"))
-    {
+	Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
+	{
         //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         //{
         //    Configuration = cfg,
@@ -129,5 +142,8 @@ private void Pack(string cfg)
 			settings.WithTarget("pack");
 			settings.WithProperty("IncludeSymbols", new[] { "true" });
 		});
-    }    
+
+		var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
+		MoveFiles(GetFiles(packDir + "/*.nupkg"), artifactsDir);
+	});
 }

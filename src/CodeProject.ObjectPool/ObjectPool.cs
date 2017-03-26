@@ -72,33 +72,7 @@ namespace CodeProject.ObjectPool
                 // Preconditions
                 Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-                if (_pooledObjects == null)
-                {
-                    _pooledObjects = new T[value];
-                    return;
-                }
-
-                var currentSize = _pooledObjects.Length;
-                if (currentSize == value)
-                {
-                    // Nothing to do.
-                    return;
-                }
-
-                if (currentSize > value)
-                {
-                    for (var i = value; i < currentSize; ++i)
-                    {
-                        ref var item = ref _pooledObjects[i];
-                        if (item != null)
-                        {
-                            item.Dispose();
-                            item = null;
-                        }
-                    }
-                }
-
-                Array.Resize(ref _pooledObjects, value);
+                ResizeQueue(value);
             }
         }
 
@@ -329,6 +303,37 @@ namespace CodeProject.ObjectPool
                 }
             }
             return false;
+        }
+
+        private void ResizeQueue(int newSize)
+        {
+            if (_pooledObjects == null)
+            {
+                _pooledObjects = new T[newSize];
+                return;
+            }
+
+            var currentSize = _pooledObjects.Length;
+            if (currentSize == newSize)
+            {
+                // Nothing to do.
+                return;
+            }
+
+            if (currentSize > newSize)
+            {
+                for (var i = newSize; i < currentSize; ++i)
+                {
+                    ref var item = ref _pooledObjects[i];
+                    if (item != null)
+                    {
+                        item.Dispose();
+                        item = null;
+                    }
+                }
+            }
+
+            Array.Resize(ref _pooledObjects, newSize);
         }
 
         #endregion Low-level Pooling

@@ -237,7 +237,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         [Test]
         public void ShouldClearPoolWhenMaxCapacityIsDecreased()
         {
-            var beforeCreation = DateTime.UtcNow;
+            var beforeCreation = _stringBuilderPool.Clock.UtcNow;
 
             DateTime initialCreatedAt;
             using (var psb = _stringBuilderPool.GetObject())
@@ -245,12 +245,12 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 initialCreatedAt = psb.CreatedAt;
             }
 
-            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            initialCreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
 
             _stringBuilderPool.MaximumStringBuilderCapacity /= 2;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(initialCreatedAt);
             }
         }
     }
