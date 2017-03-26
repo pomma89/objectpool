@@ -22,9 +22,9 @@ namespace CodeProject.ObjectPool
     public static class ObjectPool
     {
         /// <summary>
-        ///   The default maximum size for the pool. It is set to 10.
+        ///   The default maximum size for the pool. It is set to 16.
         /// </summary>
-        public const int DefaultPoolMaximumSize = 10;
+        public const int DefaultPoolMaximumSize = 16;
     }
 
     /// <summary>
