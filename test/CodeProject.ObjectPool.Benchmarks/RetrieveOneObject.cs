@@ -32,6 +32,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
         private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
         private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
+        private readonly Original.ObjectPool<MyOriginalResource> _originalObjectPool = new Original.ObjectPool<MyOriginalResource>(0, 21, () => new MyOriginalResource { Value = DateTime.UtcNow.ToString() });
 
         private sealed class MyResource : PooledObject
         {
@@ -47,6 +48,11 @@ namespace CodeProject.ObjectPool.Benchmarks
 
                 public bool Return(MyResource obj) => true;
             }
+        }
+
+        private sealed class MyOriginalResource : Original.PooledObject
+        {
+            public string Value { get; set; }
         }
 
         [Benchmark]
@@ -87,6 +93,17 @@ namespace CodeProject.ObjectPool.Benchmarks
                 {
                     _microsoftObjectPool.Return(res);
                 }
+            }
+            return str;
+        }
+
+        [Benchmark]
+        public string OriginalObjectPool()
+        {
+            string str;
+            using (var x = _originalObjectPool.GetObject())
+            {
+                str = x.Value;
             }
             return str;
         }
