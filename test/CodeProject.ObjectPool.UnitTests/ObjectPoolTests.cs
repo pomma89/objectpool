@@ -106,6 +106,29 @@ namespace CodeProject.ObjectPool.UnitTests
 #endif
 
         [Test]
+        public void ShouldResetPooledObjectIdsWhenCleared()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            var poA = pool.GetObject();
+            var poB = pool.GetObject();
+
+            poA.PooledObjectId.ShouldBe(1);
+            poB.PooledObjectId.ShouldBe(2);
+
+            poA.Dispose();
+            poB.Dispose();
+
+            pool.ObjectsInPoolCount.ShouldBe(2);
+
+            pool.Clear();
+
+            var poC = pool.GetObject();
+
+            poC.PooledObjectId.ShouldBe(1);
+        }
+
+        [Test]
         public void ShouldChangePoolLimitsIfCorrect()
         {
             var pool = new ObjectPool<MyPooledObject>();

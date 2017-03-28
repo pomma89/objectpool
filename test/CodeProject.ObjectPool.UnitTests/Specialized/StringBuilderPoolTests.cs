@@ -97,11 +97,11 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         public void IdPropertyShouldNotChangeUsageAfterUsage()
         {
             // First usage.
-            Guid id;
+            int id;
             using (var psb = _stringBuilderPool.GetObject())
             {
                 id = psb.PooledObjectId;
-                id.ShouldNotBe(Guid.Empty);
+                id.ShouldNotBe(0);
             }
 
             // Second usage is different, pool uses a queue, not a stack.

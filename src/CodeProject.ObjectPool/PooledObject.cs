@@ -36,16 +36,16 @@ namespace CodeProject.ObjectPool
         #region Properties
 
         /// <summary>
-        ///   Unique identifier.
+        ///   An identifier which is unique inside the pool to which this object belongs. Moreover,
+        ///   this identifier increases monotonically as new objects are created.
         /// </summary>
-        public Guid PooledObjectId { get; } = Guid.NewGuid();
+        public int PooledObjectId { get; internal set; }
 
         /// <summary>
         ///   Enumeration that is being managed by the pool to describe the object state - primary
         ///   used to void cases where the resources are being releases twice.
         /// </summary>
-        /// <remarks>Default value for pooled object state is <see cref="Core.PooledObjectState.Available"/>.</remarks>
-        public PooledObjectState PooledObjectState { get; internal set; } = PooledObjectState.Available;
+        public PooledObjectState PooledObjectState { get; internal set; }
 
         /// <summary>
         ///   Internal action that is initialized by the pool while creating the object, this allows

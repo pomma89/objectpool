@@ -171,6 +171,9 @@ namespace CodeProject.ObjectPool
         {
             // Destroy all objects.
             ClearQueue();
+
+            // Resets the integer used to produce pooled object IDs.
+            _lastPooledObjectId = default(int);
         }
 
         /// <summary>
@@ -340,6 +343,11 @@ namespace CodeProject.ObjectPool
 
         #region Private Methods
 
+        /// <summary>
+        ///   Keeps track of last pooled object ID.
+        /// </summary>
+        private int _lastPooledObjectId;
+
         private T CreatePooledObject()
         {
             if (Diagnostics.Enabled)
@@ -352,8 +360,10 @@ namespace CodeProject.ObjectPool
             // user and force a parameterless constructor.
             var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
-            // Setting the 'return to pool' action in the newly created pooled object.
+            // Setting the 'return to pool' action and other properties in the newly created pooled object.
             newObject.ObjectPoolHandle = this;
+            newObject.PooledObjectId = Interlocked.Increment(ref _lastPooledObjectId);
+            newObject.PooledObjectState = PooledObjectState.Available;
             return newObject;
         }
 

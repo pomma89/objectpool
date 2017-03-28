@@ -21,26 +21,29 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+
 namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
     ///   Describes the state of a pooled object.
     /// </summary>
-    public enum PooledObjectState
+    [Flags]
+    public enum PooledObjectState : byte
     {
         /// <summary>
         ///   The object is inside the pool, waiting to be used.
         /// </summary>
-        Available,
+        Available = 0,
 
         /// <summary>
         ///   The object is outside the pool, waiting to return to the pool.
         /// </summary>
-        Reserved,
+        Reserved = 1,
 
         /// <summary>
         ///   The object has been disposed and cannot be used anymore.
         /// </summary>
-        Disposed
+        Disposed = 2
     }
 }
