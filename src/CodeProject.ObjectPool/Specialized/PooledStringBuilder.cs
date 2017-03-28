@@ -62,7 +62,7 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected override void OnResetState()
         {
-            var stringBuilderPool = Handle as IStringBuilderPool;
+            var stringBuilderPool = ObjectPoolHandle as IStringBuilderPool;
             if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
             {
                 throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");

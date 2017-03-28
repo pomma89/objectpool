@@ -51,7 +51,7 @@ namespace CodeProject.ObjectPool
         ///   Internal action that is initialized by the pool while creating the object, this allows
         ///   that object to re-add itself back to the pool.
         /// </summary>
-        internal IObjectPoolHandle Handle { get; set; }
+        internal IObjectPoolHandle ObjectPoolHandle { get; set; }
 
         #endregion Properties
 
@@ -172,7 +172,7 @@ namespace CodeProject.ObjectPool
             try
             {
                 // Notifying the pool that this object is ready for re-adding to the pool.
-                Handle.ReturnObjectToPool(this, reRegisterForFinalization);
+                ObjectPoolHandle.ReturnObjectToPool(this, reRegisterForFinalization);
             }
             catch (Exception ex)
             {

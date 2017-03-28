@@ -353,7 +353,7 @@ namespace CodeProject.ObjectPool
             var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
             // Setting the 'return to pool' action in the newly created pooled object.
-            newObject.Handle = this;
+            newObject.ObjectPoolHandle = this;
             return newObject;
         }
 
