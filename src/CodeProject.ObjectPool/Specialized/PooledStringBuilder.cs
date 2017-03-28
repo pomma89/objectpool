@@ -47,11 +47,6 @@ namespace CodeProject.ObjectPool.Specialized
         }
 
         /// <summary>
-        ///   When the pooled object was created (UTC).
-        /// </summary>
-        public DateTime CreatedAt { get; } = DateTime.UtcNow;
-
-        /// <summary>
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>

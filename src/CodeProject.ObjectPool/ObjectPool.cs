@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using CodeProject.ObjectPool.Extensibility;
 using PommaLabs.Thrower;
 using System;
 using System.Linq;
@@ -26,11 +25,6 @@ namespace CodeProject.ObjectPool
         ///   The default maximum size for the pool. It is set to 16.
         /// </summary>
         public const int DefaultPoolMaximumSize = 16;
-
-        /// <summary>
-        ///   The default clock used by all pools. It is set to <see cref="SystemClock.Instance"/>.
-        /// </summary>
-        public static IClock DefaultClock { get; set; } = SystemClock.Instance;
     }
 
     /// <summary>
@@ -72,7 +66,7 @@ namespace CodeProject.ObjectPool
                 // Preconditions
                 Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-                ResizeQueue(value);
+                ResizeBuffer(value);
             }
         }
 
@@ -80,15 +74,6 @@ namespace CodeProject.ObjectPool
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
         public int ObjectsInPoolCount => _pooledObjects.Count(x => x != null);
-
-        /// <summary>
-        ///   Gets the clock used by the pool.
-        /// </summary>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="ObjectPool.DefaultClock"/>.
-        /// </remarks>
-        public IClock Clock { get; }
 
         #endregion Public Properties
 
@@ -142,9 +127,6 @@ namespace CodeProject.ObjectPool
 
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
-
-            // Initialize all services.
-            Clock = ObjectPool.DefaultClock;
         }
 
         #endregion C'tor and Initialization code
@@ -157,7 +139,7 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            ClearQueue();
+            ClearBuffer();
         }
 
         #endregion Finalizer
@@ -170,10 +152,7 @@ namespace CodeProject.ObjectPool
         public void Clear()
         {
             // Destroy all objects.
-            ClearQueue();
-
-            // Resets the integer used to produce pooled object IDs.
-            _lastPooledObjectId = default(int);
+            ClearBuffer();
         }
 
         /// <summary>
@@ -268,7 +247,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private T[] _pooledObjects;
 
-        private void ClearQueue()
+        private void ClearBuffer()
         {
             if (_pooledObjects == null)
             {
@@ -308,7 +287,7 @@ namespace CodeProject.ObjectPool
             return false;
         }
 
-        private void ResizeQueue(int newSize)
+        private void ResizeBuffer(int newSize)
         {
             if (_pooledObjects == null)
             {

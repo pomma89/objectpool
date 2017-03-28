@@ -1,4 +1,4 @@
-﻿// File name: IClock.cs
+﻿// File name: PooledObjectInfo.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,18 +21,16 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-
-namespace CodeProject.ObjectPool.Extensibility
+namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
-    ///   Extension point, allows customization of current date and time retrieval.
+    ///   Information about a specific <see cref="PooledObject"/>.
     /// </summary>
-    public interface IClock
+    public sealed class PooledObjectInfo
     {
         /// <summary>
-        ///   Current UTC date and time.
+        ///   The state.
         /// </summary>
-        DateTime UtcNow { get; }
+        public PooledObjectState State { get; set; }
     }
 }

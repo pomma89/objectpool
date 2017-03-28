@@ -276,33 +276,10 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 id.ShouldNotBe(0);
             }
 
-            // Second usage is different, pool uses a queue, not a stack.
+            // Second usage is the same, pool uses a sort of stack, not a proper queue.
             using (var pms = _memoryStreamPool.GetObject())
             {
                 pms.PooledObjectId.ShouldBe(id);
-            }
-        }
-
-        [Test]
-        public void CreatedAtPropertyShouldNotChangeUsageAfterUsage()
-        {
-            var beforeCreation = _memoryStreamPool.Clock.UtcNow;
-
-            // First usage.
-            DateTime createdAt;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                createdAt = pms.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
-                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
-            }
-
-            // Second usage is different, pool uses a queue, not a stack.
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
-                pms.CreatedAt.ShouldBe(createdAt);
-                pms.CreatedAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }
 
@@ -345,40 +322,36 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         [Test]
         public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
         {
-            var beforeCreation = DateTime.UtcNow;
-
-            DateTime initialCreatedAt;
+            int initialId;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                initialCreatedAt = pms.CreatedAt;
+                initialId = pms.PooledObjectId;
             }
 
-            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            initialId.ShouldBeGreaterThan(0);
 
             _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                pms.PooledObjectId.ShouldBe(initialId);
             }
         }
 
         [Test]
         public void ShouldClearPoolWhenMaxCapacityIsDecreased()
         {
-            var beforeCreation = _memoryStreamPool.Clock.UtcNow;
-
-            DateTime initialCreatedAt;
+            int initialId;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                initialCreatedAt = pms.CreatedAt;
+                initialId = pms.PooledObjectId;
             }
 
-            initialCreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+            initialId.ShouldBeGreaterThan(0);
 
             _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.CreatedAt.ShouldBeGreaterThanOrEqualTo(initialCreatedAt);
+                pms.PooledObjectId.ShouldBeGreaterThan(initialId);
             }
         }
 

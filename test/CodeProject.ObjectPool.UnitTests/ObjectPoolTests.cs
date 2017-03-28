@@ -106,7 +106,7 @@ namespace CodeProject.ObjectPool.UnitTests
 #endif
 
         [Test]
-        public void ShouldResetPooledObjectIdsWhenCleared()
+        public void ShouldNotResetPooledObjectIdsWhenCleared()
         {
             var pool = new ObjectPool<MyPooledObject>();
 
@@ -120,12 +120,12 @@ namespace CodeProject.ObjectPool.UnitTests
             poB.Dispose();
 
             pool.ObjectsInPoolCount.ShouldBe(2);
-
             pool.Clear();
+            pool.ObjectsInPoolCount.ShouldBe(0);
 
             var poC = pool.GetObject();
 
-            poC.PooledObjectId.ShouldBe(1);
+            poC.PooledObjectId.ShouldBe(3);
         }
 
         [Test]

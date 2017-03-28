@@ -104,33 +104,10 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
                 id.ShouldNotBe(0);
             }
 
-            // Second usage is different, pool uses a queue, not a stack.
+            // Second usage is the same, pool uses a sort of stack, not a proper queue.
             using (var psb = _stringBuilderPool.GetObject())
             {
                 psb.PooledObjectId.ShouldBe(id);
-            }
-        }
-
-        [Test]
-        public void CreatedAtPropertyShouldNotChangeUsageAfterUsage()
-        {
-            var beforeCreation = _stringBuilderPool.Clock.UtcNow;
-
-            // First usage.
-            DateTime createdAt;
-            using (var psb = _stringBuilderPool.GetObject())
-            {
-                createdAt = psb.CreatedAt;
-                createdAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
-                createdAt.Kind.ShouldBe(DateTimeKind.Utc);
-            }
-
-            // Second usage is different, pool uses a queue, not a stack.
-            using (var psb = _stringBuilderPool.GetObject())
-            {
-                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
-                psb.CreatedAt.ShouldBe(createdAt);
-                psb.CreatedAt.Kind.ShouldBe(DateTimeKind.Utc);
             }
         }
 
@@ -218,40 +195,36 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
         [Test]
         public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
         {
-            var beforeCreation = DateTime.UtcNow;
-
-            DateTime initialCreatedAt;
+            int initialId;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                initialCreatedAt = psb.CreatedAt;
+                initialId = psb.PooledObjectId;
             }
 
-            initialCreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+            initialId.ShouldBeGreaterThan(0);
 
             _stringBuilderPool.MaximumStringBuilderCapacity *= 2;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBeLessThanOrEqualTo(beforeCreation);
+                psb.PooledObjectId.ShouldBe(initialId);
             }
         }
 
         [Test]
         public void ShouldClearPoolWhenMaxCapacityIsDecreased()
         {
-            var beforeCreation = _stringBuilderPool.Clock.UtcNow;
-
-            DateTime initialCreatedAt;
+            int initialId;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                initialCreatedAt = psb.CreatedAt;
+                initialId = psb.PooledObjectId;
             }
 
-            initialCreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreation);
+            initialId.ShouldBeGreaterThan(0);
 
             _stringBuilderPool.MaximumStringBuilderCapacity /= 2;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.CreatedAt.ShouldBeGreaterThanOrEqualTo(initialCreatedAt);
+                psb.PooledObjectId.ShouldBeGreaterThan(initialId);
             }
         }
     }

@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using CodeProject.ObjectPool.Extensibility;
 using System;
 
 namespace CodeProject.ObjectPool
@@ -26,11 +25,6 @@ namespace CodeProject.ObjectPool
 #endif
         where T : PooledObject
     {
-        /// <summary>
-        ///   Gets the clock used by the pool.
-        /// </summary>
-        IClock Clock { get; }
-
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
         ///   data about how the pool operates. By default, however, an object pool records anything,
