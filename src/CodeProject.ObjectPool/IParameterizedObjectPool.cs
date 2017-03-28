@@ -8,6 +8,7 @@
  *
  */
 
+using CodeProject.ObjectPool.Core;
 using System;
 
 namespace CodeProject.ObjectPool
@@ -18,7 +19,6 @@ namespace CodeProject.ObjectPool
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
 #if NET35
-
     public interface IParameterizedObjectPool<TKey, TValue>
 #else
 

@@ -10,7 +10,7 @@
 
 using System.Threading;
 
-namespace CodeProject.ObjectPool
+namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
     ///   A simple class to track stats during execution. By default, this class does not record

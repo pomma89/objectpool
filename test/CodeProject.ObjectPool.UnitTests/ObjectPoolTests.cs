@@ -72,7 +72,7 @@ namespace CodeProject.ObjectPool.UnitTests
             }
             foreach (var obj in objects)
             {
-                (pool as IObjectPoolHandle).ReturnObjectToPool(obj, false);
+                obj.Dispose();
             }
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
@@ -207,7 +207,7 @@ namespace CodeProject.ObjectPool.UnitTests
 
             using (var obj = pool.GetObject())
             {
-                obj.State.ShouldBe(PooledObjectState.Reserved);
+                obj.PooledObjectState.ShouldBe(PooledObjectState.Reserved);
             }
         }
 
@@ -221,7 +221,7 @@ namespace CodeProject.ObjectPool.UnitTests
             {
             }
 
-            obj.State.ShouldBe(PooledObjectState.Available);
+            obj.PooledObjectState.ShouldBe(PooledObjectState.Available);
         }
 
         [Test]
@@ -237,7 +237,7 @@ namespace CodeProject.ObjectPool.UnitTests
             }
 
             obj.Dispose();
-            obj.State.ShouldBe(PooledObjectState.Disposed);
+            obj.PooledObjectState.ShouldBe(PooledObjectState.Disposed);
         }
 
         #endregion Pooled object state

@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
 using System;
 
 #if !NET35
@@ -34,22 +33,27 @@ namespace CodeProject.ObjectPool
 
         #endregion Logging
 
-        #region Internal Properties
+        #region Properties
 
         /// <summary>
-        ///   Internal Action that is initialized by the pool while creating the object, this allow
-        ///   that object to re-add itself back to the pool.
+        ///   Unique identifier.
         /// </summary>
-        internal IObjectPoolHandle Handle { get; set; }
+        public Guid PooledObjectId { get; } = Guid.NewGuid();
 
         /// <summary>
         ///   Enumeration that is being managed by the pool to describe the object state - primary
         ///   used to void cases where the resources are being releases twice.
         /// </summary>
-        /// <remarks>Default value for pooled object state is <see cref="PooledObjectState.Available"/>.</remarks>
-        public PooledObjectState State { get; internal set; } = PooledObjectState.Available;
+        /// <remarks>Default value for pooled object state is <see cref="Core.PooledObjectState.Available"/>.</remarks>
+        public PooledObjectState PooledObjectState { get; internal set; } = PooledObjectState.Available;
 
-        #endregion Internal Properties
+        /// <summary>
+        ///   Internal action that is initialized by the pool while creating the object, this allows
+        ///   that object to re-add itself back to the pool.
+        /// </summary>
+        internal IObjectPoolHandle Handle { get; set; }
+
+        #endregion Properties
 
         #region Internal Methods - resource and state management
 
@@ -159,7 +163,7 @@ namespace CodeProject.ObjectPool
         private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
             // Only when the object is reserved it can be readded to the pool.
-            if (State == PooledObjectState.Disposed || State == PooledObjectState.Available)
+            if (PooledObjectState == Core.PooledObjectState.Disposed || PooledObjectState == Core.PooledObjectState.Available)
             {
                 return;
             }
@@ -180,7 +184,7 @@ namespace CodeProject.ObjectPool
 #else
                 System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                State = PooledObjectState.Disposed;
+                PooledObjectState = Core.PooledObjectState.Disposed;
                 ReleaseResources();
             }
         }
@@ -195,55 +199,5 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Returning object to pool - Dispose and Finalizer
-    }
-
-    /// <summary>
-    ///   PooledObject wrapper, for classes which cannot inherit from that class.
-    /// </summary>
-    [Serializable]
-    public sealed class PooledObjectWrapper<T> : PooledObject where T : class
-    {
-        /// <summary>
-        ///   Wraps a given resource so that it can be put in the pool.
-        /// </summary>
-        /// <param name="resource">The resource to be wrapped.</param>
-        /// <exception cref="ArgumentNullException">Given resource is null.</exception>
-        public PooledObjectWrapper(T resource)
-        {
-            Raise.ArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
-            // Setting the internal resource
-            InternalResource = resource;
-        }
-
-        /// <summary>
-        ///   Triggered by the pool manager when there is no need for this object anymore.
-        /// </summary>
-        public Action<T> WrapperReleaseResourcesAction { get; set; }
-
-        /// <summary>
-        ///   Triggered by the pool manager just before the object is being returned to the pool.
-        /// </summary>
-        public Action<T> WrapperResetStateAction { get; set; }
-
-        /// <summary>
-        ///   The resource wrapped inside this class.
-        /// </summary>
-        public T InternalResource { get; }
-
-        /// <summary>
-        ///   Triggers the <see cref="WrapperReleaseResourcesAction"/>, if any.
-        /// </summary>
-        protected override void OnReleaseResources()
-        {
-            WrapperReleaseResourcesAction?.Invoke(InternalResource);
-        }
-
-        /// <summary>
-        ///   Triggers the <see cref="WrapperResetStateAction"/>, if any.
-        /// </summary>
-        protected override void OnResetState()
-        {
-            WrapperResetStateAction?.Invoke(InternalResource);
-        }
     }
 }

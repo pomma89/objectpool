@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Specialized;
 using Newtonsoft.Json;
 using NLipsum.Core;
@@ -271,14 +272,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             Guid id;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                id = pms.Id;
+                id = pms.PooledObjectId;
                 id.ShouldNotBe(Guid.Empty);
             }
 
             // Second usage is different, pool uses a queue, not a stack.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.Id.ShouldBe(id);
+                pms.PooledObjectId.ShouldBe(id);
             }
         }
 

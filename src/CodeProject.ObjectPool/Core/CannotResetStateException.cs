@@ -1,4 +1,4 @@
-﻿// File name: AdjustMode.cs
+﻿// File name: CannotResetStateException.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //

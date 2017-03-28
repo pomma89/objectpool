@@ -8,6 +8,7 @@
  *
  */
 
+using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Extensibility;
 using System;
 
@@ -26,7 +27,7 @@ namespace CodeProject.ObjectPool
         where T : PooledObject
     {
         /// <summary>
-        ///   Gets the clock used by the cache.
+        ///   Gets the clock used by the pool.
         /// </summary>
         IClock Clock { get; }
 

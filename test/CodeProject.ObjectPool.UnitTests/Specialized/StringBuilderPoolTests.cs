@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Specialized;
 using NLipsum.Core;
 using NUnit.Framework;
@@ -99,14 +100,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             Guid id;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                id = psb.Id;
+                id = psb.PooledObjectId;
                 id.ShouldNotBe(Guid.Empty);
             }
 
             // Second usage is different, pool uses a queue, not a stack.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.Id.ShouldBe(id);
+                psb.PooledObjectId.ShouldBe(id);
             }
         }
 

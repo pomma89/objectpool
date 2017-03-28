@@ -55,11 +55,6 @@ namespace CodeProject.ObjectPool.Specialized
         public MemoryStream MemoryStream => _trackedMemoryStream;
 
         /// <summary>
-        ///   Unique identifier.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
-
-        /// <summary>
         ///   When the pooled object was created (UTC).
         /// </summary>
         public DateTime CreatedAt { get; } = DateTime.UtcNow;

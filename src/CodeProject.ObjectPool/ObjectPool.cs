@@ -82,7 +82,7 @@ namespace CodeProject.ObjectPool
         public int ObjectsInPoolCount => _pooledObjects.Count(x => x != null);
 
         /// <summary>
-        ///   Gets the clock used by the cache.
+        ///   Gets the clock used by the pool.
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
@@ -201,7 +201,7 @@ namespace CodeProject.ObjectPool
 
             // Change the state of the pooled object, marking it as reserved. We will mark it as
             // available as soon as the object will return to the pool.
-            pooledObject.State = PooledObjectState.Reserved;
+            pooledObject.PooledObjectState = PooledObjectState.Reserved;
 
             return pooledObject;
         }
@@ -242,7 +242,7 @@ namespace CodeProject.ObjectPool
                 }
 
                 // While adding the object back to the pool, we mark it as available.
-                returnedObject.State = PooledObjectState.Available;
+                returnedObject.PooledObjectState = PooledObjectState.Available;
             }
             else
             {
@@ -361,7 +361,7 @@ namespace CodeProject.ObjectPool
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
-            if (objectToDestroy.State != PooledObjectState.Disposed)
+            if (objectToDestroy.PooledObjectState != PooledObjectState.Disposed)
             {
                 if (Diagnostics.Enabled)
                 {
@@ -371,7 +371,7 @@ namespace CodeProject.ObjectPool
                 // Deterministically release object resources, nevermind the result, we are
                 // destroying the object.
                 objectToDestroy.ReleaseResources();
-                objectToDestroy.State = PooledObjectState.Disposed;
+                objectToDestroy.PooledObjectState = PooledObjectState.Disposed;
             }
 
             // The object is being destroyed, resources have been already released deterministically,

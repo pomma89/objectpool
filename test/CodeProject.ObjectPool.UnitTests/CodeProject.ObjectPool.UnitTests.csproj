@@ -6,9 +6,6 @@
     <TargetFrameworks>net35;net40;net45;net46</TargetFrameworks>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <OutputType>Exe</OutputType>
-    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
