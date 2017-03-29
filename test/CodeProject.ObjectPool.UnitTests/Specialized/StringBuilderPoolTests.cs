@@ -100,14 +100,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int id;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                id = psb.PooledObjectId;
+                id = psb.PooledObjectInfo.Id;
                 id.ShouldNotBe(0);
             }
 
             // Second usage is the same, pool uses a sort of stack, not a proper queue.
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.PooledObjectId.ShouldBe(id);
+                psb.PooledObjectInfo.Id.ShouldBe(id);
             }
         }
 
@@ -198,7 +198,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int initialId;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                initialId = psb.PooledObjectId;
+                initialId = psb.PooledObjectInfo.Id;
             }
 
             initialId.ShouldBeGreaterThan(0);
@@ -206,7 +206,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _stringBuilderPool.MaximumStringBuilderCapacity *= 2;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.PooledObjectId.ShouldBe(initialId);
+                psb.PooledObjectInfo.Id.ShouldBe(initialId);
             }
         }
 
@@ -216,7 +216,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int initialId;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                initialId = psb.PooledObjectId;
+                initialId = psb.PooledObjectInfo.Id;
             }
 
             initialId.ShouldBeGreaterThan(0);
@@ -224,7 +224,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _stringBuilderPool.MaximumStringBuilderCapacity /= 2;
             using (var psb = _stringBuilderPool.GetObject())
             {
-                psb.PooledObjectId.ShouldBeGreaterThan(initialId);
+                psb.PooledObjectInfo.Id.ShouldBeGreaterThan(initialId);
             }
         }
     }

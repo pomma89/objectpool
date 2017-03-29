@@ -70,7 +70,7 @@ namespace CodeProject.ObjectPool.Specialized
                 throw new CannotResetStateException($"Memory stream has already been disposed");
             }
 
-            var memoryStreamPool = ObjectPoolHandle as IMemoryStreamPool;
+            var memoryStreamPool = PooledObjectInfo.Handle as IMemoryStreamPool;
             if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
             {
                 throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");

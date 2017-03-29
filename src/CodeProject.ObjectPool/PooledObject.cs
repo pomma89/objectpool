@@ -36,22 +36,9 @@ namespace CodeProject.ObjectPool
         #region Properties
 
         /// <summary>
-        ///   An identifier which is unique inside the pool to which this object belongs. Moreover,
-        ///   this identifier increases monotonically as new objects are created.
+        ///   Core information about this <see cref="PooledObject"/>.
         /// </summary>
-        public int PooledObjectId { get; internal set; }
-
-        /// <summary>
-        ///   Enumeration that is being managed by the pool to describe the object state - primary
-        ///   used to void cases where the resources are being releases twice.
-        /// </summary>
-        public PooledObjectState PooledObjectState { get; internal set; }
-
-        /// <summary>
-        ///   Internal action that is initialized by the pool while creating the object, this allows
-        ///   that object to re-add itself back to the pool.
-        /// </summary>
-        internal IObjectPoolHandle ObjectPoolHandle { get; set; }
+        public PooledObjectInfo PooledObjectInfo { get; } = new PooledObjectInfo();
 
         #endregion Properties
 
@@ -163,7 +150,7 @@ namespace CodeProject.ObjectPool
         private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
             // Only when the object is reserved it can be readded to the pool.
-            if (PooledObjectState == Core.PooledObjectState.Disposed || PooledObjectState == Core.PooledObjectState.Available)
+            if (PooledObjectInfo.State == PooledObjectState.Disposed || PooledObjectInfo.State == PooledObjectState.Available)
             {
                 return;
             }
@@ -172,7 +159,7 @@ namespace CodeProject.ObjectPool
             try
             {
                 // Notifying the pool that this object is ready for re-adding to the pool.
-                ObjectPoolHandle.ReturnObjectToPool(this, reRegisterForFinalization);
+                PooledObjectInfo.Handle.ReturnObjectToPool(this, reRegisterForFinalization);
             }
             catch (Exception ex)
             {
@@ -184,7 +171,7 @@ namespace CodeProject.ObjectPool
 #else
                 System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                PooledObjectState = Core.PooledObjectState.Disposed;
+                PooledObjectInfo.State = PooledObjectState.Disposed;
                 ReleaseResources();
             }
         }

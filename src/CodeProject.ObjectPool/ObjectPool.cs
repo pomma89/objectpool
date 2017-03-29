@@ -183,7 +183,7 @@ namespace CodeProject.ObjectPool
 
             // Change the state of the pooled object, marking it as reserved. We will mark it as
             // available as soon as the object will return to the pool.
-            pooledObject.PooledObjectState = PooledObjectState.Reserved;
+            pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
 
             return pooledObject;
         }
@@ -224,7 +224,7 @@ namespace CodeProject.ObjectPool
                 }
 
                 // While adding the object back to the pool, we mark it as available.
-                returnedObject.PooledObjectState = PooledObjectState.Available;
+                returnedObject.PooledObjectInfo.State = PooledObjectState.Available;
             }
             else
             {
@@ -340,9 +340,9 @@ namespace CodeProject.ObjectPool
             var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
 
             // Setting the 'return to pool' action and other properties in the newly created pooled object.
-            newObject.ObjectPoolHandle = this;
-            newObject.PooledObjectId = Interlocked.Increment(ref _lastPooledObjectId);
-            newObject.PooledObjectState = PooledObjectState.Available;
+            newObject.PooledObjectInfo.Id = Interlocked.Increment(ref _lastPooledObjectId);
+            newObject.PooledObjectInfo.State = PooledObjectState.Available;
+            newObject.PooledObjectInfo.Handle = this;
             return newObject;
         }
 
@@ -350,7 +350,7 @@ namespace CodeProject.ObjectPool
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
-            if (objectToDestroy.PooledObjectState != PooledObjectState.Disposed)
+            if (objectToDestroy.PooledObjectInfo.State != PooledObjectState.Disposed)
             {
                 if (Diagnostics.Enabled)
                 {
@@ -360,7 +360,7 @@ namespace CodeProject.ObjectPool
                 // Deterministically release object resources, nevermind the result, we are
                 // destroying the object.
                 objectToDestroy.ReleaseResources();
-                objectToDestroy.PooledObjectState = PooledObjectState.Disposed;
+                objectToDestroy.PooledObjectInfo.State = PooledObjectState.Disposed;
             }
 
             // The object is being destroyed, resources have been already released deterministically,

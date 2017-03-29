@@ -113,8 +113,8 @@ namespace CodeProject.ObjectPool.UnitTests
             var poA = pool.GetObject();
             var poB = pool.GetObject();
 
-            poA.PooledObjectId.ShouldBe(1);
-            poB.PooledObjectId.ShouldBe(2);
+            poA.PooledObjectInfo.Id.ShouldBe(1);
+            poB.PooledObjectInfo.Id.ShouldBe(2);
 
             poA.Dispose();
             poB.Dispose();
@@ -125,7 +125,7 @@ namespace CodeProject.ObjectPool.UnitTests
 
             var poC = pool.GetObject();
 
-            poC.PooledObjectId.ShouldBe(3);
+            poC.PooledObjectInfo.Id.ShouldBe(3);
         }
 
         [Test]
@@ -230,7 +230,7 @@ namespace CodeProject.ObjectPool.UnitTests
 
             using (var obj = pool.GetObject())
             {
-                obj.PooledObjectState.ShouldBe(PooledObjectState.Reserved);
+                obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Reserved);
             }
         }
 
@@ -244,7 +244,7 @@ namespace CodeProject.ObjectPool.UnitTests
             {
             }
 
-            obj.PooledObjectState.ShouldBe(PooledObjectState.Available);
+            obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Available);
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace CodeProject.ObjectPool.UnitTests
             }
 
             obj.Dispose();
-            obj.PooledObjectState.ShouldBe(PooledObjectState.Disposed);
+            obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Disposed);
         }
 
         #endregion Pooled object state

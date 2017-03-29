@@ -272,14 +272,14 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int id;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                id = pms.PooledObjectId;
+                id = pms.PooledObjectInfo.Id;
                 id.ShouldNotBe(0);
             }
 
             // Second usage is the same, pool uses a sort of stack, not a proper queue.
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.PooledObjectId.ShouldBe(id);
+                pms.PooledObjectInfo.Id.ShouldBe(id);
             }
         }
 
@@ -325,7 +325,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int initialId;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                initialId = pms.PooledObjectId;
+                initialId = pms.PooledObjectInfo.Id;
             }
 
             initialId.ShouldBeGreaterThan(0);
@@ -333,7 +333,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.PooledObjectId.ShouldBe(initialId);
+                pms.PooledObjectInfo.Id.ShouldBe(initialId);
             }
         }
 
@@ -343,7 +343,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             int initialId;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                initialId = pms.PooledObjectId;
+                initialId = pms.PooledObjectInfo.Id;
             }
 
             initialId.ShouldBeGreaterThan(0);
@@ -351,7 +351,7 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
             using (var pms = _memoryStreamPool.GetObject())
             {
-                pms.PooledObjectId.ShouldBeGreaterThan(initialId);
+                pms.PooledObjectInfo.Id.ShouldBeGreaterThan(initialId);
             }
         }
 
