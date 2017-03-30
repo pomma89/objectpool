@@ -1,9 +1,11 @@
 # Changelog for CodeProject.ObjectPool #
 
-### v3.0.1 (2017-04-??) ###
+### v3.0.1 (2017-03-30) ###
 
-* Breaking change - pool does not handle minimum capacity anymore.
-* Breaking change - Object 
+* Breaking change - Pool does not handle minimum capacity anymore.
+* Breaking change - Pooled object ID, state, handle have been moved to PooledObjectInfo property.
+* Breaking change - Removed CreatedAt property from PooledMemoryStream and PooledStringBuilder.
+* Breaking change - ID property on PooledMemoryStream and PooledStringBuilder is now an int instead of a GUID.
 * Default maximum capacity is now 16.
 
 ### v2.2.4 (2017-03-05) ###
