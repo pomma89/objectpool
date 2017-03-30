@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>CodeProject.ObjectPool</AssemblyName>
+    <AssemblyTitle>Generic and concurrent Object Pool</AssemblyTitle>
+    <VersionPrefix>3.0.1</VersionPrefix>
+    <TargetFrameworks>netstandard1.0;netstandard1.1;netstandard1.3;net35;net40;net45</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>CodeProject.ObjectPool</PackageId>
+    <Title>Generic and concurrent Object Pool</Title>
+    <Summary>A generic, concurrent, portable and flexible Object Pool for the .NET Framework.</Summary>
+    <Description>$(Summary) It is completely based on the Code Project article of Ofir Makmal (http://goo.gl/4qig6T). Library is production ready and it is successfully working in real life systems. Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. Moreover, a few unit tests have been added, in order to improve code reliability, and a lot of other small changes have also been applied. Of course, all modified source code is freely available at the project URL of this package. Many thanks to Ofir Makmal for his great work.</Description>
+    <Authors>Ofir Makmal &lt;ofir.makmal@gmail.com&gt;;Alessio Parma &lt;alessio.parma@gmail.com&gt;</Authors>
+    <Copyright>Copyright (c) 2013 Ofir Makmal &lt;ofir.makmal@gmail.com&gt;</Copyright>
+    <PackageReleaseNotes>https://github.com/pomma89/ObjectPool</PackageReleaseNotes>
+    <PackageIconUrl>http://pomma89.altervista.org/objectpool/logo-128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/pomma89/ObjectPool</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.codeproject.com/info/cpol10.aspx</PackageLicenseUrl>
+    <PackageTags>codeproject;object;pool;concurrent;generic;threadsafe;portable;netstandard;stringbuilder;memorystream</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/pomma89/ObjectPool</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Thrower" Version="4.1.2" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
+    <DefineConstants>$(DefineConstants);NETSTD10;LIBLOG_PORTABLE</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
+    <DefineConstants>$(DefineConstants);NETSTD11;LIBLOG_PORTABLE</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTD13;LIBLOG_PORTABLE</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <DefineConstants>$(DefineConstants);NET35</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <Reference Include="System" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>

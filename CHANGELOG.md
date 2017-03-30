@@ -1,5 +1,16 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.0.1 (2017-04-??) ###
+
+* Breaking change - pool does not handle minimum capacity anymore.
+* Breaking change - Object 
+* Default maximum capacity is now 16.
+
+### v2.2.4 (2017-03-05) ###
+
+* Fixed a bug which could produce closed pooled memory streams.
+* Converted the project to .NET Core format.
+
 ### v2.2.2 (2017-01-08) ###
 
 * Updated Thrower to v4.0.6.
