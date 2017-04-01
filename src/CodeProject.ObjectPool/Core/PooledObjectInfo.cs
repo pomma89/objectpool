@@ -35,6 +35,11 @@ namespace CodeProject.ObjectPool.Core
         public int Id { get; internal set; }
 
         /// <summary>
+        ///   Payload which can be used to add custom information to a pooled object.
+        /// </summary>
+        public object Payload { get; set; }
+
+        /// <summary>
         ///   Enumeration that is being managed by the pool to describe the object state - primary
         ///   used to void cases where the resources are being releases twice.
         /// </summary>

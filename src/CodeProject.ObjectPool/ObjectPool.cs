@@ -11,6 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using PommaLabs.Thrower;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -239,6 +240,28 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Pool Operations
+
+        #region Extensibility
+
+        /// <summary>
+        ///   All objects currently stored inside the pool.
+        /// </summary>
+        protected IEnumerable<T> PooledObjects
+        {
+            get
+            {
+                for (var i = 0; i <= _pooledObjects.Length; ++i)
+                {
+                    var item = _pooledObjects[i];
+                    if (item != null)
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
+        #endregion Extensibility
 
         #region Low-level Pooling
 
