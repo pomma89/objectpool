@@ -21,7 +21,7 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-    public sealed class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
+    public class ParameterizedObjectPool<TKey, TValue> : IParameterizedObjectPool<TKey, TValue>
         where TValue : PooledObject
     {
         #region Public Properties
@@ -165,7 +165,7 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if (NETSTD10 || NETSTD11)
+#if (NETSTD10 || NETSTD11 || NETSTD12)
         private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
 #else
         private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
@@ -191,7 +191,7 @@ namespace CodeProject.ObjectPool
 
         private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
         {
-#if (NETSTD10 || NETSTD11)
+#if (NETSTD10 || NETSTD11 || NETSTD12)
             // Dictionary requires locking even for readers.
             lock (_pools)
             {

@@ -21,9 +21,24 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#if !(NETSTD10 || NETSTD11)
+
+using System.Threading;
+
 namespace CodeProject.ObjectPool.Examples.Customizations
 {
-    internal class TimedObjectPool
+    /// <summary>
+    ///   A pool where objects are automatically removed after a period of inactivity.
+    /// </summary>
+    /// <typeparam name="T">
+    ///   The type of the object that which will be managed by the pool. The pooled object have to be
+    ///   a sub-class of PooledObject.
+    /// </typeparam>
+    internal class TimedObjectPool<T> : ObjectPool<T>
+        where T : PooledObject
     {
+        private readonly Timer Timer;
     }
 }
+
+#endif

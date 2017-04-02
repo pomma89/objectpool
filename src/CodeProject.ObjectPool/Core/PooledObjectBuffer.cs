@@ -62,7 +62,7 @@ namespace CodeProject.ObjectPool.Core
         public int Capacity => _pooledObjects.Length;
 
         /// <summary>
-        ///   The number of items stored in this buffer.
+        ///   The number of objects stored in this buffer.
         /// </summary>
         public int Count
         {
@@ -101,14 +101,18 @@ namespace CodeProject.ObjectPool.Core
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        ///   Tries to dequeue an object from the buffer.
+        /// </summary>
+        /// <param name="pooledObject">Output pooled object.</param>
+        /// <returns>True if <paramref name="pooledObject"/> has a value, false otherwise.</returns>
         [MethodImpl(TryToInline)]
         public bool TryDequeue(out T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                ref var itemRef = ref _pooledObjects[i];
-                var item = itemRef;
-                if (item != null && Interlocked.CompareExchange(ref itemRef, null, item) == item)
+                var item = _pooledObjects[i];
+                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
                 {
                     pooledObject = item;
                     return true;
@@ -118,13 +122,18 @@ namespace CodeProject.ObjectPool.Core
             return false;
         }
 
+        /// <summary>
+        ///   Tries to enqueue given object into the buffer.
+        /// </summary>
+        /// <param name="pooledObject">Input pooled object.</param>
+        /// <returns>True if there was enough space to enqueue given object, false otherwise.</returns>
         [MethodImpl(TryToInline)]
         public bool TryEnqueue(T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                ref var itemRef = ref _pooledObjects[i];
-                if (itemRef == null && Interlocked.CompareExchange(ref itemRef, pooledObject, null) == null)
+                ref var item = ref _pooledObjects[i];
+                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
                 {
                     return true;
                 }
