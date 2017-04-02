@@ -1,4 +1,4 @@
-﻿// File name: TimedObjectPool.cs
+﻿// File name: ITimedObjectPool.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,10 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !(NETSTD10 || NETSTD11)
-
-using System.Threading;
-
 namespace CodeProject.ObjectPool
 {
     /// <summary>
@@ -34,11 +30,13 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    internal class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
+#if NET35
+    public interface ITimedObjectPool<T> : IObjectPool<T>
+#else
+
+    public interface ITimedObjectPool<out T> : IObjectPool<T>
+#endif
         where T : PooledObject
     {
-        private readonly Timer Timer;
     }
 }
-
-#endif
