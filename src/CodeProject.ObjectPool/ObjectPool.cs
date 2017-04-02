@@ -66,7 +66,7 @@ namespace CodeProject.ObjectPool
                 // Preconditions
                 Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-                _pooledObjects.ResizeBuffer(value);
+                _pooledObjects.Resize(value);
             }
         }
 

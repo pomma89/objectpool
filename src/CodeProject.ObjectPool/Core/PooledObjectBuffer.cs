@@ -39,9 +39,14 @@ namespace CodeProject.ObjectPool.Core
         where T : PooledObject
     {
         /// <summary>
+        ///   Used as default value for <see cref="_pooledObjects"/>.
+        /// </summary>
+        private static readonly T[] NoObjects = new T[0];
+
+        /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        private T[] _pooledObjects;
+        private T[] _pooledObjects = NoObjects;
 
         public int Capacity => _pooledObjects.Length;
 
@@ -107,24 +112,24 @@ namespace CodeProject.ObjectPool.Core
             return false;
         }
 
-        public void ResizeBuffer(int newSize)
+        public void Resize(int newCapacity)
         {
-            if (_pooledObjects == null)
+            if (_pooledObjects == NoObjects)
             {
-                _pooledObjects = new T[newSize];
+                _pooledObjects = new T[newCapacity];
                 return;
             }
 
-            var currentSize = _pooledObjects.Length;
-            if (currentSize == newSize)
+            var currentCapacity = _pooledObjects.Length;
+            if (currentCapacity == newCapacity)
             {
                 // Nothing to do.
                 return;
             }
 
-            if (currentSize > newSize)
+            if (currentCapacity > newCapacity)
             {
-                for (var i = newSize; i < currentSize; ++i)
+                for (var i = newCapacity; i < currentCapacity; ++i)
                 {
                     ref var item = ref _pooledObjects[i];
                     if (item != null)
@@ -135,7 +140,7 @@ namespace CodeProject.ObjectPool.Core
                 }
             }
 
-            Array.Resize(ref _pooledObjects, newSize);
+            Array.Resize(ref _pooledObjects, newCapacity);
         }
     }
 }
