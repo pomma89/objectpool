@@ -50,18 +50,10 @@
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.2' ">
-    <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <DefineConstants>$(DefineConstants);NETSTD13;LIBLOG_PORTABLE</DefineConstants>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
-  </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
     <DefineConstants>$(DefineConstants);NET35</DefineConstants>
