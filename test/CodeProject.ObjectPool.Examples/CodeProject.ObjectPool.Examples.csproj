@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <AssemblyName>CodeProject.ObjectPool.Examples</AssemblyName>
@@ -15,5 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />
   </ItemGroup>
-
 </Project>

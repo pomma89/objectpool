@@ -1,4 +1,4 @@
-﻿// File name: PooledObjectInfo.cs
+﻿// File name: ITimedObjectPool.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,34 +21,22 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace CodeProject.ObjectPool.Core
+namespace CodeProject.ObjectPool
 {
     /// <summary>
-    ///   Core information about a specific <see cref="PooledObject"/>.
+    ///   A pool where objects are automatically removed after a period of inactivity.
     /// </summary>
-    public sealed class PooledObjectInfo
+    /// <typeparam name="T">
+    ///   The type of the object that which will be managed by the pool. The pooled object have to be
+    ///   a sub-class of PooledObject.
+    /// </typeparam>
+#if NET35
+    public interface ITimedObjectPool<T> : IObjectPool<T>
+#else
+
+    public interface ITimedObjectPool<out T> : IObjectPool<T>
+#endif
+        where T : PooledObject
     {
-        /// <summary>
-        ///   An identifier which is unique inside the pool to which this object belongs. Moreover,
-        ///   this identifier increases monotonically as new objects are created.
-        /// </summary>
-        public int Id { get; internal set; }
-
-        /// <summary>
-        ///   Payload which can be used to add custom information to a pooled object.
-        /// </summary>
-        public object Payload { get; set; }
-
-        /// <summary>
-        ///   Enumeration that is being managed by the pool to describe the object state - primary
-        ///   used to void cases where the resources are being releases twice.
-        /// </summary>
-        public PooledObjectState State { get; internal set; }
-
-        /// <summary>
-        ///   Internal action that is initialized by the pool while creating the object, this allows
-        ///   that object to re-add itself back to the pool.
-        /// </summary>
-        internal IObjectPoolHandle Handle { get; set; }
     }
 }

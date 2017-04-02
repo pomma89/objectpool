@@ -59,21 +59,30 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                return _pooledObjects.Length;
+                return PooledObjects.Capacity;
             }
             set
             {
                 // Preconditions
                 Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-                ResizeBuffer(value);
+                // Resize the pool and destroy exceeding items, if any.
+                foreach (var exceedingItem in PooledObjects.Resize(value))
+                {
+                    DestroyPooledObject(exceedingItem);
+                }
             }
         }
 
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _pooledObjects.Count(x => x != null);
+        public int ObjectsInPoolCount => PooledObjects.Count;
+
+        /// <summary>
+        ///   The concurrent buffer containing pooled objects.
+        /// </summary>
+        protected PooledObjectBuffer<T> PooledObjects { get; } = new PooledObjectBuffer<T>();
 
         #endregion Public Properties
 
@@ -139,7 +148,7 @@ namespace CodeProject.ObjectPool
         ~ObjectPool()
         {
             // The pool is going down, releasing the resources for all objects in pool.
-            ClearBuffer();
+            Clear();
         }
 
         #endregion Finalizer
@@ -151,8 +160,11 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            // Destroy all objects.
-            ClearBuffer();
+            // Destroy all objects, one by one.
+            while (PooledObjects.TryDequeue(out T dequeuedObjectToDestroy))
+            {
+                DestroyPooledObject(dequeuedObjectToDestroy);
+            }
         }
 
         /// <summary>
@@ -161,23 +173,16 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            if (TryDequeue(out T pooledObject))
+            if (PooledObjects.TryDequeue(out T pooledObject))
             {
                 // Object found in pool.
-                if (Diagnostics.Enabled)
-                {
-                    Diagnostics.IncrementPoolObjectHitCount();
-                }
+                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
             }
             else
             {
                 // This should not happen normally, but could be happening when there is stress on
                 // the pool. No available objects in pool, create a new one and return it to the caller.
-                if (Diagnostics.Enabled)
-                {
-                    Diagnostics.IncrementPoolObjectMissCount();
-                }
-
+                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
                 pooledObject = CreatePooledObject();
             }
 
@@ -216,7 +221,7 @@ namespace CodeProject.ObjectPool
             }
 
             // Trying to add the object back to the pool.
-            if (TryEnqueue(returnedObject))
+            if (PooledObjects.TryEnqueue(returnedObject))
             {
                 if (Diagnostics.Enabled)
                 {
@@ -239,86 +244,6 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Pool Operations
-
-        #region Low-level Pooling
-
-        /// <summary>
-        ///   The concurrent buffer containing pooled objects.
-        /// </summary>
-        private T[] _pooledObjects;
-
-        private void ClearBuffer()
-        {
-            if (_pooledObjects == null)
-            {
-                return;
-            }
-            while (TryDequeue(out T dequeuedObjectToDestroy))
-            {
-                DestroyPooledObject(dequeuedObjectToDestroy);
-            }
-        }
-
-        private bool TryDequeue(out T pooledObject)
-        {
-            for (var i = 0; i < _pooledObjects.Length; i++)
-            {
-                var item = _pooledObjects[i];
-                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
-                {
-                    pooledObject = item;
-                    return true;
-                }
-            }
-            pooledObject = null;
-            return false;
-        }
-
-        private bool TryEnqueue(T pooledObject)
-        {
-            for (var i = 0; i < _pooledObjects.Length; i++)
-            {
-                ref var item = ref _pooledObjects[i];
-                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void ResizeBuffer(int newSize)
-        {
-            if (_pooledObjects == null)
-            {
-                _pooledObjects = new T[newSize];
-                return;
-            }
-
-            var currentSize = _pooledObjects.Length;
-            if (currentSize == newSize)
-            {
-                // Nothing to do.
-                return;
-            }
-
-            if (currentSize > newSize)
-            {
-                for (var i = newSize; i < currentSize; ++i)
-                {
-                    ref var item = ref _pooledObjects[i];
-                    if (item != null)
-                    {
-                        item.Dispose();
-                        item = null;
-                    }
-                }
-            }
-
-            Array.Resize(ref _pooledObjects, newSize);
-        }
-
-        #endregion Low-level Pooling
 
         #region Private Methods
 
