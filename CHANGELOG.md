@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.0.2 (2017-04-02) ###
+
+* Moved core pool buffer into dedicated class: Core.PooledObjectBuffer. 
+
 ### v3.0.1 (2017-03-30) ###
 
 * Breaking change - Pool does not handle minimum capacity anymore.
