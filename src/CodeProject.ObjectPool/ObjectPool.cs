@@ -59,26 +59,30 @@ namespace CodeProject.ObjectPool
         {
             get
             {
-                return _pooledObjects.Capacity;
+                return PooledObjects.Capacity;
             }
             set
             {
                 // Preconditions
                 Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
-                _pooledObjects.Resize(value);
+                // Resize the pool and destroy exceeding items, if any.
+                foreach (var exceedingItem in PooledObjects.Resize(value))
+                {
+                    DestroyPooledObject(exceedingItem);
+                }
             }
         }
 
         /// <summary>
         ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public int ObjectsInPoolCount => _pooledObjects.Count;
+        public int ObjectsInPoolCount => PooledObjects.Count;
 
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        protected PooledObjectBuffer<T> _pooledObjects { get; } = new PooledObjectBuffer<T>();
+        protected PooledObjectBuffer<T> PooledObjects { get; } = new PooledObjectBuffer<T>();
 
         #endregion Public Properties
 
@@ -156,8 +160,8 @@ namespace CodeProject.ObjectPool
         /// </summary>
         public void Clear()
         {
-            // Destroy all objects.
-            while (_pooledObjects.TryDequeue(out T dequeuedObjectToDestroy))
+            // Destroy all objects, one by one.
+            while (PooledObjects.TryDequeue(out T dequeuedObjectToDestroy))
             {
                 DestroyPooledObject(dequeuedObjectToDestroy);
             }
@@ -169,23 +173,16 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            if (_pooledObjects.TryDequeue(out T pooledObject))
+            if (PooledObjects.TryDequeue(out T pooledObject))
             {
                 // Object found in pool.
-                if (Diagnostics.Enabled)
-                {
-                    Diagnostics.IncrementPoolObjectHitCount();
-                }
+                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
             }
             else
             {
                 // This should not happen normally, but could be happening when there is stress on
                 // the pool. No available objects in pool, create a new one and return it to the caller.
-                if (Diagnostics.Enabled)
-                {
-                    Diagnostics.IncrementPoolObjectMissCount();
-                }
-
+                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
                 pooledObject = CreatePooledObject();
             }
 
@@ -224,7 +221,7 @@ namespace CodeProject.ObjectPool
             }
 
             // Trying to add the object back to the pool.
-            if (_pooledObjects.TryEnqueue(returnedObject))
+            if (PooledObjects.TryEnqueue(returnedObject))
             {
                 if (Diagnostics.Enabled)
                 {

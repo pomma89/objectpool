@@ -22,7 +22,9 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace CodeProject.ObjectPool.Core
@@ -35,9 +37,15 @@ namespace CodeProject.ObjectPool.Core
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class PooledObjectBuffer<T>
+    public sealed class PooledObjectBuffer<T> : IEnumerable<T>
         where T : PooledObject
     {
+#if (NET35 || NET40)
+        private const MethodImplOptions TryToInline = default(MethodImplOptions);
+#else
+        private const MethodImplOptions TryToInline = MethodImplOptions.AggressiveInlining;
+#endif
+
         /// <summary>
         ///   Used as default value for <see cref="_pooledObjects"/>.
         /// </summary>
@@ -48,8 +56,14 @@ namespace CodeProject.ObjectPool.Core
         /// </summary>
         private T[] _pooledObjects = NoObjects;
 
+        /// <summary>
+        ///   The maximum capacity of this buffer.
+        /// </summary>
         public int Capacity => _pooledObjects.Length;
 
+        /// <summary>
+        ///   The number of items stored in this buffer.
+        /// </summary>
         public int Count
         {
             get
@@ -57,39 +71,44 @@ namespace CodeProject.ObjectPool.Core
                 var count = 0;
                 for (var i = 0; i < _pooledObjects.Length; ++i)
                 {
-                    if (_pooledObjects[i] != null)
-                    {
-                        count++;
-                    }
+                    if (_pooledObjects[i] != null) count++;
                 }
                 return count;
             }
         }
 
         /// <summary>
-        ///   All objects currently stored inside the pool.
+        ///   Returns an enumerator that iterates through the collection.
         /// </summary>
-        protected IEnumerable<T> PooledObjects
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<T> GetEnumerator()
         {
-            get
+            for (var i = 0; i <= _pooledObjects.Length; ++i)
             {
-                for (var i = 0; i <= _pooledObjects.Length; ++i)
+                var item = _pooledObjects[i];
+                if (item != null)
                 {
-                    var item = _pooledObjects[i];
-                    if (item != null)
-                    {
-                        yield return item;
-                    }
+                    yield return item;
                 }
             }
         }
 
+        /// <summary>
+        ///   Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        ///   An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        [MethodImpl(TryToInline)]
         public bool TryDequeue(out T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                var item = _pooledObjects[i];
-                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
+                ref var itemRef = ref _pooledObjects[i];
+                var item = itemRef;
+                if (item != null && Interlocked.CompareExchange(ref itemRef, null, item) == item)
                 {
                     pooledObject = item;
                     return true;
@@ -99,12 +118,13 @@ namespace CodeProject.ObjectPool.Core
             return false;
         }
 
+        [MethodImpl(TryToInline)]
         public bool TryEnqueue(T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
             {
-                ref var item = ref _pooledObjects[i];
-                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
+                ref var itemRef = ref _pooledObjects[i];
+                if (itemRef == null && Interlocked.CompareExchange(ref itemRef, pooledObject, null) == null)
                 {
                     return true;
                 }
@@ -112,21 +132,28 @@ namespace CodeProject.ObjectPool.Core
             return false;
         }
 
-        public void Resize(int newCapacity)
+        /// <summary>
+        ///   Resizes the buffer so that it fits to given capacity. If new capacity is smaller than
+        ///   current capacity, then exceeding items are returned.
+        /// </summary>
+        /// <param name="newCapacity">The new capacity of this buffer.</param>
+        /// <returns>All exceeding items.</returns>
+        public IList<T> Resize(int newCapacity)
         {
             if (_pooledObjects == NoObjects)
             {
                 _pooledObjects = new T[newCapacity];
-                return;
+                return NoObjects;
             }
 
             var currentCapacity = _pooledObjects.Length;
             if (currentCapacity == newCapacity)
             {
                 // Nothing to do.
-                return;
+                return NoObjects;
             }
 
+            IList<T> exceedingItems = NoObjects;
             if (currentCapacity > newCapacity)
             {
                 for (var i = newCapacity; i < currentCapacity; ++i)
@@ -134,13 +161,21 @@ namespace CodeProject.ObjectPool.Core
                     ref var item = ref _pooledObjects[i];
                     if (item != null)
                     {
-                        item.Dispose();
+                        if (exceedingItems == NoObjects)
+                        {
+                            exceedingItems = new List<T> { item };
+                        }
+                        else
+                        {
+                            exceedingItems.Add(item);
+                        }
                         item = null;
                     }
                 }
             }
 
             Array.Resize(ref _pooledObjects, newCapacity);
+            return exceedingItems;
         }
     }
 }
