@@ -199,6 +199,10 @@ namespace CodeProject.ObjectPool
         protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
         {
             yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Id), PooledObjectInfo.Id);
+            if (PooledObjectInfo.Payload != null)
+            {
+                yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Payload), PooledObjectInfo.Payload);
+            }
         }
 
         /// <summary>

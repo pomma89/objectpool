@@ -23,6 +23,8 @@
 
 #if !(NETSTD10 || NETSTD11)
 
+using System;
+using System.Linq;
 using System.Threading;
 
 namespace CodeProject.ObjectPool
@@ -37,7 +39,59 @@ namespace CodeProject.ObjectPool
     internal class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
         where T : PooledObject
     {
-        private readonly Timer Timer;
+        private TimeSpan _timeout;
+        private Timer _timer;
+
+        public TimedObjectPool()
+        {
+        }
+
+        /// <summary>
+        ///   When pooled objects have not been used for a time greater than <see cref="Timeout"/>,
+        ///   then they will be destroyed by a cleaning task.
+        /// </summary>
+        public TimeSpan Timeout
+        {
+            get => _timeout;
+            set
+            {
+                _timeout = value;
+                UpdateTimeout();
+            }
+        }
+
+        /// <summary>
+        ///   Updates the timer according to a new timeout.
+        /// </summary>
+        private void UpdateTimeout()
+        {
+            lock (this)
+            {
+                if (_timer != null)
+                {
+                    // A timer already exists, simply change its period.
+                    _timer.Change(_timeout, _timeout);
+                    return;
+                }
+
+                _timer = new Timer(_ =>
+                {
+                    // Local copy, since the buffer might change.
+                    var items = PooledObjects.ToArray();
+
+                    // All items which have been last used before following threshold will be destroyed.
+                    var threshold = DateTime.UtcNow - _timeout;
+
+                    foreach (var item in items)
+                    {
+                        if (item.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold && PooledObjects.TryRemove(item))
+                        {
+                            DestroyPooledObject(item);
+                        }
+                    }
+                }, null, _timeout, _timeout);
+            }
+        }
     }
 }
 

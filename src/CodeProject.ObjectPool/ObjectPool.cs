@@ -245,14 +245,18 @@ namespace CodeProject.ObjectPool
 
         #endregion Pool Operations
 
-        #region Private Methods
+        #region Protected Methods
 
         /// <summary>
         ///   Keeps track of last pooled object ID.
         /// </summary>
         private int _lastPooledObjectId;
 
-        private T CreatePooledObject()
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <returns>A new pooled object.</returns>
+        protected T CreatePooledObject()
         {
             if (Diagnostics.Enabled)
             {
@@ -271,7 +275,11 @@ namespace CodeProject.ObjectPool
             return newObject;
         }
 
-        private void DestroyPooledObject(PooledObject objectToDestroy)
+        /// <summary>
+        ///   Destroys given pooled object, disposing its resources.
+        /// </summary>
+        /// <param name="objectToDestroy">The pooled object that should be destroyed.</param>
+        protected void DestroyPooledObject(PooledObject objectToDestroy)
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
@@ -293,6 +301,6 @@ namespace CodeProject.ObjectPool
             GC.SuppressFinalize(objectToDestroy);
         }
 
-        #endregion Private Methods
+        #endregion Protected Methods
     }
 }
