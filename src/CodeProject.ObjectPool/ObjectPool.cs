@@ -260,7 +260,7 @@ namespace CodeProject.ObjectPool
         ///   Creates a new pooled object, initializing its info.
         /// </summary>
         /// <returns>A new pooled object.</returns>
-        protected T CreatePooledObject()
+        protected virtual T CreatePooledObject()
         {
             if (Diagnostics.Enabled)
             {

@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Threading;
 
 namespace CodeProject.ObjectPool.Examples
 {
@@ -59,6 +60,20 @@ namespace CodeProject.ObjectPool.Examples
                 // wrapper.InternalResource contains the object that you pooled.
                 wrapper.InternalResource.DoOtherStuff();
             } // Exiting the using scope will return the object back to the pool.
+
+            // Creates a pool where objects which have not been used for over 2 seconds will be
+            // cleaned up by a dedicated thread.
+            var timedPool = new TimedObjectPool<ExpensiveResource>(TimeSpan.FromSeconds(2));
+
+            using (var resource = timedPool.GetObject())
+            {
+                // Using the resource...
+                resource.DoStuff();
+            } // Exiting the using scope will return the object back to the pool and record last usage.
+
+            Console.WriteLine($"Timed pool size after 0 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 1
+            Thread.Sleep(TimeSpan.FromSeconds(4));
+            Console.WriteLine($"Timed pool size after 4 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 0
 
             Console.Read();
         }

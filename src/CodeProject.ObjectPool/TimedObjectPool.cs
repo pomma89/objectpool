@@ -38,7 +38,7 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    internal class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
+    public class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
         where T : PooledObject
     {
         #region Fields
@@ -136,6 +136,23 @@ namespace CodeProject.ObjectPool
         #endregion Public Properties
 
         #region Core Methods
+
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <returns>A new pooled object.</returns>
+        protected override T CreatePooledObject()
+        {
+            var pooledObject = base.CreatePooledObject();
+
+            // Register an handler which records the time at which the object returned to the pool.
+            pooledObject.OnResetState += () =>
+            {
+                pooledObject.PooledObjectInfo.Payload = DateTime.UtcNow;
+            };
+
+            return pooledObject;
+        }
 
         /// <summary>
         ///   Updates the timer according to a new timeout.

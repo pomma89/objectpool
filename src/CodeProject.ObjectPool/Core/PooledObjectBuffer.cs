@@ -83,9 +83,8 @@ namespace CodeProject.ObjectPool.Core
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (var i = 0; i <= _pooledObjects.Length; ++i)
+            foreach (var item in _pooledObjects)
             {
-                var item = _pooledObjects[i];
                 if (item != null)
                 {
                     yield return item;
