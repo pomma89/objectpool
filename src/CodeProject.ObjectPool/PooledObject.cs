@@ -55,21 +55,24 @@ namespace CodeProject.ObjectPool
         {
             var successFlag = true;
 
-            try
+            if (OnReleaseResources != null)
             {
-                OnReleaseResources();
-            }
-            catch (Exception ex)
-            {
-#if !NET35
-                if (Log.IsWarnEnabled())
+                try
                 {
-                    Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
+                    OnReleaseResources();
                 }
+                catch (Exception ex)
+                {
+#if !NET35
+                    if (Log.IsWarnEnabled())
+                    {
+                        Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
+                    }
 #else
-                System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
+                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                successFlag = false;
+                    successFlag = false;
+                }
             }
 
             return successFlag;
@@ -83,33 +86,36 @@ namespace CodeProject.ObjectPool
         {
             var successFlag = true;
 
-            try
+            if (OnResetState != null)
             {
-                OnResetState();
-            }
-            catch (CannotResetStateException crsex)
-            {
-#if !NET35
-                if (Log.IsDebugEnabled())
+                try
                 {
-                    Log.DebugException("[ObjectPool] Object state could not be reset", crsex);
+                    OnResetState();
                 }
-#else
-                System.Diagnostics.Debug.Assert(crsex != null); // Placeholder to avoid warnings
-#endif
-                successFlag = false;
-            }
-            catch (Exception ex)
-            {
-#if !NET35
-                if (Log.IsWarnEnabled())
+                catch (CannotResetStateException crsex)
                 {
-                    Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
-                }
+#if !NET35
+                    if (Log.IsDebugEnabled())
+                    {
+                        Log.DebugException("[ObjectPool] Object state could not be reset", crsex);
+                    }
 #else
-                System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
+                    System.Diagnostics.Debug.Assert(crsex != null); // Placeholder to avoid warnings
 #endif
-                successFlag = false;
+                    successFlag = false;
+                }
+                catch (Exception ex)
+                {
+#if !NET35
+                    if (Log.IsWarnEnabled())
+                    {
+                        Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
+                    }
+#else
+                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
+                    successFlag = false;
+                }
             }
 
             return successFlag;
@@ -117,23 +123,19 @@ namespace CodeProject.ObjectPool
 
         #endregion Internal Methods - resource and state management
 
-        #region Virtual Template Methods - extending resource and state management
+        #region Events - extending resource and state management
 
         /// <summary>
         ///   Reset the object state to allow this object to be re-used by other parts of the application.
         /// </summary>
-        protected virtual void OnResetState()
-        {
-        }
+        public Action OnResetState { get; set; }
 
         /// <summary>
         ///   Releases the object's resources.
         /// </summary>
-        protected virtual void OnReleaseResources()
-        {
-        }
+        public Action OnReleaseResources { get; set; }
 
-        #endregion Virtual Template Methods - extending resource and state management
+        #endregion Events - extending resource and state management
 
         #region Returning object to pool - Dispose and Finalizer
 

@@ -31,17 +31,10 @@ namespace CodeProject.ObjectPool
             Raise.ArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
 
             InternalResource = resource;
+
+            base.OnReleaseResources += () => OnReleaseResources?.Invoke(InternalResource);
+            base.OnResetState += () => OnResetState?.Invoke(InternalResource);
         }
-
-        /// <summary>
-        ///   Triggered by the pool manager when there is no need for this object anymore.
-        /// </summary>
-        public Action<T> WrapperReleaseResourcesAction { get; set; }
-
-        /// <summary>
-        ///   Triggered by the pool manager just before the object is being returned to the pool.
-        /// </summary>
-        public Action<T> WrapperResetStateAction { get; set; }
 
         /// <summary>
         ///   The resource wrapped inside this class.
@@ -49,19 +42,13 @@ namespace CodeProject.ObjectPool
         public T InternalResource { get; }
 
         /// <summary>
-        ///   Triggers the <see cref="WrapperReleaseResourcesAction"/>, if any.
+        ///   Triggered by the pool manager when there is no need for this object anymore.
         /// </summary>
-        protected override void OnReleaseResources()
-        {
-            WrapperReleaseResourcesAction?.Invoke(InternalResource);
-        }
+        public new Action<T> OnReleaseResources { get; set; }
 
         /// <summary>
-        ///   Triggers the <see cref="WrapperResetStateAction"/>, if any.
+        ///   Triggered by the pool manager just before the object is being returned to the pool.
         /// </summary>
-        protected override void OnResetState()
-        {
-            WrapperResetStateAction?.Invoke(InternalResource);
-        }
+        public new Action<T> OnResetState { get; set; }
     }
 }

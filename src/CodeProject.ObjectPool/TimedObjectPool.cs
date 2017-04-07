@@ -23,6 +23,8 @@
 
 #if !(NETSTD10 || NETSTD11)
 
+using CodeProject.ObjectPool.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Linq;
 using System.Threading;
@@ -39,12 +41,83 @@ namespace CodeProject.ObjectPool
     internal class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
         where T : PooledObject
     {
+        #region Fields
+
+        /// <summary>
+        ///   Backing field for <see cref="Timeout"/>.
+        /// </summary>
         private TimeSpan _timeout;
+
+        /// <summary>
+        ///   The timer which periodically cleans the pool up.
+        /// </summary>
         private Timer _timer;
 
-        public TimedObjectPool()
+        #endregion Fields
+
+        #region C'tor and Initialization code
+
+        /// <summary>
+        ///   Initializes a new timed pool with default settings and specified timeout.
+        /// </summary>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(TimeSpan timeout)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, timeout)
         {
         }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified maximum pool size and timeout.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(int maximumPoolSize, TimeSpan timeout)
+            : this(maximumPoolSize, null, timeout)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified factory method and timeout.
+        /// </summary>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(Func<T> factoryMethod, TimeSpan timeout)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod, timeout)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified factory method, maximum size and timeout.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout) : base(maximumPoolSize, factoryMethod)
+        {
+            // Preconditions
+            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(timeout, TimeSpan.Zero, nameof(timeout), ErrorMessages.NegativeOrZeroTimeout);
+
+            // Assigning properties.
+            Timeout = timeout;
+        }
+
+        #endregion C'tor and Initialization code
+
+        #region Public Properties
 
         /// <summary>
         ///   When pooled objects have not been used for a time greater than <see cref="Timeout"/>,
@@ -59,6 +132,10 @@ namespace CodeProject.ObjectPool
                 UpdateTimeout();
             }
         }
+
+        #endregion Public Properties
+
+        #region Core Methods
 
         /// <summary>
         ///   Updates the timer according to a new timeout.
@@ -92,6 +169,8 @@ namespace CodeProject.ObjectPool
                 }, null, _timeout, _timeout);
             }
         }
+
+        #endregion Core Methods
     }
 }
 

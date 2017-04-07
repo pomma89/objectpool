@@ -44,6 +44,22 @@ namespace CodeProject.ObjectPool.Specialized
         public PooledStringBuilder(int capacity)
         {
             StringBuilder = new StringBuilder(capacity);
+
+            OnResetState += () =>
+            {
+                var stringBuilderPool = PooledObjectInfo.Handle as IStringBuilderPool;
+                if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
+                {
+                    throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
+                }
+
+                ClearStringBuilder();
+            };
+
+            OnReleaseResources += () =>
+            {
+                ClearStringBuilder();
+            };
         }
 
         /// <summary>
@@ -51,30 +67,6 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString() => StringBuilder.ToString();
-
-        /// <summary>
-        ///   Reset the object state to allow this object to be re-used by other parts of the application.
-        /// </summary>
-        protected override void OnResetState()
-        {
-            var stringBuilderPool = PooledObjectInfo.Handle as IStringBuilderPool;
-            if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
-            {
-                throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
-            }
-
-            ClearStringBuilder();
-            base.OnResetState();
-        }
-
-        /// <summary>
-        ///   Releases the object's resources.
-        /// </summary>
-        protected override void OnReleaseResources()
-        {
-            ClearStringBuilder();
-            base.OnReleaseResources();
-        }
 
         /// <summary>
         ///   Clears the <see cref="StringBuilder"/> property, using specific methods depending on

@@ -80,8 +80,4 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensibility\" />
-  </ItemGroup>
 </Project>
