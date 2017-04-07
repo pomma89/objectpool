@@ -1,5 +1,10 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.0.3 (2017-04-08) ###
+
+* Added a timed object pool (issue #1).
+* OnReleaseResources and OnResetState are now simple actions on PooledObject.
+
 ### v3.0.2 (2017-04-02) ###
 
 * Moved core pool buffer into dedicated class: Core.PooledObjectBuffer. 
