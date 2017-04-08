@@ -21,6 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.Threading;
+
 namespace CodeProject.ObjectPool.Examples
 {
     /// <summary>
@@ -48,8 +51,8 @@ namespace CodeProject.ObjectPool.Examples
             var newPool = new ObjectPool<PooledObjectWrapper<ExternalExpensiveResource>>(() =>
                 new PooledObjectWrapper<ExternalExpensiveResource>(CreateNewResource())
                 {
-                    WrapperReleaseResourcesAction = r => ExternalResourceReleaseResource(r),
-                    WrapperResetStateAction = r => ExternalResourceResetState(r)
+                    OnReleaseResources = ExternalResourceReleaseResource,
+                    OnResetState = ExternalResourceResetState
                 });
 
             using (var wrapper = newPool.GetObject())
@@ -57,6 +60,22 @@ namespace CodeProject.ObjectPool.Examples
                 // wrapper.InternalResource contains the object that you pooled.
                 wrapper.InternalResource.DoOtherStuff();
             } // Exiting the using scope will return the object back to the pool.
+
+            // Creates a pool where objects which have not been used for over 2 seconds will be
+            // cleaned up by a dedicated thread.
+            var timedPool = new TimedObjectPool<ExpensiveResource>(TimeSpan.FromSeconds(2));
+
+            using (var resource = timedPool.GetObject())
+            {
+                // Using the resource...
+                resource.DoStuff();
+            } // Exiting the using scope will return the object back to the pool and record last usage.
+
+            Console.WriteLine($"Timed pool size after 0 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 1
+            Thread.Sleep(TimeSpan.FromSeconds(4));
+            Console.WriteLine($"Timed pool size after 4 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 0
+
+            Console.Read();
         }
 
         private static ExternalExpensiveResource CreateNewResource()
@@ -77,19 +96,22 @@ namespace CodeProject.ObjectPool.Examples
 
     internal sealed class ExpensiveResource : PooledObject
     {
+        public ExpensiveResource()
+        {
+            OnReleaseResources = () =>
+            {
+                // Called if the resource needs to be manually cleaned before the memory is reclaimed.
+            };
+
+            OnResetState = () =>
+            {
+                // Called if the resource needs resetting before it is getting back into the pool.
+            };
+        }
+
         public void DoStuff()
         {
             // Do some work here, for example.
-        }
-
-        protected override void OnReleaseResources()
-        {
-            // Override if the resource needs to be manually cleaned before the memory is reclaimed.
-        }
-
-        protected override void OnResetState()
-        {
-            // Override if the resource needs resetting before it is getting back into the pool.
         }
     }
 

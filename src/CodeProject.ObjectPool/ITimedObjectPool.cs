@@ -21,6 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+
 namespace CodeProject.ObjectPool
 {
     /// <summary>
@@ -38,5 +40,10 @@ namespace CodeProject.ObjectPool
 #endif
         where T : PooledObject
     {
+        /// <summary>
+        ///   When pooled objects have not been used for a time greater than <see cref="Timeout"/>,
+        ///   then they will be destroyed by a cleaning task.
+        /// </summary>
+        TimeSpan Timeout { get; set; }
     }
 }

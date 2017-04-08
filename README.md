@@ -5,7 +5,7 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 
 ## Summary ##
 
-* Latest release version: `v3.0.2`
+* Latest release version: `v3.0.3`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
     + [HTML](https://goo.gl/RVA7mV)
@@ -37,9 +37,9 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        // Creating a pool with minimum size of 5 and maximum size of 25, using custom Factory
-        // method to create and instance of ExpensiveResource.
-        var pool = new ObjectPool<ExpensiveResource>(5, 25, () => new ExpensiveResource(/* resource specific initialization */));
+        // Creating a pool with a maximum size of 25, using custom Factory method to create and
+        // instance of ExpensiveResource.
+        var pool = new ObjectPool<ExpensiveResource>(25, () => new ExpensiveResource(/* resource specific initialization */));
 
         using (var resource = pool.GetObject())
         {
@@ -52,8 +52,8 @@ internal static class Program
         var newPool = new ObjectPool<PooledObjectWrapper<ExternalExpensiveResource>>(() =>
             new PooledObjectWrapper<ExternalExpensiveResource>(CreateNewResource())
             {
-                WrapperReleaseResourcesAction = r => ExternalResourceReleaseResource(r),
-                WrapperResetStateAction = r => ExternalResourceResetState(r)
+                OnReleaseResources = ExternalResourceReleaseResource,
+                OnResetState = ExternalResourceResetState
             });
 
         using (var wrapper = newPool.GetObject())
@@ -61,6 +61,22 @@ internal static class Program
             // wrapper.InternalResource contains the object that you pooled.
             wrapper.InternalResource.DoOtherStuff();
         } // Exiting the using scope will return the object back to the pool.
+
+        // Creates a pool where objects which have not been used for over 2 seconds will be
+        // cleaned up by a dedicated thread.
+        var timedPool = new TimedObjectPool<ExpensiveResource>(TimeSpan.FromSeconds(2));
+
+        using (var resource = timedPool.GetObject())
+        {
+            // Using the resource...
+            resource.DoStuff();
+        } // Exiting the using scope will return the object back to the pool and record last usage.
+
+        Console.WriteLine($"Timed pool size after 0 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 1
+        Thread.Sleep(TimeSpan.FromSeconds(4));
+        Console.WriteLine($"Timed pool size after 4 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 0
+
+        Console.Read();
     }
 
     private static ExternalExpensiveResource CreateNewResource()
@@ -81,19 +97,22 @@ internal static class Program
 
 internal sealed class ExpensiveResource : PooledObject
 {
+    public ExpensiveResource()
+    {
+        OnReleaseResources = () =>
+        {
+            // Called if the resource needs to be manually cleaned before the memory is reclaimed.
+        };
+
+        OnResetState = () =>
+        {
+            // Called if the resource needs resetting before it is getting back into the pool.
+        };
+    }
+
     public void DoStuff()
     {
         // Do some work here, for example.
-    }
-
-    protected override void OnReleaseResources()
-    {
-        // Override if the resource needs to be manually cleaned before the memory is reclaimed.
-    }
-
-    protected override void OnResetState()
-    {
-        // Override if the resource needs resetting before it is getting back into the pool.
     }
 }
 
@@ -112,91 +131,89 @@ All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](ht
 
 ### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveOneObject.cs) ###
 
-In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using a single thread. We compare three implementations:
+In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using a single thread. We compare four implementations:
 
 * [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
 * [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
 * [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
+* [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
 
-```ini
+``` ini
 
-Host Process Environment Information:
-BenchmarkDotNet.Core=v0.9.9.0
-OS=Microsoft Windows NT 6.2.9200.0
-Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
-Frequency=14318180 ticks, Resolution=69.8413 ns, Timer=HPET
-CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
-GC=Concurrent Workstation
-JitModules=clrjit-v4.6.1586.0
+BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
+Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
-Type=RetrieveOneObject  Mode=Throughput  
+Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
-                  Method |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------- |------------ |---------- |------ |------ |------ |------------------- |
-        SimpleObjectPool | 136.0373 ns | 3.4367 ns | 11.02 |  9.58 |  9.58 |               3,09 |
- ParameterizedObjectPool | 199.7968 ns | 4.4435 ns | 21.00 |     - |     - |               3,08 |
-     MicrosoftObjectPool |  60.7935 ns | 1.8593 ns |     - |     - |     - |               0,00 |
+ |                  Method |          Mean |     StdDev |  Gen 0 | Allocated |
+ |------------------------ |-------------- |----------- |------- |---------- |
+ |        SimpleObjectPool |   106.3367 ns |  1.9033 ns |      - |       0 B |
+ | ParameterizedObjectPool |   174.2507 ns |  1.9017 ns | 0.0391 |      24 B |
+ |     MicrosoftObjectPool |    59.3673 ns |  1.2349 ns |      - |       0 B |
+ |      OriginalObjectPool | 1,773.9186 ns | 96.7615 ns | 0.0238 |     240 B |
 
 ### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
 
-In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using `Count` threads. We compare three implementations:
+In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using `Count` threads. We compare four implementations:
 
 * [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
 * [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
 * [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
+* [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
 
-```ini
+``` ini
 
-Host Process Environment Information:
-BenchmarkDotNet.Core=v0.9.9.0
-OS=Microsoft Windows NT 6.2.9200.0
-Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
-Frequency=14318180 ticks, Resolution=69.8413 ns, Timer=HPET
-CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
-GC=Concurrent Workstation
-JitModules=clrjit-v4.6.1586.0
+BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
+Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
-Type=RetrieveObjectsConcurrently  Mode=Throughput  Affinity=2  
+Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
-                  Method | Count |      Median |    StdDev | Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------- |------ |------------ |---------- |------ |------ |------ |------------------- |
-        **SimpleObjectPool** |    **10** |   **5.7390 us** | **0.3109 us** |  **1.72** |  **0.72** |  **0.07** |             **278,68** |
- ParameterizedObjectPool |    10 |   6.4189 us | 1.1792 us |  1.58 |  1.23 |     - |             284,70 |
-     MicrosoftObjectPool |    10 |   4.2985 us | 0.0975 us |  1.30 |  1.11 |     - |             244,84 |
-        **SimpleObjectPool** |   **100** |  **19.6048 us** | **1.2525 us** |  **3.04** |  **2.32** |  **0.73** |             **576,85** |
- ParameterizedObjectPool |   100 |  27.8705 us | 1.9570 us |  3.09 |  2.81 |     - |             560,35 |
-     MicrosoftObjectPool |   100 |  10.5264 us | 1.5110 us |  1.78 |  0.97 |  0.03 |             233,25 |
-        **SimpleObjectPool** |  **1000** | **157.9986 us** | **6.2393 us** | **12.67** | **12.12** |  **9.92** |           **3.277,64** |
- ParameterizedObjectPool |  1000 | 223.4054 us | 7.6698 us | 20.00 |     - |     - |           2.697,82 |
-     MicrosoftObjectPool |  1000 |  76.3736 us | 0.8204 us |  5.17 |  0.29 |     - |             247,38 |
+ |                  Method | Count |          Mean |     StdDev |   Gen 0 |   Gen 1 | Allocated |
+ |------------------------ |------ |-------------- |----------- |-------- |-------- |---------- |
+ |        **SimpleObjectPool** |    **10** |    **10.1346 us** |  **0.3799 us** |  **1.7548** |       **-** |   **1.12 kB** |
+ | ParameterizedObjectPool |    10 |    13.6740 us |  0.3560 us |  1.9409 |       - |   1.42 kB |
+ |     MicrosoftObjectPool |    10 |     9.3135 us |  0.1154 us |  1.7008 |       - |   1.12 kB |
+ |      OriginalObjectPool |    10 |    26.4688 us |  0.7511 us |       - |       - |    3.7 kB |
+ |        **SimpleObjectPool** |   **100** |    **54.1560 us** |  **1.7507 us** |       **-** |       **-** |   **1.31 kB** |
+ | ParameterizedObjectPool |   100 |    72.3400 us |  0.8960 us |  4.8177 |       - |   3.93 kB |
+ |     MicrosoftObjectPool |   100 |    30.9284 us |  1.1752 us |  2.9975 |       - |   2.16 kB |
+ |      OriginalObjectPool |   100 |   177.0052 us |  3.7795 us |  1.7904 |       - |  27.04 kB |
+ |        **SimpleObjectPool** |  **1000** |   **689.5726 us** | **21.9610 us** |       **-** |       **-** |   **4.07 kB** |
+ | ParameterizedObjectPool |  1000 |   844.7284 us | 19.1851 us | 10.9863 |       - |  28.18 kB |
+ |     MicrosoftObjectPool |  1000 |   362.2347 us | 21.3030 us | 51.1351 | 15.1438 |   28.3 kB |
+ |      OriginalObjectPool |  1000 | 1,458.5456 us | 25.8381 us | 29.1667 |       - | 268.99 kB |
+
 
 ### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
 
-In this benchmark we evaluate how long it takes to extract and return a memory stream stored into the pool, using a single thread. We compare three implementations:
+In this benchmark we evaluate how long it takes to extract and return a memory stream stored into the pool, using a single thread. We compare two implementations:
 
 * [This project's MemoryStreamPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/Specialized/MemoryStreamPool.cs)
 * [Microsoft's RecyclableMemoryStreamManager](http://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream/)
 
-```ini
+``` ini
 
-Host Process Environment Information:
-BenchmarkDotNet.Core=v0.9.9.0
-OS=Microsoft Windows NT 6.2.9200.0
-Processor=Intel(R) Core(TM) i3-2330M CPU 2.20GHz, ProcessorCount=4
-Frequency=14318180 ticks, Resolution=69.8413 ns, Timer=HPET
-CLR=MS.NET 4.0.30319.42000, Arch=32-bit RELEASE
-GC=Concurrent Workstation
-JitModules=clrjit-v4.6.1586.0
+BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
+Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
-Type=MemoryStreamPooling  Mode=Throughput  
+Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
-                        Method |        Median |      StdDev |  Gen 0 | Gen 1 | Gen 2 | Bytes Allocated/Op |
------------------------------- |-------------- |------------ |------- |------ |------ |------------------- |
-              MemoryStreamPool |   171.7594 ns |   4.7127 ns |   1.46 |  1.26 |  1.26 |               3,08 |
- RecyclableMemoryStreamManager | 2,924.0579 ns | 117.2652 ns | 341.00 |     - |     - |              88,74 |
+ |                        Method |          Mean |     StdErr |      StdDev |  Gen 0 | Allocated |
+ |------------------------------ |-------------- |----------- |------------ |------- |---------- |
+ |              MemoryStreamPool |   180.0207 ns |  1.6126 ns |   6.0337 ns |      - |       0 B |
+ | RecyclableMemoryStreamManager | 4,213.5708 ns | 44.6009 ns | 446.0087 ns | 0.8134 |     448 B |
 
 ## About this repository and its maintainer ##
 

@@ -92,12 +92,12 @@ private void Build(string cfg)
     //        NoIncremental = true
     //    });
     //}
-	
-	MSBuild(solutionFile, settings =>
-	{
+    
+    MSBuild(solutionFile, settings =>
+    {
         settings.SetConfiguration(cfg);
-		settings.SetMaxCpuCount(0);
-	});
+        settings.SetMaxCpuCount(0);
+    });
 }
 
 private void Test(string cfg)
@@ -107,27 +107,27 @@ private void Test(string cfg)
     //    NoResults = true
     //});
 
-	const string flags = "--noheader --noresult";
-	const string errMsg = " - Unit test failure - ";
+    const string flags = "--noheader --noresult";
+    const string errMsg = " - Unit test failure - ";
 
-	Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
-	{
-		if (StartProcess(netExe, flags) != 0)
-		{
-			throw new Exception(cfg + errMsg + netExe);
-		}
-	});
+    Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+    {
+        if (StartProcess(netExe, flags) != 0)
+        {
+            throw new Exception(cfg + errMsg + netExe);
+        }
+    });
 
-	Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
-	{
-		DotNetCoreExecute(netCoreDll, flags);
-	});
+    Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+    {
+        DotNetCoreExecute(netCoreDll, flags);
+    });
 }
 
 private void Pack(string cfg)
 {
-	Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
-	{
+    Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
+    {
         //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         //{
         //    Configuration = cfg,
@@ -135,15 +135,15 @@ private void Pack(string cfg)
         //    NoBuild = true
         //});
 
-		MSBuild(project, settings =>
-		{
-			settings.SetConfiguration(cfg);
-			settings.SetMaxCpuCount(0);
-			settings.WithTarget("pack");
-			settings.WithProperty("IncludeSymbols", new[] { "true" });
-		});
+        MSBuild(project, settings =>
+        {
+            settings.SetConfiguration(cfg);
+            settings.SetMaxCpuCount(0);
+            settings.WithTarget("pack");
+            settings.WithProperty("IncludeSymbols", new[] { "true" });
+        });
 
-		var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
-		MoveFiles(GetFiles(packDir + "/*.nupkg"), artifactsDir);
-	});
+        var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
+        MoveFiles(GetFiles(packDir + "/*.nupkg"), artifactsDir);
+    });
 }

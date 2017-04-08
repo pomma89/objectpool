@@ -23,6 +23,10 @@
 
 #if !(NETSTD10 || NETSTD11)
 
+using CodeProject.ObjectPool.Core;
+using PommaLabs.Thrower;
+using System;
+using System.Linq;
 using System.Threading;
 
 namespace CodeProject.ObjectPool
@@ -34,10 +38,156 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    internal class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
+    public class TimedObjectPool<T> : ObjectPool<T>, ITimedObjectPool<T>
         where T : PooledObject
     {
-        private readonly Timer Timer;
+        #region Fields
+
+        /// <summary>
+        ///   Backing field for <see cref="Timeout"/>.
+        /// </summary>
+        private TimeSpan _timeout;
+
+        /// <summary>
+        ///   The timer which periodically cleans the pool up.
+        /// </summary>
+        private Timer _timer;
+
+        #endregion Fields
+
+        #region C'tor and Initialization code
+
+        /// <summary>
+        ///   Initializes a new timed pool with default settings and specified timeout.
+        /// </summary>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(TimeSpan timeout)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, timeout)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified maximum pool size and timeout.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(int maximumPoolSize, TimeSpan timeout)
+            : this(maximumPoolSize, null, timeout)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified factory method and timeout.
+        /// </summary>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(Func<T> factoryMethod, TimeSpan timeout)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod, timeout)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new timed pool with specified factory method, maximum size and timeout.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="timeout">The timeout of each pooled object.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        /// </exception>
+        public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout) : base(maximumPoolSize, factoryMethod)
+        {
+            // Preconditions
+            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(timeout, TimeSpan.Zero, nameof(timeout), ErrorMessages.NegativeOrZeroTimeout);
+
+            // Assigning properties.
+            Timeout = timeout;
+        }
+
+        #endregion C'tor and Initialization code
+
+        #region Public Properties
+
+        /// <summary>
+        ///   When pooled objects have not been used for a time greater than <see cref="Timeout"/>,
+        ///   then they will be destroyed by a cleaning task.
+        /// </summary>
+        public TimeSpan Timeout
+        {
+            get => _timeout;
+            set
+            {
+                _timeout = value;
+                UpdateTimeout();
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Core Methods
+
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <returns>A new pooled object.</returns>
+        protected override T CreatePooledObject()
+        {
+            var pooledObject = base.CreatePooledObject();
+
+            // Register an handler which records the time at which the object returned to the pool.
+            pooledObject.OnResetState += () =>
+            {
+                pooledObject.PooledObjectInfo.Payload = DateTime.UtcNow;
+            };
+
+            return pooledObject;
+        }
+
+        /// <summary>
+        ///   Updates the timer according to a new timeout.
+        /// </summary>
+        private void UpdateTimeout()
+        {
+            lock (this)
+            {
+                if (_timer != null)
+                {
+                    // A timer already exists, simply change its period.
+                    _timer.Change(_timeout, _timeout);
+                    return;
+                }
+
+                _timer = new Timer(_ =>
+                {
+                    // Local copy, since the buffer might change.
+                    var items = PooledObjects.ToArray();
+
+                    // All items which have been last used before following threshold will be destroyed.
+                    var threshold = DateTime.UtcNow - _timeout;
+
+                    foreach (var item in items)
+                    {
+                        if (item.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold && PooledObjects.TryRemove(item))
+                        {
+                            DestroyPooledObject(item);
+                        }
+                    }
+                }, null, _timeout, _timeout);
+            }
+        }
+
+        #endregion Core Methods
     }
 }
 

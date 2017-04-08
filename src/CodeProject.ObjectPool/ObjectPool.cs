@@ -37,6 +37,64 @@ namespace CodeProject.ObjectPool
     public class ObjectPool<T> : IObjectPool<T>, IObjectPoolHandle
         where T : PooledObject
     {
+        #region C'tor and Initialization code
+
+        /// <summary>
+        ///   Initializes a new pool with default settings.
+        /// </summary>
+        public ObjectPool()
+            : this(ObjectPool.DefaultPoolMaximumSize, null)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified maximum pool size.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        public ObjectPool(int maximumPoolSize)
+            : this(maximumPoolSize, null)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method.
+        /// </summary>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        public ObjectPool(Func<T> factoryMethod)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method and maximum size.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
+        {
+            // Preconditions
+            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(maximumPoolSize, 0, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
+
+            // Throws an exception if the type does not have default constructor - on purpose! We
+            // could have added a generic constraint with new (), but we did not want to limit the
+            // user and force a parameterless constructor.
+            FactoryMethod = factoryMethod ?? Activator.CreateInstance<T>;
+
+            // Max pool size.
+            MaximumPoolSize = maximumPoolSize;
+
+            // Creating a new instance for the Diagnostics class.
+            Diagnostics = new ObjectPoolDiagnostics();
+        }
+
+        #endregion C'tor and Initialization code
+
         #region Public Properties
 
         /// <summary>
@@ -85,60 +143,6 @@ namespace CodeProject.ObjectPool
         protected PooledObjectBuffer<T> PooledObjects { get; } = new PooledObjectBuffer<T>();
 
         #endregion Public Properties
-
-        #region C'tor and Initialization code
-
-        /// <summary>
-        ///   Initializes a new pool with default settings.
-        /// </summary>
-        public ObjectPool()
-            : this(ObjectPool.DefaultPoolMaximumSize, null)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new pool with specified maximum pool size.
-        /// </summary>
-        /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
-        /// </exception>
-        public ObjectPool(int maximumPoolSize)
-            : this(maximumPoolSize, null)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new pool with specified factory method.
-        /// </summary>
-        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new pool with specified factory method and maximum size.
-        /// </summary>
-        /// <param name="maximumPoolSize">The maximum pool size limit</param>
-        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
-        /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
-        {
-            // Preconditions
-            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
-
-            // Assigning properties.
-            FactoryMethod = factoryMethod;
-            MaximumPoolSize = maximumPoolSize;
-
-            // Creating a new instance for the Diagnostics class.
-            Diagnostics = new ObjectPoolDiagnostics();
-        }
-
-        #endregion C'tor and Initialization code
 
         #region Finalizer
 
@@ -245,33 +249,45 @@ namespace CodeProject.ObjectPool
 
         #endregion Pool Operations
 
-        #region Private Methods
+        #region Protected Methods
 
         /// <summary>
         ///   Keeps track of last pooled object ID.
         /// </summary>
         private int _lastPooledObjectId;
 
-        private T CreatePooledObject()
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <returns>A new pooled object.</returns>
+        protected virtual T CreatePooledObject()
         {
             if (Diagnostics.Enabled)
             {
                 Diagnostics.IncrementObjectsCreatedCount();
             }
 
-            // Throws an exception if the type does not have default constructor - on purpose! We
-            // could have added a generic constraint with new (), but we did not want to limit the
-            // user and force a parameterless constructor.
-            var newObject = FactoryMethod?.Invoke() ?? Activator.CreateInstance<T>();
+            if (FactoryMethod == null)
+            {
+                // A child class has deleted our factory method. Therefore, we can only return null.
+                return null;
+            }
+
+            var newObject = FactoryMethod();
 
             // Setting the 'return to pool' action and other properties in the newly created pooled object.
             newObject.PooledObjectInfo.Id = Interlocked.Increment(ref _lastPooledObjectId);
             newObject.PooledObjectInfo.State = PooledObjectState.Available;
             newObject.PooledObjectInfo.Handle = this;
+
             return newObject;
         }
 
-        private void DestroyPooledObject(PooledObject objectToDestroy)
+        /// <summary>
+        ///   Destroys given pooled object, disposing its resources.
+        /// </summary>
+        /// <param name="objectToDestroy">The pooled object that should be destroyed.</param>
+        protected void DestroyPooledObject(PooledObject objectToDestroy)
         {
             // Making sure that the object is only disposed once (in case of application shutting
             // down and we don't control the order of the finalization).
@@ -293,6 +309,6 @@ namespace CodeProject.ObjectPool
             GC.SuppressFinalize(objectToDestroy);
         }
 
-        #endregion Private Methods
+        #endregion Protected Methods
     }
 }

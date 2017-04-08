@@ -47,6 +47,33 @@ namespace CodeProject.ObjectPool.Specialized
             {
                 Parent = this
             };
+
+            OnResetState += () =>
+            {
+                if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
+                {
+                    throw new CannotResetStateException($"Memory stream has already been disposed");
+                }
+
+                var memoryStreamPool = PooledObjectInfo.Handle as IMemoryStreamPool;
+                if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
+                {
+                    throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
+                }
+                if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
+                {
+                    throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
+                }
+
+                _trackedMemoryStream.Position = 0L;
+                _trackedMemoryStream.SetLength(0L);
+            };
+
+            OnReleaseResources += () =>
+            {
+                _trackedMemoryStream.Parent = null;
+                _trackedMemoryStream.Dispose();
+            };
         }
 
         /// <summary>
@@ -59,41 +86,6 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString() => _trackedMemoryStream.ToString();
-
-        /// <summary>
-        ///   Reset the object state to allow this object to be re-used by other parts of the application.
-        /// </summary>
-        protected override void OnResetState()
-        {
-            if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
-            {
-                throw new CannotResetStateException($"Memory stream has already been disposed");
-            }
-
-            var memoryStreamPool = PooledObjectInfo.Handle as IMemoryStreamPool;
-            if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
-            {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
-            }
-            if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
-            {
-                throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
-            }
-
-            _trackedMemoryStream.Position = 0L;
-            _trackedMemoryStream.SetLength(0L);
-            base.OnResetState();
-        }
-
-        /// <summary>
-        ///   Releases the object's resources.
-        /// </summary>
-        protected override void OnReleaseResources()
-        {
-            _trackedMemoryStream.Parent = null;
-            _trackedMemoryStream.Dispose();
-            base.OnReleaseResources();
-        }
 
         private sealed class TrackedMemoryStream : MemoryStream
         {

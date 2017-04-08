@@ -100,7 +100,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Initializes a new pool with specified maximum pool size.
         /// </summary>
-        /// <param name="maximumPoolSize">The maximum pool size limit</param>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
         public ParameterizedObjectPool(int maximumPoolSize)
             : this(maximumPoolSize, null)
         {
@@ -118,7 +118,7 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Initializes a new pool with specified factory method and maximum size.
         /// </summary>
-        /// <param name="maximumPoolSize">The maximum pool size limit</param>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ParameterizedObjectPool(int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {

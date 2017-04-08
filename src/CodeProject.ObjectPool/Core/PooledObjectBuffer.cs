@@ -41,9 +41,9 @@ namespace CodeProject.ObjectPool.Core
         where T : PooledObject
     {
 #if (NET35 || NET40)
-        private const MethodImplOptions TryToInline = default(MethodImplOptions);
+        private const MethodImplOptions TryInline = default(MethodImplOptions);
 #else
-        private const MethodImplOptions TryToInline = MethodImplOptions.AggressiveInlining;
+        private const MethodImplOptions TryInline = MethodImplOptions.AggressiveInlining;
 #endif
 
         /// <summary>
@@ -83,9 +83,8 @@ namespace CodeProject.ObjectPool.Core
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (var i = 0; i <= _pooledObjects.Length; ++i)
+            foreach (var item in _pooledObjects)
             {
-                var item = _pooledObjects[i];
                 if (item != null)
                 {
                     yield return item;
@@ -106,7 +105,7 @@ namespace CodeProject.ObjectPool.Core
         /// </summary>
         /// <param name="pooledObject">Output pooled object.</param>
         /// <returns>True if <paramref name="pooledObject"/> has a value, false otherwise.</returns>
-        [MethodImpl(TryToInline)]
+        [MethodImpl(TryInline)]
         public bool TryDequeue(out T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
@@ -127,7 +126,7 @@ namespace CodeProject.ObjectPool.Core
         /// </summary>
         /// <param name="pooledObject">Input pooled object.</param>
         /// <returns>True if there was enough space to enqueue given object, false otherwise.</returns>
-        [MethodImpl(TryToInline)]
+        [MethodImpl(TryInline)]
         public bool TryEnqueue(T pooledObject)
         {
             for (var i = 0; i < _pooledObjects.Length; i++)
@@ -185,6 +184,25 @@ namespace CodeProject.ObjectPool.Core
 
             Array.Resize(ref _pooledObjects, newCapacity);
             return exceedingItems;
+        }
+
+        /// <summary>
+        ///   Tries to remove given object from the buffer.
+        /// </summary>
+        /// <param name="pooledObject">Pooled object to be removed.</param>
+        /// <returns>True if <paramref name="pooledObject"/> has been removed, false otherwise.</returns>
+        [MethodImpl(TryInline)]
+        public bool TryRemove(T pooledObject)
+        {
+            for (var i = 0; i < _pooledObjects.Length; i++)
+            {
+                var item = _pooledObjects[i];
+                if (item != null && item == pooledObject && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
