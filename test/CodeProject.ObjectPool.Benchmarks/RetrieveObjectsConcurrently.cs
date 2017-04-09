@@ -59,8 +59,8 @@ namespace CodeProject.ObjectPool.Benchmarks
         [Params(10, 100, 1000)]
         public int Count { get; set; }
 
-        [Benchmark]
-        public ParallelLoopResult SimpleObjectPool() => Parallel.For(0, Count, _ =>
+        [Benchmark(Baseline = true)]
+        public ParallelLoopResult Simple() => Parallel.For(0, Count, _ =>
         {
             string str;
             using (var x = _objectPool.GetObject())
@@ -70,7 +70,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         });
 
         [Benchmark]
-        public ParallelLoopResult ParameterizedObjectPool() => Parallel.For(0, Count, _ =>
+        public ParallelLoopResult Parameterized() => Parallel.For(0, Count, _ =>
         {
             string str;
             using (var x = _paramObjectPool.GetObject(21))
@@ -80,7 +80,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         });
 
         [Benchmark]
-        public ParallelLoopResult MicrosoftObjectPool() => Parallel.For(0, Count, _ =>
+        public ParallelLoopResult Microsoft() => Parallel.For(0, Count, _ =>
         {
             MyResource res = null;
             string str;
@@ -99,7 +99,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         });
 
         [Benchmark]
-        public ParallelLoopResult OriginalObjectPool() => Parallel.For(0, Count, _ =>
+        public ParallelLoopResult Original() => Parallel.For(0, Count, _ =>
         {
             string str;
             using (var x = _originalObjectPool.GetObject())
