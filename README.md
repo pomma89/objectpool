@@ -143,19 +143,21 @@ In this benchmark we evaluate how long it takes to extract and return an object 
 
 BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
   [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
   RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |                  Method |          Mean |     StdDev |  Gen 0 | Allocated |
- |------------------------ |-------------- |----------- |------- |---------- |
- |        SimpleObjectPool |   106.3367 ns |  1.9033 ns |      - |       0 B |
- | ParameterizedObjectPool |   174.2507 ns |  1.9017 ns | 0.0391 |      24 B |
- |     MicrosoftObjectPool |    59.3673 ns |  1.2349 ns |      - |       0 B |
- |      OriginalObjectPool | 1,773.9186 ns | 96.7615 ns | 0.0238 |     240 B |
+ |        Method |          Mean |    StdErr |     StdDev |        Median | Scaled | Scaled-StdDev |  Gen 0 | Allocated |
+ |-------------- |-------------- |---------- |----------- |-------------- |------- |-------------- |------- |---------- |
+ |        Simple |   121.7587 ns | 2.6138 ns |  9.7801 ns |   117.3474 ns |   1.00 |          0.00 |      - |       0 B |
+ | Parameterized |   180.3051 ns | 0.4339 ns |  1.5644 ns |   180.0446 ns |   1.49 |          0.10 | 0.0331 |      24 B |
+ |     Microsoft |    60.0949 ns | 0.7015 ns |  5.0583 ns |    57.2039 ns |   0.50 |          0.05 |      - |       0 B |
+ |      Original | 2,015.6827 ns | 8.4539 ns | 32.7417 ns | 2,023.0768 ns |  16.64 |          1.18 |      - |     239 B |
+
+![](http://pomma89.altervista.org/objectpool/perf/RetrieveOneObject-barplot.png "Retrieve one object barplot")
 
 ### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
 
@@ -170,28 +172,29 @@ In this benchmark we evaluate how long it takes to extract and return an object 
 
 BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
   [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
   RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |                  Method | Count |          Mean |     StdDev |   Gen 0 |   Gen 1 | Allocated |
- |------------------------ |------ |-------------- |----------- |-------- |-------- |---------- |
- |        **SimpleObjectPool** |    **10** |    **10.1346 us** |  **0.3799 us** |  **1.7548** |       **-** |   **1.12 kB** |
- | ParameterizedObjectPool |    10 |    13.6740 us |  0.3560 us |  1.9409 |       - |   1.42 kB |
- |     MicrosoftObjectPool |    10 |     9.3135 us |  0.1154 us |  1.7008 |       - |   1.12 kB |
- |      OriginalObjectPool |    10 |    26.4688 us |  0.7511 us |       - |       - |    3.7 kB |
- |        **SimpleObjectPool** |   **100** |    **54.1560 us** |  **1.7507 us** |       **-** |       **-** |   **1.31 kB** |
- | ParameterizedObjectPool |   100 |    72.3400 us |  0.8960 us |  4.8177 |       - |   3.93 kB |
- |     MicrosoftObjectPool |   100 |    30.9284 us |  1.1752 us |  2.9975 |       - |   2.16 kB |
- |      OriginalObjectPool |   100 |   177.0052 us |  3.7795 us |  1.7904 |       - |  27.04 kB |
- |        **SimpleObjectPool** |  **1000** |   **689.5726 us** | **21.9610 us** |       **-** |       **-** |   **4.07 kB** |
- | ParameterizedObjectPool |  1000 |   844.7284 us | 19.1851 us | 10.9863 |       - |  28.18 kB |
- |     MicrosoftObjectPool |  1000 |   362.2347 us | 21.3030 us | 51.1351 | 15.1438 |   28.3 kB |
- |      OriginalObjectPool |  1000 | 1,458.5456 us | 25.8381 us | 29.1667 |       - | 268.99 kB |
+ |        Method | Count |          Mean |     StdErr |     StdDev | Scaled | Scaled-StdDev |   Gen 0 |   Gen 1 | Allocated |
+ |-------------- |------ |-------------- |----------- |----------- |------- |-------------- |-------- |-------- |---------- |
+ |        **Simple** |    **10** |    **12.5464 us** |  **0.0161 us** |  **0.0559 us** |   **1.00** |          **0.00** |  **2.0091** |       **-** |   **1.15 kB** |
+ | Parameterized |    10 |    14.6937 us |  0.1460 us |  0.8758 us |   1.17 |          0.07 |  2.4578 |       - |   1.43 kB |
+ |     Microsoft |    10 |     9.9922 us |  0.0994 us |  0.9325 us |   0.80 |          0.07 |  1.8722 |       - |   1.12 kB |
+ |      Original |    10 |    27.0116 us |  0.1161 us |  0.4184 us |   2.15 |          0.03 |       - |       - |   3.72 kB |
+ |        **Simple** |   **100** |    **69.6033 us** |  **0.4120 us** |  **1.4271 us** |   **1.00** |          **0.00** |  **0.0163** |       **-** |   **1.47 kB** |
+ | Parameterized |   100 |    78.6620 us |  0.6899 us |  2.3897 us |   1.13 |          0.04 |  6.0963 |       - |   3.92 kB |
+ |     Microsoft |   100 |    33.5158 us |  0.3347 us |  2.5710 us |   0.48 |          0.04 |  4.1996 |  0.7410 |   2.42 kB |
+ |      Original |   100 |   177.8085 us |  0.8120 us |  3.1450 us |   2.56 |          0.07 |  3.6719 |       - |  27.01 kB |
+ |        **Simple** |  **1000** |   **800.4478 us** |  **1.4427 us** |  **5.2017 us** |   **1.00** |          **0.00** |       **-** |       **-** |   **4.75 kB** |
+ | Parameterized |  1000 |   847.4692 us |  2.5917 us | 10.0377 us |   1.06 |          0.01 | 31.3802 |       - |  27.91 kB |
+ |     Microsoft |  1000 |   367.3571 us |  3.6502 us | 28.0380 us |   0.46 |          0.03 | 53.3482 | 10.9933 |  33.35 kB |
+ |      Original |  1000 | 1,447.6767 us | 22.5522 us | 84.3827 us |   1.81 |          0.10 |       - |       - | 267.77 kB |
 
+![](http://pomma89.altervista.org/objectpool/perf/RetrieveObjectsConcurrently-barplot.png "Retrieve objects concurrently barplot")
 
 ### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
 
@@ -204,17 +207,19 @@ In this benchmark we evaluate how long it takes to extract and return a memory s
 
 BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949470 Hz, Resolution=512.9599 ns, Timer=TSC
+Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
   [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
   RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |                        Method |          Mean |     StdErr |      StdDev |  Gen 0 | Allocated |
- |------------------------------ |-------------- |----------- |------------ |------- |---------- |
- |              MemoryStreamPool |   180.0207 ns |  1.6126 ns |   6.0337 ns |      - |       0 B |
- | RecyclableMemoryStreamManager | 4,213.5708 ns | 44.6009 ns | 446.0087 ns | 0.8134 |     448 B |
+ |                        Method |          Mean |     StdDev | Scaled | Scaled-StdDev |  Gen 0 | Allocated |
+ |------------------------------ |-------------- |----------- |------- |-------------- |------- |---------- |
+ |              MemoryStreamPool |   173.8324 ns |  5.5788 ns |   1.00 |          0.00 |      - |       0 B |
+ | RecyclableMemoryStreamManager | 3,406.0877 ns | 88.6058 ns |  19.61 |          0.76 | 0.7796 |     448 B |
+
+![](http://pomma89.altervista.org/objectpool/perf/MemoryStreamPooling-barplot.png "Memory stream pooling barplot")
 
 ## About this repository and its maintainer ##
 
