@@ -8,14 +8,15 @@ A generic, concurrent, portable and flexible Object Pool for the .NET Framework,
 * Latest release version: `v3.0.3`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
-    + [HTML](https://goo.gl/RVA7mV)
-    + [PDF](https://goo.gl/U6dNkt)
+    + [HTML](http://pomma89.altervista.org/objectpool/doc/html/index.html)
+    + [CHM](http://pomma89.altervista.org/objectpool/doc/refman.chm)
+    + [PDF](http://pomma89.altervista.org/objectpool/doc/refman.pdf)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
 
 ## Introduction ##
 
-Library is production ready and it is successfully working in real life systems. [Here](https://4538d366a46bbb00d202aaaa7b99c4e50320a061.googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/ObjectPool/doc/index.html) you can find the Doxygen-generated API documentation.
+Library is production ready and it is successfully working in real life systems.
 
 Original source code has been modified, in order to introduce a Parameterized Object Pool, already drafted by Ofir Makmal in the comments of the article. 
 Moreover, a few unit tests have been added, in order to improve code reliability, and a lot of other small changes have also been applied. 
@@ -127,14 +128,14 @@ internal sealed class ExternalExpensiveResource
 
 ## Benchmarks ##
 
-All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](https://github.com/PerfDotNet/BenchmarkDotNet) library.
+All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) library.
 
-### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveOneObject.cs) ###
+### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveOneObject.cs) ###
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using a single thread. We compare four implementations:
 
-* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
-* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
+* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ObjectPool.cs)
+* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ParameterizedObjectPool.cs)
 * [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 * [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
 
@@ -156,12 +157,12 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
  |     MicrosoftObjectPool |    59.3673 ns |  1.2349 ns |      - |       0 B |
  |      OriginalObjectPool | 1,773.9186 ns | 96.7615 ns | 0.0238 |     240 B |
 
-### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
+### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using `Count` threads. We compare four implementations:
 
-* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ObjectPool.cs)
-* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/ParameterizedObjectPool.cs)
+* [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ObjectPool.cs)
+* [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ParameterizedObjectPool.cs)
 * [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 * [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
 
@@ -192,11 +193,11 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
  |      OriginalObjectPool |  1000 | 1,458.5456 us | 25.8381 us | 29.1667 |       - | 268.99 kB |
 
 
-### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
+### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
 
 In this benchmark we evaluate how long it takes to extract and return a memory stream stored into the pool, using a single thread. We compare two implementations:
 
-* [This project's MemoryStreamPool](https://github.com/pomma89/ObjectPool/blob/master/ObjectPool/Specialized/MemoryStreamPool.cs)
+* [This project's MemoryStreamPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/Specialized/MemoryStreamPool.cs)
 * [Microsoft's RecyclableMemoryStreamManager](http://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream/)
 
 ``` ini
