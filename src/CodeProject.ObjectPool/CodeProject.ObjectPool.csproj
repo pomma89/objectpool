@@ -32,6 +32,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="doc\**" />
+    <EmbeddedResource Remove="doc\**" />
+    <None Remove="doc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Thrower" Version="4.1.2" />
   </ItemGroup>
 
