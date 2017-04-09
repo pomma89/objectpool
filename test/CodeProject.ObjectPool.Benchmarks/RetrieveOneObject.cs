@@ -55,8 +55,8 @@ namespace CodeProject.ObjectPool.Benchmarks
             public string Value { get; set; }
         }
 
-        [Benchmark]
-        public string SimpleObjectPool()
+        [Benchmark(Baseline = true)]
+        public string Simple()
         {
             string str;
             using (var x = _objectPool.GetObject())
@@ -67,7 +67,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         }
 
         [Benchmark]
-        public string ParameterizedObjectPool()
+        public string Parameterized()
         {
             string str;
             using (var x = _paramObjectPool.GetObject(21))
@@ -78,7 +78,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         }
 
         [Benchmark]
-        public string MicrosoftObjectPool()
+        public string Microsoft()
         {
             MyResource res = null;
             string str;
@@ -98,7 +98,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         }
 
         [Benchmark]
-        public string OriginalObjectPool()
+        public string Original()
         {
             string str;
             using (var x = _originalObjectPool.GetObject())

@@ -32,7 +32,7 @@ namespace CodeProject.ObjectPool.Benchmarks
         private readonly IObjectPool<PooledMemoryStream> _objectPool = Specialized.MemoryStreamPool.Instance;
         private readonly Microsoft.IO.RecyclableMemoryStreamManager _recManager = new Microsoft.IO.RecyclableMemoryStreamManager();
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public long MemoryStreamPool()
         {
             long l;

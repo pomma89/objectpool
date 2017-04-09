@@ -38,7 +38,7 @@ namespace CodeProject.ObjectPool.Benchmarks
             public Config()
             {
                 Add(Job.RyuJitX64);
-                Add(CsvExporter.Default, HtmlExporter.Default, MarkdownExporter.GitHub, PlainExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
+                Add(PlainExporter.Default, MarkdownExporter.GitHub, CsvExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
                 Add(new MemoryDiagnoser());
                 Add(EnvironmentAnalyser.Default);
             }
