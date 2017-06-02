@@ -37,32 +37,32 @@ Task("Build-Debug")
     Build("Debug");
 });
 
-Task("Test-Debug")
-    .IsDependentOn("Build-Debug")
-    .Does(() =>
-{
-    Test("Debug");
-});
-
 Task("Build-Release")
-    .IsDependentOn("Test-Debug")
+    .IsDependentOn("Build-Debug")
     .Does(() => 
 {
     Build("Release");
 });
 
-Task("Test-Release")
-    .IsDependentOn("Build-Release")
-    .Does(() =>
-{
-    Test("Release");
-});
-
 Task("Pack-Release")
-    .IsDependentOn("Test-Release")
+    .IsDependentOn("Build-Release")
     .Does(() => 
 {
     Pack("Release");
+});
+
+Task("Test-Debug")
+    .IsDependentOn("Pack-Release")
+    .Does(() =>
+{
+    Test("Debug");
+});
+
+Task("Test-Release")
+    .IsDependentOn("Test-Debug")
+    .Does(() =>
+{
+    Test("Release");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ Task("Pack-Release")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack-Release");
+    .IsDependentOn("Test-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -107,10 +107,10 @@ private void Test(string cfg)
     //    NoResults = true
     //});
 
-    const string flags = "--noheader --noresult";
+    const string flags = "--noheader --noresult --stoponerror";
     const string errMsg = " - Unit test failure - ";
 
-    Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
     {
         if (StartProcess(netExe, flags) != 0)
         {
@@ -118,7 +118,7 @@ private void Test(string cfg)
         }
     });
 
-    Parallel.ForEach(GetFiles("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
     {
         DotNetCoreExecute(netCoreDll, flags);
     });
