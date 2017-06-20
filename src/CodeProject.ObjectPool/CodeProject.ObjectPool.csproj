@@ -3,7 +3,7 @@
     <AssemblyName>CodeProject.ObjectPool</AssemblyName>
     <AssemblyTitle>Generic and concurrent Object Pool</AssemblyTitle>
     <VersionPrefix>3.0.3</VersionPrefix>
-    <TargetFrameworks>netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;net35;net40;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;net35;net40;net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
@@ -39,16 +39,6 @@
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <DefineConstants>$(DefineConstants);NETSTD10;LIBLOG_PORTABLE</DefineConstants>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
-    <DefineConstants>$(DefineConstants);NETSTD11;LIBLOG_PORTABLE</DefineConstants>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.2' ">
-    <DefineConstants>$(DefineConstants);NETSTD12;LIBLOG_PORTABLE</DefineConstants>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
   </PropertyGroup>
 

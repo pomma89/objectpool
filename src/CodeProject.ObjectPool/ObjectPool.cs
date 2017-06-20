@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
 using System;
 using System.Linq;
 using System.Threading;
@@ -79,7 +78,7 @@ namespace CodeProject.ObjectPool
         public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
         {
             // Preconditions
-            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(maximumPoolSize, 0, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
             // Throws an exception if the type does not have default constructor - on purpose! We
             // could have added a generic constraint with new (), but we did not want to limit the
@@ -122,7 +121,7 @@ namespace CodeProject.ObjectPool
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
+                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
                 // Resize the pool and destroy exceeding items, if any.
                 foreach (var exceedingItem in PooledObjects.Resize(value))
