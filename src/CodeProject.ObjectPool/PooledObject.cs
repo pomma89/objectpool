@@ -9,13 +9,12 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 
 #if !NET35
 
-using PommaLabs.Thrower.Logging;
+using CodeProject.ObjectPool.Logging;
 
 #endif
 
@@ -24,8 +23,11 @@ namespace CodeProject.ObjectPool
     /// <summary>
     ///   PooledObject base class.
     /// </summary>
+#if HAS_SERIALIZABLE
     [Serializable]
-    public abstract class PooledObject : EquatableObject<PooledObject>, IDisposable
+#endif
+
+    public abstract class PooledObject : IDisposable, IEquatable<PooledObject>
     {
         #region Logging
 
@@ -190,34 +192,39 @@ namespace CodeProject.ObjectPool
 
         #region Formatting and equality
 
-        /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
-        /// </summary>
-        /// <returns>
-        ///   All property (or field) values, along with their names, so that they can be used to
-        ///   produce a meaningful <see cref="object.ToString"/>.
-        /// </returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
-        {
-            yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Id), PooledObjectInfo.Id);
-            if (PooledObjectInfo.Payload != null)
-            {
-                yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Payload), PooledObjectInfo.Payload);
-            }
-        }
+        ///// <summary>
+        /////   Returns all property (or field) values, along with their names, so that they can be
+        /////   used to produce a meaningful <see cref="object.ToString"/>.
+        ///// </summary>
+        ///// <returns>
+        /////   All property (or field) values, along with their names, so that they can be used to
+        /////   produce a meaningful <see cref="object.ToString"/>.
+        ///// </returns>
+        //protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
+        //{
+        //    yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Id), PooledObjectInfo.Id);
+        //    if (PooledObjectInfo.Payload != null)
+        //    {
+        //        yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Payload), PooledObjectInfo.Payload);
+        //    }
+        //}
 
-        /// <summary>
-        ///   Returns all property (or field) values that should be used inside
-        ///   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
-        /// </summary>
-        /// <returns>
-        ///   All property (or field) values that should be used inside
-        ///   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
-        /// </returns>
-        protected override IEnumerable<object> GetIdentifyingMembers()
+        ///// <summary>
+        /////   Returns all property (or field) values that should be used inside
+        /////   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
+        ///// </summary>
+        ///// <returns>
+        /////   All property (or field) values that should be used inside
+        /////   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
+        ///// </returns>
+        //protected override IEnumerable<object> GetIdentifyingMembers()
+        //{
+        //    yield return PooledObjectInfo.Id;
+        //}
+
+        public bool Equals(PooledObject other)
         {
-            yield return PooledObjectInfo.Id;
+            throw new NotImplementedException();
         }
 
         #endregion Formatting and equality

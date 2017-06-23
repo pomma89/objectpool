@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -69,7 +68,7 @@ namespace CodeProject.ObjectPool
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value < 1, nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
+                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
                 _maximumPoolSize = value;
             }
@@ -123,7 +122,7 @@ namespace CodeProject.ObjectPool
         public ParameterizedObjectPool(int maximumPoolSize, Func<TKey, TValue> factoryMethod)
         {
             // Preconditions
-            Raise.ArgumentOutOfRangeException.If(maximumPoolSize < 1, nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
+            if (maximumPoolSize < 1) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
 
             // Assigning properties
             Diagnostics = new ObjectPoolDiagnostics();

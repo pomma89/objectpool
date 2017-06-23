@@ -24,7 +24,6 @@
 #if !NETSTD10
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
 using System;
 using System.Linq;
 using System.Threading;
@@ -109,7 +108,7 @@ namespace CodeProject.ObjectPool
         public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout) : base(maximumPoolSize, factoryMethod)
         {
             // Preconditions
-            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(timeout, TimeSpan.Zero, nameof(timeout), ErrorMessages.NegativeOrZeroTimeout);
+            if (timeout <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(timeout), ErrorMessages.NegativeOrZeroTimeout);
 
             // Assigning properties.
             Timeout = timeout;

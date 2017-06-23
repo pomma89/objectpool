@@ -9,7 +9,6 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using PommaLabs.Thrower;
 using System;
 
 namespace CodeProject.ObjectPool
@@ -17,7 +16,10 @@ namespace CodeProject.ObjectPool
     /// <summary>
     ///   PooledObject wrapper, for classes which cannot inherit from that class.
     /// </summary>
+#if HAS_SERIALIZABLE
     [Serializable]
+#endif
+
     public sealed class PooledObjectWrapper<T> : PooledObject where T : class
     {
         /// <summary>
@@ -27,10 +29,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentNullException">Given resource is null.</exception>
         public PooledObjectWrapper(T resource)
         {
-            // Preconditions
-            Raise.ArgumentNullException.IfIsNull(resource, nameof(resource), ErrorMessages.NullResource);
-
-            InternalResource = resource;
+            InternalResource = resource ?? throw new ArgumentNullException(nameof(resource), ErrorMessages.NullResource);
 
             base.OnReleaseResources += () => OnReleaseResources?.Invoke(InternalResource);
             base.OnResetState += () => OnResetState?.Invoke(InternalResource);
