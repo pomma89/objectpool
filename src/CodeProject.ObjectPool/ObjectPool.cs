@@ -185,15 +185,16 @@ namespace CodeProject.ObjectPool
                 }
                 else
                 {
-                    // This should not happen normally, but could be happening when there is stress on
-                    // the pool. No available objects in pool, create a new one and return it to the caller.
+                    // This should not happen normally, but could be happening when there is stress
+                    // on the pool. No available objects in pool, create a new one and return it to
+                    // the caller.
                     if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
                     pooledObject = CreatePooledObject();
                 }
-                if (pooledObject.ValidateObject())
+                if (pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
                 {
-                    // Change the state of the pooled object, marking it as reserved. We will mark it as
-                    // available as soon as the object will return to the pool.
+                    // Change the state of the pooled object, marking it as reserved. We will mark it
+                    // as available as soon as the object will return to the pool.
                     pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
 
                     return pooledObject;

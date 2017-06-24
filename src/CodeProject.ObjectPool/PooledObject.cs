@@ -10,7 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Collections.Generic;
 
 #if !NET35
 
@@ -49,13 +48,11 @@ namespace CodeProject.ObjectPool
         #region Internal Methods - resource and state management
 
         /// <summary>
-        /// Validate wraped Object state.
+        ///   Validates pooled object state.
         /// </summary>
-        /// <returns></returns>
-        internal virtual bool ValidateObject()
-        {
-            return true;
-        }
+        /// <param name="validationContext">The validation context.</param>
+        /// <returns>True if current pooled object is valid, false otherwise.</returns>
+        protected internal virtual bool ValidateObject(PooledObjectValidationContext validationContext) => true;
 
         /// <summary>
         ///   Releases the object resources. This method will be called by the pool manager when
@@ -64,8 +61,6 @@ namespace CodeProject.ObjectPool
         /// </summary>
         internal bool ReleaseResources()
         {
-            var successFlag = true;
-
             if (OnReleaseResources != null)
             {
                 try
@@ -82,11 +77,10 @@ namespace CodeProject.ObjectPool
 #else
                     System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                    successFlag = false;
+                    return false;
                 }
             }
-
-            return successFlag;
+            return true;
         }
 
         /// <summary>
@@ -95,8 +89,10 @@ namespace CodeProject.ObjectPool
         /// </summary>
         internal bool ResetState()
         {
-            var successFlag = true;
-
+            if (!ValidateObject(PooledObjectValidationContext.Inbound))
+            {
+                return false;
+            }
             if (OnResetState != null)
             {
                 try
@@ -113,7 +109,7 @@ namespace CodeProject.ObjectPool
 #else
                     System.Diagnostics.Debug.Assert(crsex != null); // Placeholder to avoid warnings
 #endif
-                    successFlag = false;
+                    return false;
                 }
                 catch (Exception ex)
                 {
@@ -125,11 +121,10 @@ namespace CodeProject.ObjectPool
 #else
                     System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                    successFlag = false;
+                    return false;
                 }
             }
-
-            return successFlag;
+            return true;
         }
 
         #endregion Internal Methods - resource and state management
