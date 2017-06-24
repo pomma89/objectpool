@@ -192,40 +192,63 @@ namespace CodeProject.ObjectPool
 
         #region Formatting and equality
 
-        ///// <summary>
-        /////   Returns all property (or field) values, along with their names, so that they can be
-        /////   used to produce a meaningful <see cref="object.ToString"/>.
-        ///// </summary>
-        ///// <returns>
-        /////   All property (or field) values, along with their names, so that they can be used to
-        /////   produce a meaningful <see cref="object.ToString"/>.
-        ///// </returns>
-        //protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
-        //{
-        //    yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Id), PooledObjectInfo.Id);
-        //    if (PooledObjectInfo.Payload != null)
-        //    {
-        //        yield return new KeyValuePair<string, object>(nameof(PooledObjectInfo.Payload), PooledObjectInfo.Payload);
-        //    }
-        //}
+        /// <summary>
+        ///   Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => PooledObjectInfo.ToString();
 
-        ///// <summary>
-        /////   Returns all property (or field) values that should be used inside
-        /////   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
-        ///// </summary>
-        ///// <returns>
-        /////   All property (or field) values that should be used inside
-        /////   <see cref="IEquatable{T}.Equals(T)"/> or <see cref="object.GetHashCode"/>.
-        ///// </returns>
-        //protected override IEnumerable<object> GetIdentifyingMembers()
-        //{
-        //    yield return PooledObjectInfo.Id;
-        //}
-
-        public bool Equals(PooledObject other)
+        /// <summary>
+        ///   Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        ///   true if the current object is equal to the <paramref name="other"/> parameter;
+        ///   otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public virtual bool Equals(PooledObject other)
         {
-            throw new NotImplementedException();
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return PooledObjectInfo.Equals(other.PooledObjectInfo);
         }
+
+        /// <summary>
+        ///   Determines whether the specified <see cref="object"/> is equal to the current <see cref="PooledObject"/>.
+        /// </summary>
+        /// <returns>
+        ///   true if the specified <see cref="object"/> is equal to the current
+        ///   <see cref="PooledObject"/>; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="PooledObject"/>.</param>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals(obj as PooledObject);
+        }
+
+        /// <summary>
+        ///   Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>A hash code for the current <see cref="PooledObject"/>.</returns>
+        public override int GetHashCode() => PooledObjectInfo.GetHashCode();
+
+        /// <summary>
+        ///   Compares to pooled objects.
+        /// </summary>
+        /// <param name="left">Left object.</param>
+        /// <param name="right">Right object.</param>
+        /// <returns>True if given pooled objects are equal, false otherwise.</returns>
+        public static bool operator ==(PooledObject left, PooledObject right) => Equals(left, right);
+
+        /// <summary>
+        ///   Compares to pooled objects.
+        /// </summary>
+        /// <param name="left">Left object.</param>
+        /// <param name="right">Right object.</param>
+        /// <returns>True if given pooled objects are not equal, false otherwise.</returns>
+        public static bool operator !=(PooledObject left, PooledObject right) => !Equals(left, right);
 
         #endregion Formatting and equality
     }
