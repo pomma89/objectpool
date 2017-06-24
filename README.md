@@ -5,7 +5,7 @@
 
 ## Summary ##
 
-* Latest release version: `v3.0.4`
+* Latest release version: `v3.1.0`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/r4qnqaqj9ri6cicn?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
     + [HTML](http://pomma89.altervista.org/objectpool/doc/html/index.html)

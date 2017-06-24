@@ -1,8 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
-### v3.0.4 (2017-06-24) ###
+### v3.1.0 (2017-06-24) ###
 
 * Removed dependency on Thrower.
+* Pooled objects can now specify a validation step (PR#4 by uliian).
 * Removed CannotResetStateException class, not needed with new validation step.
 
 ### v3.0.3 (2017-04-08) ###
