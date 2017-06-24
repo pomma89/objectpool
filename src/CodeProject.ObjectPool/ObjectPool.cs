@@ -177,24 +177,29 @@ namespace CodeProject.ObjectPool
         /// <returns>A monitored object from the pool.</returns>
         public T GetObject()
         {
-            if (PooledObjects.TryDequeue(out T pooledObject))
+            while (true)
             {
-                // Object found in pool.
-                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
-            }
-            else
-            {
-                // This should not happen normally, but could be happening when there is stress on
-                // the pool. No available objects in pool, create a new one and return it to the caller.
-                if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
-                pooledObject = CreatePooledObject();
-            }
+                if (PooledObjects.TryDequeue(out T pooledObject))
+                {
+                    // Object found in pool.
+                    if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
+                }
+                else
+                {
+                    // This should not happen normally, but could be happening when there is stress on
+                    // the pool. No available objects in pool, create a new one and return it to the caller.
+                    if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
+                    pooledObject = CreatePooledObject();
+                }
+                if (pooledObject.ValidateObject())
+                {
+                    // Change the state of the pooled object, marking it as reserved. We will mark it as
+                    // available as soon as the object will return to the pool.
+                    pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
 
-            // Change the state of the pooled object, marking it as reserved. We will mark it as
-            // available as soon as the object will return to the pool.
-            pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
-
-            return pooledObject;
+                    return pooledObject;
+                }
+            }
         }
 
         void IObjectPoolHandle.ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
