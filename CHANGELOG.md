@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.0.4 (2017-06-24) ###
+
+* Removed dependency on Thrower.
+
 ### v3.0.3 (2017-04-08) ###
 
 * Added a timed object pool (issue #1).
