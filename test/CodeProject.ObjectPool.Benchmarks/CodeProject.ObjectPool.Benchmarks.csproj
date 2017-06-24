@@ -1,13 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
-    <AssemblyName>CodeProject.ObjectPool.Benchmarks</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>CodeProject.ObjectPool.Benchmarks</PackageId>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,14 +9,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="1.1.0" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.8" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="1.1.1" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
   </ItemGroup>
-
 </Project>
