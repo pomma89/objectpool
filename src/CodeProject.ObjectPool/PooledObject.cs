@@ -49,6 +49,15 @@ namespace CodeProject.ObjectPool
         #region Internal Methods - resource and state management
 
         /// <summary>
+        /// Validate wraped Object state.
+        /// </summary>
+        /// <returns></returns>
+        internal virtual bool ValidateObject()
+        {
+            return true;
+        }
+
+        /// <summary>
         ///   Releases the object resources. This method will be called by the pool manager when
         ///   there is no need for this object anymore (decreasing pooled objects count, pool is
         ///   being destroyed).
