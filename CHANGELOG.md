@@ -3,6 +3,7 @@
 ### v3.0.4 (2017-06-24) ###
 
 * Removed dependency on Thrower.
+* Removed CannotResetStateException class, not needed with new validation step.
 
 ### v3.0.3 (2017-04-08) ###
 

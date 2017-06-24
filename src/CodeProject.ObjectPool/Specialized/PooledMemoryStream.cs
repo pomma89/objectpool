@@ -22,8 +22,13 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
-using System;
 using System.IO;
+
+#if !NET35
+
+using CodeProject.ObjectPool.Logging;
+
+#endif
 
 namespace CodeProject.ObjectPool.Specialized
 {
@@ -32,6 +37,14 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public class PooledMemoryStream : PooledObject
     {
+        #region Logging
+
+#if !NET35
+        private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledMemoryStream));
+#endif
+
+        #endregion Logging
+
         /// <summary>
         ///   The tracked memory stream.
         /// </summary>
@@ -48,23 +61,44 @@ namespace CodeProject.ObjectPool.Specialized
                 Parent = this
             };
 
-            OnResetState += () =>
+            OnValidateObject += (ctx) =>
             {
+                if (ctx.Direction == PooledObjectDirection.Outbound)
+                {
+                    // We validate only inbound objects, because when they are in the pool they
+                    // cannot change their state.
+                    return true;
+                }
+
                 if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
                 {
-                    throw new CannotResetStateException($"Memory stream has already been disposed");
+#if !NET35
+                    if (Log.IsWarnEnabled()) Log.Warn("[ObjectPool] Memory stream has already been disposed");
+#endif
+                    return false;
                 }
 
                 var memoryStreamPool = PooledObjectInfo.Handle as IMemoryStreamPool;
                 if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
                 {
-                    throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
+#if !NET35
+                    if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
+#endif
+                    return false;
                 }
                 if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
                 {
-                    throw new CannotResetStateException($"Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
+#if !NET35
+                    if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
+#endif
+                    return false;
                 }
 
+                return true; // Object is valid.
+            };
+
+            OnResetState += () =>
+            {
                 _trackedMemoryStream.Position = 0L;
                 _trackedMemoryStream.SetLength(0L);
             };
