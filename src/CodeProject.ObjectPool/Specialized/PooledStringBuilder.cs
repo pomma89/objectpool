@@ -22,8 +22,13 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
-using System;
 using System.Text;
+
+#if !NET35
+
+using CodeProject.ObjectPool.Logging;
+
+#endif
 
 namespace CodeProject.ObjectPool.Specialized
 {
@@ -32,6 +37,14 @@ namespace CodeProject.ObjectPool.Specialized
     /// </summary>
     public class PooledStringBuilder : PooledObject
     {
+        #region Logging
+
+#if !NET35
+        private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledStringBuilder));
+#endif
+
+        #endregion Logging
+
         /// <summary>
         ///   The string builder.
         /// </summary>
@@ -45,14 +58,29 @@ namespace CodeProject.ObjectPool.Specialized
         {
             StringBuilder = new StringBuilder(capacity);
 
-            OnResetState += () =>
+            OnValidateObject += (ctx) =>
             {
+                if (ctx.Direction == PooledObjectDirection.Outbound)
+                {
+                    // We validate only inbound objects, because when they are in the pool they
+                    // cannot change their state.
+                    return true;
+                }
+
                 var stringBuilderPool = PooledObjectInfo.Handle as IStringBuilderPool;
                 if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
                 {
-                    throw new CannotResetStateException($"String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
+#if !NET35
+                    if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
+#endif
+                    return false;
                 }
 
+                return true; // Object is valid.
+            };
+
+            OnResetState += () =>
+            {
                 ClearStringBuilder();
             };
 

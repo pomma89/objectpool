@@ -1,4 +1,4 @@
-﻿// File name: CannotResetStateException.cs
+﻿// File name: PooledObjectDirection.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,23 +21,21 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-
 namespace CodeProject.ObjectPool.Core
 {
     /// <summary>
-    ///   This exception can be used to signal that the object whose state is being reset cannot be
-    ///   added back to the pool for some reason.
+    ///   Direction of a pooled object.
     /// </summary>
-    public sealed class CannotResetStateException : Exception
+    public enum PooledObjectDirection
     {
         /// <summary>
-        ///   Builds the exception using given message.
+        ///   An object is returning to the pool.
         /// </summary>
-        /// <param name="message">The message.</param>
-        public CannotResetStateException(string message)
-            : base(message)
-        {
-        }
+        Inbound,
+
+        /// <summary>
+        ///   An object is getting out of the pool.
+        /// </summary>
+        Outbound
     }
 }

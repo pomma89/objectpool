@@ -10,7 +10,6 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Collections.Generic;
 
 #if !NET35
 
@@ -49,14 +48,39 @@ namespace CodeProject.ObjectPool
         #region Internal Methods - resource and state management
 
         /// <summary>
+        ///   Validates pooled object state. An invalid object will not get into the pool and it will
+        ///   not be returned to consumers.
+        /// </summary>
+        /// <param name="validationContext">The validation context.</param>
+        /// <returns>True if current pooled object is valid, false otherwise.</returns>
+        internal bool ValidateObject(PooledObjectValidationContext validationContext)
+        {
+            if (OnValidateObject != null)
+            {
+                try
+                {
+                    return OnValidateObject(validationContext);
+                }
+                catch (Exception ex)
+                {
+#if !NET35
+                    if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while validating an object", ex);
+#else
+                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
+#endif
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         ///   Releases the object resources. This method will be called by the pool manager when
         ///   there is no need for this object anymore (decreasing pooled objects count, pool is
         ///   being destroyed).
         /// </summary>
         internal bool ReleaseResources()
         {
-            var successFlag = true;
-
             if (OnReleaseResources != null)
             {
                 try
@@ -66,18 +90,14 @@ namespace CodeProject.ObjectPool
                 catch (Exception ex)
                 {
 #if !NET35
-                    if (Log.IsWarnEnabled())
-                    {
-                        Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
-                    }
+                    if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
 #else
                     System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                    successFlag = false;
+                    return false;
                 }
             }
-
-            return successFlag;
+            return true;
         }
 
         /// <summary>
@@ -86,46 +106,38 @@ namespace CodeProject.ObjectPool
         /// </summary>
         internal bool ResetState()
         {
-            var successFlag = true;
-
+            if (!ValidateObject(PooledObjectValidationContext.Inbound))
+            {
+                return false;
+            }
             if (OnResetState != null)
             {
                 try
                 {
                     OnResetState();
                 }
-                catch (CannotResetStateException crsex)
-                {
-#if !NET35
-                    if (Log.IsDebugEnabled())
-                    {
-                        Log.DebugException("[ObjectPool] Object state could not be reset", crsex);
-                    }
-#else
-                    System.Diagnostics.Debug.Assert(crsex != null); // Placeholder to avoid warnings
-#endif
-                    successFlag = false;
-                }
                 catch (Exception ex)
                 {
 #if !NET35
-                    if (Log.IsWarnEnabled())
-                    {
-                        Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
-                    }
+                    if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
 #else
                     System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
-                    successFlag = false;
+                    return false;
                 }
             }
-
-            return successFlag;
+            return true;
         }
 
         #endregion Internal Methods - resource and state management
 
         #region Events - extending resource and state management
+
+        /// <summary>
+        ///   Validates pooled object state. An invalid object will not get into the pool and it will
+        ///   not be returned to consumers.
+        /// </summary>
+        public Func<PooledObjectValidationContext, bool> OnValidateObject { get; set; }
 
         /// <summary>
         ///   Reset the object state to allow this object to be re-used by other parts of the application.
@@ -167,10 +179,7 @@ namespace CodeProject.ObjectPool
             catch (Exception ex)
             {
 #if !NET35
-                if (Log.IsWarnEnabled())
-                {
-                    Log.WarnException("[ObjectPool] An error occurred while re-adding to pool", ex);
-                }
+                if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An error occurred while re-adding to pool", ex);
 #else
                 System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
 #endif
