@@ -75,7 +75,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer timer = null, EvictionConfig evictionConfig = null)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -90,6 +90,13 @@ namespace CodeProject.ObjectPool
 
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
+
+
+#if !NETSTD10
+            // Creating a new instance for the EvictorTimer class.
+            this._timer = timer ?? new EvictorTimer();
+#endif
+            this.StartEvictor(evictionConfig);
         }
 
         #endregion C'tor and Initialization code
@@ -159,6 +166,32 @@ namespace CodeProject.ObjectPool
         #region Pool Operations
 
         /// <summary>
+        /// Start Evictor
+        /// </summary>
+        /// <param name="config"></param>
+        protected void StartEvictor(EvictionConfig config)
+        {
+            if (config != null && this._timer != null && config.Enable)
+            {
+                this._timer.Schedule(
+                    () =>
+                    {
+                        if (this.PooledObjects.TryDequeue(out T pooledObject))
+                        {
+                            if (pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
+                            {
+                                pooledObject.PooledObjectInfo.State = PooledObjectState.Available;
+                            }
+                            else
+                            {
+                                this.DestroyPooledObject(pooledObject);
+                            }
+                        }
+                    }, config.Delay, config.Period);
+            }
+        }
+
+        /// <summary>
         ///   Clears the pool and destroys each object stored inside it.
         /// </summary>
         public void Clear()
@@ -197,7 +230,12 @@ namespace CodeProject.ObjectPool
                     // as available as soon as the object will return to the pool.
                     pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
 
+                    pooledObject.PooledObjectInfo.BorrowCount++;
                     return pooledObject;
+                }
+                else
+                {
+                    this.DestroyPooledObject(pooledObject);
                 }
             }
         }
@@ -260,6 +298,8 @@ namespace CodeProject.ObjectPool
         ///   Keeps track of last pooled object ID.
         /// </summary>
         private int _lastPooledObjectId;
+
+        private IEvictionTimer _timer;
 
         /// <summary>
         ///   Creates a new pooled object, initializing its info.

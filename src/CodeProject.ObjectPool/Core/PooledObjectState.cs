@@ -44,6 +44,21 @@ namespace CodeProject.ObjectPool.Core
         /// <summary>
         ///   The object has been disposed and cannot be used anymore.
         /// </summary>
-        Disposed = 2
+        Disposed = 2,
+
+        /// <summary>
+        /// The object is outside the pool, waiting to validate.
+        /// </summary>
+        Validating = 4,
+
+        /// <summary>
+        /// The object is outside the pool,waiting to be used.
+        /// </summary>
+        ValidateSuccess = 8,
+
+        /// <summary>
+        /// The object is outside the pool，waiting to destory.
+        /// </summary>
+        ValidateFail = 16
     }
 }
