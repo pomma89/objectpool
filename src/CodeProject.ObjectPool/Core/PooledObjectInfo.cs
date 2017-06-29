@@ -54,6 +54,11 @@ namespace CodeProject.ObjectPool.Core
         internal IObjectPoolHandle Handle { get; set; }
 
         /// <summary>
+        /// The number of times the object was borrowed
+        /// </summary>
+        public long BorrowCount{get; internal set; }
+
+        /// <summary>
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
