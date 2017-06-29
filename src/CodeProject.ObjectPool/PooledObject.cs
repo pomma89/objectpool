@@ -69,6 +69,7 @@ namespace CodeProject.ObjectPool
                     {
                         this.PooledObjectInfo.State = PooledObjectState.ValidateFail;
                     }
+                    return verifyResult;
                 }
                 catch (Exception ex)
                 {

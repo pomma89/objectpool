@@ -171,7 +171,7 @@ namespace CodeProject.ObjectPool
         /// <param name="config"></param>
         protected void StartEvictor(EvictionConfig config)
         {
-            if (this._timer != null && config.Enable)
+            if (config != null && this._timer != null && config.Enable)
             {
                 this._timer.Schedule(
                     () =>
