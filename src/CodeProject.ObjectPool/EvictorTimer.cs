@@ -12,7 +12,7 @@ using CodeProject.ObjectPool.Logging;
 
 namespace CodeProject.ObjectPool
 {
-#if !NETSTD10
+
     public class EvictorTimer : IEvictionTimer, IDisposable
     {
 #if !NET35
@@ -114,5 +114,5 @@ namespace CodeProject.ObjectPool
             }
         }
     }
-#endif
+
 }

@@ -90,12 +90,10 @@ namespace CodeProject.ObjectPool
 
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
-
-
-#if !NETSTD10
+            
             // Creating a new instance for the EvictorTimer class.
             this._timer = timer ?? new EvictorTimer();
-#endif
+
             this.StartEvictor(evictionConfig);
         }
 
