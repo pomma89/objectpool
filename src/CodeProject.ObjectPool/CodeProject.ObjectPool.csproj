@@ -40,6 +40,7 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
@@ -50,6 +51,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
@@ -76,17 +78,5 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
-    <PackageReference Include="System.Threading.Timer">
-      <Version>4.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
-    <PackageReference Include="System.Threading.Timer">
-      <Version>4.3.0</Version>
-    </PackageReference>
   </ItemGroup>
 </Project>
