@@ -57,9 +57,19 @@ namespace CodeProject.ObjectPool
         {
             if (OnValidateObject != null)
             {
+                this.PooledObjectInfo.State = PooledObjectState.Validating;
                 try
                 {
-                    return OnValidateObject(validationContext);
+                    bool verifyResult = OnValidateObject(validationContext);
+                    if (verifyResult)
+                    {
+                        this.PooledObjectInfo.State = PooledObjectState.ValidateSuccess;
+                    }
+                    else
+                    {
+                        this.PooledObjectInfo.State = PooledObjectState.ValidateFail;
+                    }
+                    return verifyResult;
                 }
                 catch (Exception ex)
                 {
