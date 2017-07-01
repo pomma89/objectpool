@@ -1,28 +1,47 @@
-﻿// Copyright (c) GZNB. All rights reserved.
+﻿// File name: EvictionSettings.cs
+//
+// Author(s): ULiiAn <yncxcxz@gmail.com>, Alessio Parma <alessio.parma@gmail.com>
+//
+// The MIT License (MIT)
+//
+// Copyright (c) 2013-2018 Alessio Parma <alessio.parma@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CodeProject.ObjectPool
 {
     /// <summary>
-    /// Eviction Config Infomation
+    ///   Eviction settings.
     /// </summary>
-    public class EvictionConfig
+    public class EvictionSettings
     {
         /// <summary>
-        /// Eviction Is Enable default is false
+        ///   Whether eviction is enabled or not. By default, eviction is not enabled.
         /// </summary>
-        public bool Enable { get; set; } = false;
+        public bool Enabled { get; set; } = false;
 
         /// <summary>
-        /// Timer delay time default is zero
+        ///   The delay specified when an eviction job is scheduled. Default value is <see cref="TimeSpan.Zero"/>.
         /// </summary>
         public TimeSpan Delay { get; set; } = TimeSpan.Zero;
 
         /// <summary>
-        /// Timer period default is one minute
+        ///   How frequent should be the eviction job. Default value is one minute.
         /// </summary>
         public TimeSpan Period { get; set; } = TimeSpan.FromMinutes(1);
     }

@@ -75,7 +75,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer timer = null, EvictionConfig evictionConfig = null)
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer timer = null, EvictionSettings evictionConfig = null)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -90,9 +90,9 @@ namespace CodeProject.ObjectPool
 
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
-            
+
             // Creating a new instance for the EvictorTimer class.
-            this._timer = timer ?? new EvictorTimer();
+            this._timer = timer ?? new EvictionTimer();
 
             this.StartEvictor(evictionConfig);
         }
@@ -164,12 +164,12 @@ namespace CodeProject.ObjectPool
         #region Pool Operations
 
         /// <summary>
-        /// Start Evictor
+        ///   Start Evictor
         /// </summary>
         /// <param name="config"></param>
-        protected void StartEvictor(EvictionConfig config)
+        protected void StartEvictor(EvictionSettings config)
         {
-            if (config != null && this._timer != null && config.Enable)
+            if (config != null && this._timer != null && config.Enabled)
             {
                 this._timer.Schedule(
                     () =>
