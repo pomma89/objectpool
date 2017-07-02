@@ -42,7 +42,7 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(ObjectPool.DefaultPoolMaximumSize, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, null, null)
         {
         }
 
@@ -54,7 +54,7 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
         public ObjectPool(int maximumPoolSize)
-            : this(maximumPoolSize, null)
+            : this(maximumPoolSize, null, null, null)
         {
         }
 
@@ -63,7 +63,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod, null, null)
         {
         }
 
@@ -75,7 +75,36 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer timer = null, EvictionSettings evictionConfig = null)
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
+            : this(maximumPoolSize, factoryMethod, null, null)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified eviction timer and settings.
+        /// </summary>
+        /// <param name="evictionTimer">
+        ///   The eviction timer used to schedule an async validation and eviction job.
+        /// </param>
+        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
+        public ObjectPool(IEvictionTimer evictionTimer, EvictionSettings evictionSettings)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, evictionTimer, evictionSettings)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method, maximum size, eviction timer and settings.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="evictionTimer">
+        ///   The eviction timer used to schedule an async validation and eviction job.
+        /// </param>
+        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer evictionTimer, EvictionSettings evictionSettings)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -91,10 +120,9 @@ namespace CodeProject.ObjectPool
             // Creating a new instance for the Diagnostics class.
             Diagnostics = new ObjectPoolDiagnostics();
 
-            // Creating a new instance for the EvictorTimer class.
-            this._timer = timer ?? new EvictionTimer();
-
-            this.StartEvictor(evictionConfig);
+            // Use specified timer or create a new one if missing.
+            _evictionTimer = evictionTimer ?? new EvictionTimer();
+            StartEvictor(evictionSettings ?? EvictionSettings.Default);
         }
 
         #endregion C'tor and Initialization code
@@ -157,37 +185,14 @@ namespace CodeProject.ObjectPool
         {
             // The pool is going down, releasing the resources for all objects in pool.
             Clear();
+
+            // Dispose the eviction timer, if any.
+            _evictionTimer?.Dispose();
         }
 
         #endregion Finalizer
 
         #region Pool Operations
-
-        /// <summary>
-        ///   Start Evictor
-        /// </summary>
-        /// <param name="config"></param>
-        protected void StartEvictor(EvictionSettings config)
-        {
-            if (config != null && this._timer != null && config.Enabled)
-            {
-                this._timer.Schedule(
-                    () =>
-                    {
-                        if (this.PooledObjects.TryDequeue(out T pooledObject))
-                        {
-                            if (pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
-                            {
-                                pooledObject.PooledObjectInfo.State = PooledObjectState.Available;
-                            }
-                            else
-                            {
-                                this.DestroyPooledObject(pooledObject);
-                            }
-                        }
-                    }, config.Delay, config.Period);
-            }
-        }
 
         /// <summary>
         ///   Clears the pool and destroys each object stored inside it.
@@ -222,19 +227,17 @@ namespace CodeProject.ObjectPool
                     if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
                     pooledObject = CreatePooledObject();
                 }
-                if (pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
-                {
-                    // Change the state of the pooled object, marking it as reserved. We will mark it
-                    // as available as soon as the object will return to the pool.
-                    pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
 
-                    pooledObject.PooledObjectInfo.BorrowCount++;
-                    return pooledObject;
-                }
-                else
+                if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
                 {
-                    this.DestroyPooledObject(pooledObject);
+                    DestroyPooledObject(pooledObject);
+                    continue;
                 }
+
+                // Change the state of the pooled object, marking it as reserved. We will mark it as
+                // available as soon as the object will return to the pool.
+                pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
+                return pooledObject;
             }
         }
 
@@ -297,7 +300,17 @@ namespace CodeProject.ObjectPool
         /// </summary>
         private int _lastPooledObjectId;
 
-        private IEvictionTimer _timer;
+        /// <summary>
+        ///   Used to schedule an async validation and eviction job.
+        /// </summary>
+        private IEvictionTimer _evictionTimer;
+
+        /// <summary>
+        ///   Stores the ticket returned by
+        ///   <see cref="IEvictionTimer.Schedule(Action, TimeSpan, TimeSpan)"/>, in order to be able
+        ///   to cancel the scheduled eviction action, if needed.
+        /// </summary>
+        private Guid _evictionActionTicket;
 
         /// <summary>
         ///   Creates a new pooled object, initializing its info.
@@ -350,6 +363,35 @@ namespace CodeProject.ObjectPool
             // The object is being destroyed, resources have been already released deterministically,
             // so we di no need the finalizer to fire.
             GC.SuppressFinalize(objectToDestroy);
+        }
+
+        /// <summary>
+        ///   Starts the evictor process, if enabled.
+        /// </summary>
+        /// <param name="settings">Eviction settings.</param>
+        protected void StartEvictor(EvictionSettings settings)
+        {
+            if (settings.Enabled)
+            {
+                if (_evictionActionTicket != Guid.Empty)
+                {
+                    _evictionTimer.Cancel(_evictionActionTicket);
+                }
+                _evictionActionTicket = _evictionTimer.Schedule(() =>
+                {
+                    // Local copy, since the buffer might change.
+                    var pooledObjects = PooledObjects.ToArray();
+
+                    // All items which are not valid will be destroyed.
+                    foreach (var pooledObject in pooledObjects)
+                    {
+                        if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound) && PooledObjects.TryRemove(pooledObject))
+                        {
+                            DestroyPooledObject(pooledObject);
+                        }
+                    }
+                }, settings.Delay, settings.Period);
+            }
         }
 
         #endregion Protected Methods

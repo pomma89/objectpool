@@ -168,16 +168,16 @@ namespace CodeProject.ObjectPool
                 _timer = new Timer(_ =>
                 {
                     // Local copy, since the buffer might change.
-                    var items = PooledObjects.ToArray();
+                    var pooledObjects = PooledObjects.ToArray();
 
                     // All items which have been last used before following threshold will be destroyed.
                     var threshold = DateTime.UtcNow - _timeout;
 
-                    foreach (var item in items)
+                    foreach (var pooledObject in pooledObjects)
                     {
-                        if (item.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold && PooledObjects.TryRemove(item))
+                        if (pooledObject.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold && PooledObjects.TryRemove(pooledObject))
                         {
-                            DestroyPooledObject(item);
+                            DestroyPooledObject(pooledObject);
                         }
                     }
                 }, null, _timeout, _timeout);

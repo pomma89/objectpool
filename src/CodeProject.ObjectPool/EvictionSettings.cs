@@ -31,6 +31,11 @@ namespace CodeProject.ObjectPool
     public class EvictionSettings
     {
         /// <summary>
+        ///   Default eviction settings.
+        /// </summary>
+        public static EvictionSettings Default { get; } = new EvictionSettings();
+
+        /// <summary>
         ///   Whether eviction is enabled or not. By default, eviction is not enabled.
         /// </summary>
         public bool Enabled { get; set; } = false;

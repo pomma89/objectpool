@@ -28,7 +28,7 @@ namespace CodeProject.ObjectPool
     /// <summary>
     ///   Eviction timer interface, used to abstract over eviction jobs.
     /// </summary>
-    public interface IEvictionTimer
+    public interface IEvictionTimer : IDisposable
     {
         /// <summary>
         ///   Schedules an eviction action.
@@ -36,12 +36,18 @@ namespace CodeProject.ObjectPool
         /// <param name="action">Eviction action.</param>
         /// <param name="delay">Start delay.</param>
         /// <param name="period">Schedule period.</param>
-        void Schedule(Action action, TimeSpan delay, TimeSpan period);
+        /// <returns>
+        ///   A ticket which identifies the scheduled eviction action, it can be used to cancel the
+        ///   scheduled action via <see cref="Cancel(Guid)"/> method.
+        /// </returns>
+        Guid Schedule(Action action, TimeSpan delay, TimeSpan period);
 
         /// <summary>
-        ///   Cancels a scheduled task.
+        ///   Cancels a scheduled evicton action using a ticket returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
         /// </summary>
-        /// <param name="task">Scheduled task.</param>
-        void Cancel(Action task);
+        /// <param name="actionTicket">
+        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
+        /// </param>
+        void Cancel(Guid actionTicket);
     }
 }

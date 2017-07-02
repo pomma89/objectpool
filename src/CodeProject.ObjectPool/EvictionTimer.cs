@@ -43,16 +43,8 @@ namespace CodeProject.ObjectPool
         private static readonly ILog Log = LogProvider.GetLogger(typeof(EvictionTimer));
 #endif
 
-        private readonly Dictionary<Action, Timer> _actionMap;
+        private readonly Dictionary<Guid, Timer> _actionMap = new Dictionary<Guid, Timer>();
         private volatile bool _disposed;
-
-        /// <summary>
-        ///   Constructor for <see cref="EvictionTimer"/>.
-        /// </summary>
-        public EvictionTimer()
-        {
-            _actionMap = new Dictionary<Action, Timer>();
-        }
 
         /// <summary>
         ///   Finalizer for <see cref="EvictionTimer"/>.
@@ -77,45 +69,49 @@ namespace CodeProject.ObjectPool
         /// <param name="action">Eviction action.</param>
         /// <param name="delay">Start delay.</param>
         /// <param name="period">Schedule period.</param>
-        public void Schedule(Action action, TimeSpan delay, TimeSpan period)
+        /// <returns>
+        ///   A ticket which identifies the scheduled eviction action, it can be used to cancel the
+        ///   scheduled action via <see cref="Cancel(Guid)"/> method.
+        /// </returns>
+        public Guid Schedule(Action action, TimeSpan delay, TimeSpan period)
         {
             ThrowIfDisposed();
             if (action == null)
             {
-                return;
+                return Guid.Empty;
             }
-            lock (typeof(EvictionTimer))
+            lock (_actionMap)
             {
 #if!NET35
-                Action piplineAction = () => Log.Debug("Begin Schedule Evictor");
-                piplineAction += action;
-                piplineAction += () => Log.Debug("End Schedule Evictor");
-                action = piplineAction;
+                TimerCallback timerCallback = _ =>
+                {
+                    Log.Debug("Begin scheduled evictor");
+                    action();
+                    Log.Debug("End scheduled evictor");
+                };
+#else
+                TimerCallback timerCallback = _ => action();
 #endif
-                if (_actionMap.TryGetValue(action, out Timer timer))
-                {
-                    timer.Change(delay, period);
-                }
-                else
-                {
-                    var t = new Timer(state => action(), null, delay, period);
-                    _actionMap[action] = t;
-                }
+                var actionTicket = Guid.NewGuid();
+                _actionMap[actionTicket] = new Timer(timerCallback, null, delay, period);
+                return actionTicket;
             }
         }
 
         /// <summary>
-        ///   Cancels a scheduled task.
+        ///   Cancels a scheduled evicton action using a ticket returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
         /// </summary>
-        /// <param name="task">Scheduled task.</param>
-        public void Cancel(Action task)
+        /// <param name="actionTicket">
+        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
+        /// </param>
+        public void Cancel(Guid actionTicket)
         {
             ThrowIfDisposed();
-            lock (typeof(EvictionTimer))
+            lock (_actionMap)
             {
-                if (_actionMap.TryGetValue(task, out Timer timer))
+                if (_actionMap.TryGetValue(actionTicket, out Timer timer))
                 {
-                    _actionMap.Remove(task);
+                    _actionMap.Remove(actionTicket);
                     timer.Dispose();
                 }
             }
