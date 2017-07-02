@@ -106,7 +106,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         internal bool ResetState()
         {
-            if (!ValidateObject(PooledObjectValidationContext.Inbound))
+            if (!ValidateObject(PooledObjectValidationContext.Inbound(this)))
             {
                 return false;
             }

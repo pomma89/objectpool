@@ -29,24 +29,38 @@ namespace CodeProject.ObjectPool.Core
     public sealed class PooledObjectValidationContext
     {
         /// <summary>
+        ///   The pooled object which has to be validated.
+        /// </summary>
+        public PooledObject PooledObject { get; private set; }
+
+        /// <summary>
+        ///   Info about the pooled object which has to be validated.
+        /// </summary>
+        public PooledObjectInfo PooledObjectInfo => PooledObject.PooledObjectInfo;
+
+        /// <summary>
+        ///   Whether an object is going out of the pool or into the pool.
+        /// </summary>
+        public PooledObjectDirection Direction { get; private set; }
+
+        /// <summary>
         ///   Used when an object is returning to the pool.
         /// </summary>
-        internal static PooledObjectValidationContext Inbound { get; } = new PooledObjectValidationContext
+        /// <param name="pooledObject">The pooled object which has to be validated.</param>
+        internal static PooledObjectValidationContext Inbound(PooledObject pooledObject) => new PooledObjectValidationContext
         {
+            PooledObject = pooledObject,
             Direction = PooledObjectDirection.Inbound
         };
 
         /// <summary>
         ///   Used when an object is going out of the pool.
         /// </summary>
-        internal static PooledObjectValidationContext Outbound { get; } = new PooledObjectValidationContext
+        /// <param name="pooledObject">The pooled object which has to be validated.</param>
+        internal static PooledObjectValidationContext Outbound(PooledObject pooledObject) => new PooledObjectValidationContext
         {
+            PooledObject = pooledObject,
             Direction = PooledObjectDirection.Outbound
         };
-
-        /// <summary>
-        ///   Whether an object is going out of the pool or into the pool.
-        /// </summary>
-        public PooledObjectDirection Direction { get; private set; }
     }
 }

@@ -81,14 +81,11 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Initializes a new pool with specified eviction timer and settings.
+        ///   Initializes a new pool with specified eviction settings.
         /// </summary>
-        /// <param name="evictionTimer">
-        ///   The eviction timer used to schedule an async validation and eviction job.
-        /// </param>
         /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
-        public ObjectPool(IEvictionTimer evictionTimer, EvictionSettings evictionSettings)
-            : this(ObjectPool.DefaultPoolMaximumSize, null, evictionTimer, evictionSettings)
+        public ObjectPool(EvictionSettings evictionSettings)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, evictionSettings, null)
         {
         }
 
@@ -97,14 +94,14 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="maximumPoolSize">The maximum pool size limit.</param>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
         /// <param name="evictionTimer">
         ///   The eviction timer used to schedule an async validation and eviction job.
         /// </param>
-        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, IEvictionTimer evictionTimer, EvictionSettings evictionSettings)
+        public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -228,7 +225,7 @@ namespace CodeProject.ObjectPool
                     pooledObject = CreatePooledObject();
                 }
 
-                if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound))
+                if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound(pooledObject)))
                 {
                     DestroyPooledObject(pooledObject);
                     continue;
@@ -373,24 +370,28 @@ namespace CodeProject.ObjectPool
         {
             if (settings.Enabled)
             {
-                if (_evictionActionTicket != Guid.Empty)
+                lock (this)
                 {
-                    _evictionTimer.Cancel(_evictionActionTicket);
-                }
-                _evictionActionTicket = _evictionTimer.Schedule(() =>
-                {
-                    // Local copy, since the buffer might change.
-                    var pooledObjects = PooledObjects.ToArray();
-
-                    // All items which are not valid will be destroyed.
-                    foreach (var pooledObject in pooledObjects)
+                    if (_evictionActionTicket != Guid.Empty)
                     {
-                        if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound) && PooledObjects.TryRemove(pooledObject))
-                        {
-                            DestroyPooledObject(pooledObject);
-                        }
+                        // Cancel previous eviction action.
+                        _evictionTimer.Cancel(_evictionActionTicket);
                     }
-                }, settings.Delay, settings.Period);
+                    _evictionActionTicket = _evictionTimer.Schedule(() =>
+                    {
+                        // Local copy, since the buffer might change.
+                        var pooledObjects = PooledObjects.ToArray();
+
+                        // All items which are not valid will be destroyed.
+                        foreach (var pooledObject in pooledObjects)
+                        {
+                            if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound(pooledObject)) && PooledObjects.TryRemove(pooledObject))
+                            {
+                                DestroyPooledObject(pooledObject);
+                            }
+                        }
+                    }, settings.Delay, settings.Period);
+                }
             }
         }
 
