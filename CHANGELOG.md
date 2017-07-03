@@ -2,9 +2,9 @@
 
 ### v3.1.1 (2017-07-03) ###
 
-* Object pool now supports an async eviction job (PR #6 by @ullian).
+* Object pool now supports an async eviction job (PR #6 by @uliian).
 * Timed object pool is now backed by the new eviction system.
-* Timed object pool is also available on .NET Standard 1.0 (PR #6 by @ullian).
+* Timed object pool is also available on .NET Standard 1.0 (PR #6 by @uliian).
 
 ### v3.1.0 (2017-06-24) ###
 
