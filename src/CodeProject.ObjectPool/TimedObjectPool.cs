@@ -21,12 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !NETSTD10
-
 using CodeProject.ObjectPool.Core;
 using System;
-using System.Linq;
-using System.Threading;
 
 namespace CodeProject.ObjectPool
 {
@@ -46,11 +42,6 @@ namespace CodeProject.ObjectPool
         ///   Backing field for <see cref="Timeout"/>.
         /// </summary>
         private TimeSpan _timeout;
-
-        /// <summary>
-        ///   The timer which periodically cleans the pool up.
-        /// </summary>
-        private Timer _timer;
 
         #endregion Fields
 
@@ -105,13 +96,14 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
         /// </exception>
-        public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout) : base(maximumPoolSize, factoryMethod)
+        public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout)
+            : base(maximumPoolSize, factoryMethod, new EvictionSettings { Enabled = true, Delay = timeout, Period = timeout }, null)
         {
             // Preconditions
             if (timeout <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(timeout), ErrorMessages.NegativeOrZeroTimeout);
 
             // Assigning properties.
-            Timeout = timeout;
+            _timeout = timeout;
         }
 
         #endregion C'tor and Initialization code
@@ -127,8 +119,8 @@ namespace CodeProject.ObjectPool
             get => _timeout;
             set
             {
+                StartEvictor(new EvictionSettings { Enabled = true, Delay = value, Period = value });
                 _timeout = value;
-                UpdateTimeout();
             }
         }
 
@@ -150,44 +142,17 @@ namespace CodeProject.ObjectPool
                 pooledObject.PooledObjectInfo.Payload = DateTime.UtcNow;
             };
 
-            return pooledObject;
-        }
-
-        /// <summary>
-        ///   Updates the timer according to a new timeout.
-        /// </summary>
-        private void UpdateTimeout()
-        {
-            lock (this)
+            // Register an handler which validates pooled objects timeout.
+            pooledObject.OnValidateObject += (ctx) =>
             {
-                if (_timer != null)
-                {
-                    // A timer already exists, simply change its period.
-                    _timer.Change(_timeout, _timeout);
-                    return;
-                }
+                // An item which have been last used before following threshold will be destroyed.
+                var threshold = DateTime.UtcNow - _timeout;
+                return !(ctx.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold);
+            };
 
-                _timer = new Timer(_ =>
-                {
-                    // Local copy, since the buffer might change.
-                    var items = PooledObjects.ToArray();
-
-                    // All items which have been last used before following threshold will be destroyed.
-                    var threshold = DateTime.UtcNow - _timeout;
-
-                    foreach (var item in items)
-                    {
-                        if (item.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold && PooledObjects.TryRemove(item))
-                        {
-                            DestroyPooledObject(item);
-                        }
-                    }
-                }, null, _timeout, _timeout);
-            }
+            return pooledObject;
         }
 
         #endregion Core Methods
     }
 }
-
-#endif

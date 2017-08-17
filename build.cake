@@ -98,7 +98,7 @@ private void Build(string cfg)
     {
         settings.SetConfiguration(cfg);
         settings.SetMaxCpuCount(0);
-        settings.SetVerbosity(Verbosity.Minimal);
+        settings.SetVerbosity(Verbosity.Quiet);
         if (!IsRunningOnWindows())
         { 
             // Hack for Linux bug - Missing MSBuild path.
@@ -146,7 +146,7 @@ private void Pack(string cfg)
         {
             settings.SetConfiguration(cfg);
             settings.SetMaxCpuCount(0);
-            settings.SetVerbosity(Verbosity.Minimal);
+            settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
             settings.WithProperty("IncludeSymbols", new[] { "true" });
             if (!IsRunningOnWindows())

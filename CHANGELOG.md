@@ -1,13 +1,18 @@
 # Changelog for CodeProject.ObjectPool #
 
 ### v3.2.0 (2017-08-16)
-
 * Added support for .NET Standard 2.0.
+
+### v3.1.1 (2017-07-03)
+
+* Object pool now supports an async eviction job (PR #6 by @uliian).
+* Timed object pool is now backed by the new eviction system.
+* Timed object pool is also available on .NET Standard 1.0 (PR #6 by @uliian).
 
 ### v3.1.0 (2017-06-24)
 
 * Removed dependency on Thrower.
-* Pooled objects can now specify a validation step (PR#4 by uliian).
+* Pooled objects can now specify a validation step (PR #4 by @uliian).
 * Removed CannotResetStateException class, not needed with new validation step.
 
 ### v3.0.3 (2017-04-08)
