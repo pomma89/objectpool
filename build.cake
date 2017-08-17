@@ -123,7 +123,9 @@ private void Pack(string cfg)
         {
             Configuration = cfg,
             OutputDirectory = ArtifactsDir(),
-            NoBuild = true
+            NoBuild = true,
+            IncludeSource = true,
+            IncludeSymbols = true
         });
     }
 }
