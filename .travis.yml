@@ -1,13 +1,8 @@
 language: csharp
-dist: trusty
-sudo: required
+mono: none
 dotnet: 2.0.0
-install:
-  - export DOTNET_CLI_TELEMETRY_OUTPUT=1
-before_script:
-  - chmod a+x ./build.sh
-script:
-  - ./build.sh
+dist: trusty
+
 addons:
   apt:
     sources:
@@ -16,3 +11,8 @@ addons:
     packages:
     - dotnet-hostfxr-1.0.1
     - dotnet-sharedframework-microsoft.netcore.app-1.1.2
+
+before_script:
+  - chmod a+x ./build.sh
+script:
+  - ./build.sh

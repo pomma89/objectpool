@@ -12,7 +12,6 @@ var target = Argument("target", "Default");
 
 private string SolutionFile() { return "./ObjectPool.sln"; }
 private string ArtifactsDir() { return "./artifacts"; }
-private string MSBuildLinuxPath() { return @"/usr/lib/mono/msbuild/15.0/bin/MSBuild.dll"; }
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -85,25 +84,10 @@ RunTarget(target);
 
 private void Build(string cfg)
 {
-    //foreach(var project in GetFiles("./**/*.csproj"))
-    //{
-    //    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
-    //    {
-    //        Configuration = cfg,
-    //        NoIncremental = true
-    //    });
-    //}
-
-    MSBuild(SolutionFile(), settings =>
+    DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
     {
-        settings.SetConfiguration(cfg);
-        settings.SetMaxCpuCount(0);
-        settings.SetVerbosity(Verbosity.Quiet);
-        if (!IsRunningOnWindows())
-        { 
-            // Hack for Linux bug - Missing MSBuild path.
-            settings.ToolPath = new FilePath(MSBuildLinuxPath());
-        }
+        Configuration = cfg,
+        NoIncremental = true
     });
 }
 
@@ -133,30 +117,13 @@ private void Test(string cfg)
 
 private void Pack(string cfg)
 {
-    Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
+    foreach (var project in GetFiles("./src/**/*.csproj"))
     {
-        //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
-        //{
-        //    Configuration = cfg,
-        //    OutputDirectory = ArtifactsDir(),
-        //    NoBuild = true
-        //});
-
-        MSBuild(project, settings =>
+        DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         {
-            settings.SetConfiguration(cfg);
-            settings.SetMaxCpuCount(0);
-            settings.SetVerbosity(Verbosity.Quiet);
-            settings.WithTarget("pack");
-            settings.WithProperty("IncludeSymbols", new[] { "true" });
-            if (!IsRunningOnWindows())
-            { 
-                // Hack for Linux bug - Missing MSBuild path.
-                settings.ToolPath = new FilePath(MSBuildLinuxPath());
-            }
+            Configuration = cfg,
+            OutputDirectory = ArtifactsDir(),
+            NoBuild = true
         });
-
-        var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
-        MoveFiles(GetFiles(packDir + "/*.nupkg"), ArtifactsDir());
-    });
+    }
 }
