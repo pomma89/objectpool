@@ -12,6 +12,7 @@ var target = Argument("target", "Default");
 
 private string SolutionFile() { return "./ObjectPool.sln"; }
 private string ArtifactsDir() { return "./artifacts"; }
+private string MSBuildLinuxPath() { return @"/usr/lib/mono/msbuild/15.0/bin/MSBuild.dll"; }
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -84,10 +85,22 @@ RunTarget(target);
 
 private void Build(string cfg)
 {
-    DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
+    //DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
+    //{
+    //    Configuration = cfg,
+    //    NoIncremental = true
+    //});
+
+    MSBuild(SolutionFile(), settings =>
     {
-        Configuration = cfg,
-        NoIncremental = true
+        settings.SetConfiguration(cfg);
+        settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        if (!IsRunningOnWindows())
+        { 
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
     });
 }
 
@@ -117,15 +130,33 @@ private void Test(string cfg)
 
 private void Pack(string cfg)
 {
-    foreach (var project in GetFiles("./src/**/*.csproj"))
+    Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
     {
-        DotNetCorePack(project.FullPath, new DotNetCorePackSettings
+        //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
+        //{
+        //    Configuration = cfg,
+        //    OutputDirectory = ArtifactsDir(),
+        //    NoBuild = true,
+        //    IncludeSource = true,
+        //    IncludeSymbols = true
+        //});
+
+        MSBuild(project, settings =>
         {
-            Configuration = cfg,
-            OutputDirectory = ArtifactsDir(),
-            NoBuild = true,
-            IncludeSource = true,
-            IncludeSymbols = true
+            settings.SetConfiguration(cfg);
+            settings.SetMaxCpuCount(0);
+            settings.SetVerbosity(Verbosity.Quiet);
+            settings.WithTarget("pack");
+            settings.WithProperty("IncludeSource", new[] { "true" });
+            settings.WithProperty("IncludeSymbols", new[] { "true" });
+            if (!IsRunningOnWindows())
+            { 
+                // Hack for Linux bug - Missing MSBuild path.
+                settings.ToolPath = new FilePath(MSBuildLinuxPath());
+            }
         });
-    }
+
+        var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
+        MoveFiles(GetFiles(packDir + "/*.nupkg"), ArtifactsDir());
+    });
 }
