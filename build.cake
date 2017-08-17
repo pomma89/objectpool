@@ -28,7 +28,7 @@ Task("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreRestore();
+    Restore();
 });
 
 Task("Build-Debug")
@@ -82,6 +82,23 @@ RunTarget(target);
 //////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////
+
+private void Restore()
+{
+    //DotNetCoreRestore();
+
+    MSBuild(SolutionFile(), settings =>
+    {
+        settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("restore");
+        if (!IsRunningOnWindows())
+        { 
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
+    });
+}
 
 private void Build(string cfg)
 {
