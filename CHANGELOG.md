@@ -5,6 +5,7 @@
 * Added support for .NET Standard 2.0.
 * System.Timer does not seem to be available on .NET Standard 1.0 anymore.
 * Added support for .NET Standard 1.2, since it is the minimum version which implements System.Timer.
+* Dropped support for .NET 3.5.
 
 ### v3.1.1 (2017-07-03)
 

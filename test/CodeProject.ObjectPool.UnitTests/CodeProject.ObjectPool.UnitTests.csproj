@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.1;netcoreapp2.0;net35;net40;net45;net46</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.1;netcoreapp2.0;net40;net45;net46</TargetFrameworks>
     <OutputType>exe</OutputType>
   </PropertyGroup>
 
@@ -14,7 +14,7 @@
     <PackageReference Include="NUnit" Version="3.7.1" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.7.0" />
     <PackageReference Include="NUnitLite" Version="3.7.2" />
-    <PackageReference Include="Shouldly" Version="2.8.3" />
+    <PackageReference Include="Shouldly" Version="3.0.0-beta0003" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
@@ -29,14 +29,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <DefineConstants>$(DefineConstants);NET35</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <Reference Include="System" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">

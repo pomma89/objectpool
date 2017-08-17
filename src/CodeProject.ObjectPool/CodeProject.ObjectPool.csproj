@@ -3,7 +3,7 @@
     <AssemblyName>CodeProject.ObjectPool</AssemblyName>
     <AssemblyTitle>Generic and concurrent Object Pool</AssemblyTitle>
     <VersionPrefix>3.2.0</VersionPrefix>
-    <TargetFrameworks>netstandard1.0;netstandard1.2;netstandard1.3;netstandard2.0;net35;net40;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.2;netstandard1.3;netstandard2.0;net40;net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
@@ -65,14 +65,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <DefineConstants>$(DefineConstants);NET35;HAS_SERIALIZABLE</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <Reference Include="System" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">

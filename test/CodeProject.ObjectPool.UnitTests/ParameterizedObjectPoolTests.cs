@@ -25,7 +25,7 @@ using CodeProject.ObjectPool;
 using NUnit.Framework;
 using System;
 
-#if !(NET35 || NET40)
+#if !NET40
 
 using System.Threading.Tasks;
 
@@ -54,7 +54,7 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
-#if !(NET35 || NET40)
+#if !NET40
 
         [TestCase(1)]
         [TestCase(5)]

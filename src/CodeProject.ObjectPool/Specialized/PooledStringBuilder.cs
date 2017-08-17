@@ -24,11 +24,7 @@
 using CodeProject.ObjectPool.Core;
 using System.Text;
 
-#if !NET35
-
 using CodeProject.ObjectPool.Logging;
-
-#endif
 
 namespace CodeProject.ObjectPool.Specialized
 {
@@ -39,9 +35,7 @@ namespace CodeProject.ObjectPool.Specialized
     {
         #region Logging
 
-#if !NET35
         private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledStringBuilder));
-#endif
 
         #endregion Logging
 
@@ -70,24 +64,16 @@ namespace CodeProject.ObjectPool.Specialized
                 var stringBuilderPool = PooledObjectInfo.Handle as IStringBuilderPool;
                 if (StringBuilder.Capacity > stringBuilderPool.MaximumStringBuilderCapacity)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] String builder capacity is {StringBuilder.Capacity}, while maximum allowed capacity is {stringBuilderPool.MaximumStringBuilderCapacity}");
-#endif
                     return false;
                 }
 
                 return true; // Object is valid.
             };
 
-            OnResetState += () =>
-            {
-                ClearStringBuilder();
-            };
+            OnResetState += ClearStringBuilder;
 
-            OnReleaseResources += () =>
-            {
-                ClearStringBuilder();
-            };
+            OnReleaseResources += ClearStringBuilder;
         }
 
         /// <summary>
@@ -102,11 +88,7 @@ namespace CodeProject.ObjectPool.Specialized
         /// </summary>
         protected void ClearStringBuilder()
         {
-#if NET35
-            StringBuilder.Remove(0, StringBuilder.Length);
-#else
             StringBuilder.Clear();
-#endif
         }
     }
 }

@@ -22,13 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Core;
-using System.IO;
-
-#if !NET35
-
 using CodeProject.ObjectPool.Logging;
-
-#endif
+using System.IO;
 
 namespace CodeProject.ObjectPool.Specialized
 {
@@ -39,9 +34,7 @@ namespace CodeProject.ObjectPool.Specialized
     {
         #region Logging
 
-#if !NET35
         private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledMemoryStream));
-#endif
 
         #endregion Logging
 
@@ -72,25 +65,19 @@ namespace CodeProject.ObjectPool.Specialized
 
                 if (!_trackedMemoryStream.CanRead || !_trackedMemoryStream.CanWrite || !_trackedMemoryStream.CanSeek)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.Warn("[ObjectPool] Memory stream has already been disposed");
-#endif
                     return false;
                 }
 
                 var memoryStreamPool = PooledObjectInfo.Handle as IMemoryStreamPool;
                 if (_trackedMemoryStream.Capacity < memoryStreamPool.MinimumMemoryStreamCapacity)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] Memory stream capacity is {_trackedMemoryStream.Capacity}, while minimum required capacity is {memoryStreamPool.MinimumMemoryStreamCapacity}");
-#endif
                     return false;
                 }
                 if (_trackedMemoryStream.Capacity > memoryStreamPool.MaximumMemoryStreamCapacity)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.Warn($"[ObjectPool] Memory stream capacity is {_trackedMemoryStream.Capacity}, while maximum allowed capacity is {memoryStreamPool.MaximumMemoryStreamCapacity}");
-#endif
                     return false;
                 }
 

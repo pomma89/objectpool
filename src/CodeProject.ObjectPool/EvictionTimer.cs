@@ -23,16 +23,11 @@
 
 #if !NETSTD10
 
+using CodeProject.ObjectPool.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
-#if !NET35
-
-using CodeProject.ObjectPool.Logging;
-
-#endif
 
 namespace CodeProject.ObjectPool
 {
@@ -41,9 +36,7 @@ namespace CodeProject.ObjectPool
     /// </summary>
     public sealed class EvictionTimer : IEvictionTimer, IDisposable
     {
-#if !NET35
         private static readonly ILog Log = LogProvider.GetLogger(typeof(EvictionTimer));
-#endif
 
         private readonly Dictionary<Guid, Timer> _actionMap = new Dictionary<Guid, Timer>();
         private volatile bool _disposed;
@@ -84,16 +77,12 @@ namespace CodeProject.ObjectPool
             }
             lock (_actionMap)
             {
-#if !NET35
                 TimerCallback timerCallback = _ =>
                 {
                     Log.Debug("Begin scheduled evictor");
                     action();
                     Log.Debug("End scheduled evictor");
                 };
-#else
-                TimerCallback timerCallback = _ => action();
-#endif
                 var actionTicket = Guid.NewGuid();
                 _actionMap[actionTicket] = new Timer(timerCallback, null, delay, period);
                 return actionTicket;

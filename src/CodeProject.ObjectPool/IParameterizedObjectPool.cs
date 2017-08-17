@@ -18,12 +18,7 @@ namespace CodeProject.ObjectPool
     /// </summary>
     /// <typeparam name="TKey">The type of the pool parameter.</typeparam>
     /// <typeparam name="TValue">The type of the objects stored in the pool.</typeparam>
-#if NET35
-    public interface IParameterizedObjectPool<TKey, TValue>
-#else
-
     public interface IParameterizedObjectPool<in TKey, out TValue>
-#endif
     {
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
