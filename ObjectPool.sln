@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{4C2B7C0C-7
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
 		LICENSE.htm = LICENSE.htm
