@@ -1,4 +1,6 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.6.1
+#addin "nuget:?package=Cake.Wyam"
+#tool "nuget:?package=NUnit.ConsoleRunner"
+#tool "nuget:?package=Wyam"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -10,8 +12,9 @@ var target = Argument("target", "Default");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-var solutionFile = "./ObjectPool.sln";
-var artifactsDir = "./artifacts";
+private string SolutionFile() { return "./ObjectPool.sln"; }
+private string ArtifactsDir() { return "./artifacts"; }
+private string MSBuildLinuxPath() { return @"/usr/lib/mono/msbuild/15.0/bin/MSBuild.dll"; }
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -20,14 +23,14 @@ var artifactsDir = "./artifacts";
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectory(artifactsDir);
+    CleanDirectory(ArtifactsDir());
 });
 
 Task("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreRestore();
+    Restore();
 });
 
 Task("Build-Debug")
@@ -65,12 +68,19 @@ Task("Test-Release")
     Test("Release");
 });
 
+Task("Docs")
+    .IsDependentOn("Test-Release")
+    .Does(() =>
+{
+    Docs();
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Test-Release");
+    .IsDependentOn("Docs");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -82,21 +92,41 @@ RunTarget(target);
 // HELPERS
 //////////////////////////////////////////////////////////////////////
 
+private void Restore()
+{
+    //DotNetCoreRestore();
+
+    MSBuild(SolutionFile(), settings =>
+    {
+        settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("restore");
+        if (!IsRunningOnWindows())
+        { 
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
+    });
+}
+
 private void Build(string cfg)
 {
-    //foreach(var project in GetFiles("./**/*.csproj"))
+    //DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
     //{
-    //    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
-    //    {
-    //        Configuration = cfg,
-    //        NoIncremental = true
-    //    });
-    //}
-    
-    MSBuild(solutionFile, settings =>
+    //    Configuration = cfg,
+    //    NoIncremental = true
+    //});
+
+    MSBuild(SolutionFile(), settings =>
     {
         settings.SetConfiguration(cfg);
         settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        if (!IsRunningOnWindows())
+        { 
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
     });
 }
 
@@ -131,19 +161,40 @@ private void Pack(string cfg)
         //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         //{
         //    Configuration = cfg,
-        //    OutputDirectory = artifactsDir,
-        //    NoBuild = true
+        //    OutputDirectory = ArtifactsDir(),
+        //    NoBuild = true,
+        //    IncludeSource = true,
+        //    IncludeSymbols = true
         //});
 
         MSBuild(project, settings =>
         {
             settings.SetConfiguration(cfg);
             settings.SetMaxCpuCount(0);
+            settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
+            settings.WithProperty("IncludeSource", new[] { "true" });
             settings.WithProperty("IncludeSymbols", new[] { "true" });
+            if (!IsRunningOnWindows())
+            { 
+                // Hack for Linux bug - Missing MSBuild path.
+                settings.ToolPath = new FilePath(MSBuildLinuxPath());
+            }
         });
 
         var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
-        MoveFiles(GetFiles(packDir + "/*.nupkg"), artifactsDir);
+        MoveFiles(GetFiles(packDir + "/*.nupkg"), ArtifactsDir());
     });
+}
+
+private void Docs()
+{
+    if (IsRunningOnWindows())
+    {
+		Wyam(new WyamSettings()
+		{
+			InputPaths = new DirectoryPath[] { Directory("./pages") },
+			OutputPath = Directory("./docs")
+		});
+    }
 }

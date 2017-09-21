@@ -164,7 +164,7 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if NETSTD10
+#if (NETSTD10 || NETSTD12)
         private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
 #else
         private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
@@ -190,7 +190,7 @@ namespace CodeProject.ObjectPool
 
         private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
         {
-#if NETSTD10
+#if (NETSTD10 || NETSTD12)
             // Dictionary requires locking even for readers.
             lock (_pools)
             {

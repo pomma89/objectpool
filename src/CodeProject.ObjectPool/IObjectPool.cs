@@ -17,12 +17,7 @@ namespace CodeProject.ObjectPool
     ///   Describes all methods available on Object Pools.
     /// </summary>
     /// <typeparam name="T">The type of the objects stored in the pool.</typeparam>
-#if NET35
-    public interface IObjectPool<T>
-#else
-
     public interface IObjectPool<out T>
-#endif
         where T : PooledObject
     {
         /// <summary>

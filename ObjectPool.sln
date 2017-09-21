@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
+		config.wyam = config.wyam
 		LICENSE.htm = LICENSE.htm
 		NuGet.Config = NuGet.Config
 		pomma89.snk = pomma89.snk
@@ -75,5 +77,8 @@ Global
 		{9C66B27C-8424-4D2E-A033-612776D59202} = {69DFB95F-7861-4E90-ABC1-33F75FBE67AF}
 		{362C2E4A-3EE7-41BE-A233-70649B258439} = {69DFB95F-7861-4E90-ABC1-33F75FBE67AF}
 		{DA3DC42C-80E7-4559-9737-F13BE6F4565C} = {4C2B7C0C-7CDD-4125-B57A-88E168D24190}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C81698D-E18E-4669-B9D3-7FEFA57C794D}
 	EndGlobalSection
 EndGlobal

@@ -9,13 +9,8 @@
  */
 
 using CodeProject.ObjectPool.Core;
-using System;
-
-#if !NET35
-
 using CodeProject.ObjectPool.Logging;
-
-#endif
+using System;
 
 namespace CodeProject.ObjectPool
 {
@@ -30,9 +25,7 @@ namespace CodeProject.ObjectPool
     {
         #region Logging
 
-#if !NET35
         private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledObject));
-#endif
 
         #endregion Logging
 
@@ -57,27 +50,13 @@ namespace CodeProject.ObjectPool
         {
             if (OnValidateObject != null)
             {
-                this.PooledObjectInfo.State = PooledObjectState.Validating;
                 try
                 {
-                    bool verifyResult = OnValidateObject(validationContext);
-                    if (verifyResult)
-                    {
-                        this.PooledObjectInfo.State = PooledObjectState.ValidateSuccess;
-                    }
-                    else
-                    {
-                        this.PooledObjectInfo.State = PooledObjectState.ValidateFail;
-                    }
-                    return verifyResult;
+                    return OnValidateObject(validationContext);
                 }
                 catch (Exception ex)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while validating an object", ex);
-#else
-                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
-#endif
                     return false;
                 }
             }
@@ -99,11 +78,7 @@ namespace CodeProject.ObjectPool
                 }
                 catch (Exception ex)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while releasing resources", ex);
-#else
-                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
-#endif
                     return false;
                 }
             }
@@ -116,7 +91,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         internal bool ResetState()
         {
-            if (!ValidateObject(PooledObjectValidationContext.Inbound))
+            if (!ValidateObject(PooledObjectValidationContext.Inbound(this)))
             {
                 return false;
             }
@@ -128,11 +103,7 @@ namespace CodeProject.ObjectPool
                 }
                 catch (Exception ex)
                 {
-#if !NET35
                     if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An unexpected error occurred while resetting state", ex);
-#else
-                    System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
-#endif
                     return false;
                 }
             }
@@ -188,11 +159,7 @@ namespace CodeProject.ObjectPool
             }
             catch (Exception ex)
             {
-#if !NET35
                 if (Log.IsWarnEnabled()) Log.WarnException("[ObjectPool] An error occurred while re-adding to pool", ex);
-#else
-                System.Diagnostics.Debug.Assert(ex != null); // Placeholder to avoid warnings
-#endif
                 PooledObjectInfo.State = PooledObjectState.Disposed;
                 ReleaseResources();
             }

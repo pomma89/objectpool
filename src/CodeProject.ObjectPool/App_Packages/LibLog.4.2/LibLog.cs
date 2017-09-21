@@ -36,8 +36,6 @@
 // Define LIBLOG_PROVIDERS_ONLY if your library provides its own logging API and you just want to use
 // the LibLog providers internally to provide built in support for popular logging frameworks.
 
-#if !NET35
-
 #pragma warning disable 1591
 
 using System.Diagnostics.CodeAnalysis;
@@ -2349,5 +2347,3 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
         }
     }
 }
-
-#endif
