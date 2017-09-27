@@ -9,7 +9,7 @@
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Label="NuGet">
     <PackageId>CodeProject.ObjectPool</PackageId>
     <Title>Generic and concurrent Object Pool</Title>
     <Summary>A generic, concurrent, portable and flexible Object Pool for the .NET Framework.</Summary>
