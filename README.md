@@ -5,7 +5,7 @@
 
 ## Summary ##
 
-* Latest release version: `v3.2.0`
+* Latest release version: `v3.2.1`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/ObjectPool.svg?branch=master)](https://travis-ci.org/pomma89/ObjectPool)
 * Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/cgldtxe3p9v7nf0i/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool/branch/master)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
