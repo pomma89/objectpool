@@ -117,14 +117,14 @@ namespace CodeProject.ObjectPool.Benchmarks
             string str;
             try
             {
-                res = _microsoftObjectPool.Get();
+                res = _adaptedMicrosoftObjectPool.Get();
                 str = res.Value;
             }
             finally
             {
                 if (res != null)
                 {
-                    _microsoftObjectPool.Return(res);
+                    _adaptedMicrosoftObjectPool.Return(res);
                 }
             }
             return str;

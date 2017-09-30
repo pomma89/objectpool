@@ -15,12 +15,6 @@
     <RepositoryUrl>https://github.com/pomma89/ObjectPool</RepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="doc\**" />
-    <EmbeddedResource Remove="doc\**" />
-    <None Remove="doc\**" />
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <DefineConstants>$(DefineConstants);NETSTD10;LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>

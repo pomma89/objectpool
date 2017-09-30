@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BenchmarkDotNet.Artifacts\**" />
+    <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
+    <None Remove="BenchmarkDotNet.Artifacts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
   </ItemGroup>
