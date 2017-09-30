@@ -1,6 +1,6 @@
 # Changelog for CodeProject.ObjectPool #
 
-### v3.2.1 (2017-09-27)
+### v3.2.1 (2017-09-30)
 
 * Added an adapter for Microsoft.Extensions.ObjectPool.
 

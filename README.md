@@ -14,6 +14,7 @@
     + [PDF](http://pomma89.altervista.org/objectpool/doc/refman.pdf)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
+    + [CodeProject.ObjectPool.MicrosoftExtensionsAdapter](https://nuget.org/packages/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/)
 
 ## Introduction ##
 
@@ -137,26 +138,29 @@ In this benchmark we evaluate how long it takes to extract and return an object 
 
 * [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ObjectPool.cs)
 * [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ParameterizedObjectPool.cs)
-* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 * [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
+* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
+* [This project's adapter for Microsoft's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter.cs)
 
 ``` ini
 
-BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+BenchmarkDotNet=v0.10.9, OS=Windows 10 Redstone 1 (10.0.14393)
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
-  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
-  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+Frequency=1949467 Hz, Resolution=512.9607 ns, Timer=TSC
+.NET Core SDK=2.0.0
+  [Host]    : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+  RyuJitX64 : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |        Method |          Mean |    StdErr |     StdDev |        Median | Scaled | Scaled-StdDev |  Gen 0 | Allocated |
- |-------------- |-------------- |---------- |----------- |-------------- |------- |-------------- |------- |---------- |
- |        Simple |   121.7587 ns | 2.6138 ns |  9.7801 ns |   117.3474 ns |   1.00 |          0.00 |      - |       0 B |
- | Parameterized |   180.3051 ns | 0.4339 ns |  1.5644 ns |   180.0446 ns |   1.49 |          0.10 | 0.0331 |      24 B |
- |     Microsoft |    60.0949 ns | 0.7015 ns |  5.0583 ns |    57.2039 ns |   0.50 |          0.05 |      - |       0 B |
- |      Original | 2,015.6827 ns | 8.4539 ns | 32.7417 ns | 2,023.0768 ns |  16.64 |          1.18 |      - |     239 B |
+ |           Method |        Mean |     Error |    StdDev |      Median | Scaled | ScaledSD |  Gen 0 |  Gen 1 | Allocated |
+ |----------------- |------------:|----------:|----------:|------------:|-------:|---------:|-------:|-------:|----------:|
+ |           Simple |   235.58 ns |  4.935 ns | 10.729 ns |   237.90 ns |   1.00 |     0.00 | 0.1216 |      - |      64 B |
+ |    Parameterized |   334.42 ns |  6.966 ns | 20.211 ns |   340.66 ns |   1.42 |     0.11 | 0.1674 |      - |      88 B |
+ |         Original | 1,100.13 ns | 12.239 ns | 10.850 ns | 1,099.87 ns |   4.68 |     0.22 | 0.3399 | 0.0046 |     196 B |
+ |        Microsoft |    79.35 ns |  1.791 ns |  2.329 ns |    79.92 ns |   0.34 |     0.02 |      - |      - |       0 B |
+ | AdaptedMicrosoft |   243.91 ns |  5.221 ns | 15.394 ns |   246.22 ns |   1.04 |     0.08 | 0.1216 |      - |      64 B |
 
 ![](http://pomma89.altervista.org/objectpool/perf/RetrieveOneObject-barplot.png "Retrieve one object barplot")
 
@@ -166,34 +170,39 @@ In this benchmark we evaluate how long it takes to extract and return an object 
 
 * [This project's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ObjectPool.cs)
 * [This project's ParameterizedObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool/ParameterizedObjectPool.cs)
-* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
 * [Original ObjectPool](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET)
+* [Microsoft's ObjectPool](http://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
+* [This project's adapter for Microsoft's ObjectPool](https://github.com/pomma89/ObjectPool/blob/master/src/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter.cs)
 
 ``` ini
 
-BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+BenchmarkDotNet=v0.10.9, OS=Windows 10 Redstone 1 (10.0.14393)
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
-  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
-  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+Frequency=1949467 Hz, Resolution=512.9607 ns, Timer=TSC
+.NET Core SDK=2.0.0
+  [Host]    : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+  RyuJitX64 : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |        Method | Count |          Mean |     StdErr |     StdDev | Scaled | Scaled-StdDev |   Gen 0 |   Gen 1 | Allocated |
- |-------------- |------ |-------------- |----------- |----------- |------- |-------------- |-------- |-------- |---------- |
- |        **Simple** |    **10** |    **12.5464 us** |  **0.0161 us** |  **0.0559 us** |   **1.00** |          **0.00** |  **2.0091** |       **-** |   **1.15 kB** |
- | Parameterized |    10 |    14.6937 us |  0.1460 us |  0.8758 us |   1.17 |          0.07 |  2.4578 |       - |   1.43 kB |
- |     Microsoft |    10 |     9.9922 us |  0.0994 us |  0.9325 us |   0.80 |          0.07 |  1.8722 |       - |   1.12 kB |
- |      Original |    10 |    27.0116 us |  0.1161 us |  0.4184 us |   2.15 |          0.03 |       - |       - |   3.72 kB |
- |        **Simple** |   **100** |    **69.6033 us** |  **0.4120 us** |  **1.4271 us** |   **1.00** |          **0.00** |  **0.0163** |       **-** |   **1.47 kB** |
- | Parameterized |   100 |    78.6620 us |  0.6899 us |  2.3897 us |   1.13 |          0.04 |  6.0963 |       - |   3.92 kB |
- |     Microsoft |   100 |    33.5158 us |  0.3347 us |  2.5710 us |   0.48 |          0.04 |  4.1996 |  0.7410 |   2.42 kB |
- |      Original |   100 |   177.8085 us |  0.8120 us |  3.1450 us |   2.56 |          0.07 |  3.6719 |       - |  27.01 kB |
- |        **Simple** |  **1000** |   **800.4478 us** |  **1.4427 us** |  **5.2017 us** |   **1.00** |          **0.00** |       **-** |       **-** |   **4.75 kB** |
- | Parameterized |  1000 |   847.4692 us |  2.5917 us | 10.0377 us |   1.06 |          0.01 | 31.3802 |       - |  27.91 kB |
- |     Microsoft |  1000 |   367.3571 us |  3.6502 us | 28.0380 us |   0.46 |          0.03 | 53.3482 | 10.9933 |  33.35 kB |
- |      Original |  1000 | 1,447.6767 us | 22.5522 us | 84.3827 us |   1.81 |          0.10 |       - |       - | 267.77 kB |
+ |           Method | Count |        Mean |      Error |     StdDev | Scaled | ScaledSD |    Gen 0 |   Gen 1 | Allocated |
+ |----------------- |------ |------------:|-----------:|-----------:|-------:|---------:|---------:|--------:|----------:|
+ |           **Simple** |    **10** |    **16.20 us** |  **0.3121 us** |  **0.4166 us** |   **1.00** |     **0.00** |   **4.9215** |       **-** |   **2.35 KB** |
+ |    Parameterized |    10 |    16.04 us |  0.2204 us |  0.2062 us |   0.99 |     0.03 |   5.6030 |       - |   2.56 KB |
+ |         Original |    10 |    18.60 us |  0.1700 us |  0.1420 us |   1.15 |     0.03 |   7.6222 |       - |      3 KB |
+ |        Microsoft |    10 |    14.04 us |  0.2648 us |  0.2211 us |   0.87 |     0.03 |   3.6167 |       - |   1.74 KB |
+ | AdaptedMicrosoft |    10 |    15.80 us |  0.2689 us |  0.2099 us |   0.98 |     0.03 |   5.0049 |       - |   2.35 KB |
+ |           **Simple** |   **100** |    **66.00 us** |  **1.2006 us** |  **1.0643 us** |   **1.00** |     **0.00** |  **16.6273** |       **-** |   **4.75 KB** |
+ |    Parameterized |   100 |    84.03 us |  1.6033 us |  1.5746 us |   1.27 |     0.03 |  21.5088 |       - |   5.09 KB |
+ |         Original |   100 |   133.08 us |  1.0699 us |  1.0008 us |   2.02 |     0.03 |  43.2617 |       - |  14.15 KB |
+ |        Microsoft |   100 |    32.72 us |  0.6511 us |  0.6395 us |   0.50 |     0.01 |   5.3711 |  0.9359 |   1.87 KB |
+ | AdaptedMicrosoft |   100 |    74.85 us |  1.4805 us |  2.3908 us |   1.13 |     0.04 |  16.5876 |       - |   4.66 KB |
+ |           **Simple** |  **1000** |   **756.57 us** |  **4.9338 us** |  **4.6151 us** |   **1.00** |     **0.00** | **128.0599** |       **-** |   **19.8 KB** |
+ |    Parameterized |  1000 |   499.51 us |  3.4858 us |  2.7215 us |   0.66 |     0.01 | 174.9349 |       - |  25.92 KB |
+ |         Original |  1000 | 1,222.56 us | 12.8086 us | 11.9812 us |   1.62 |     0.02 | 337.2396 |  9.3750 | 101.38 KB |
+ |        Microsoft |  1000 |   428.70 us |  8.3805 us |  8.6061 us |   0.57 |     0.01 |  48.0572 | 15.8991 |   4.12 KB |
+ | AdaptedMicrosoft |  1000 |   824.49 us |  6.4987 us |  6.0789 us |   1.09 |     0.01 | 128.0599 |       - |  19.67 KB |
 
 ![](http://pomma89.altervista.org/objectpool/perf/RetrieveObjectsConcurrently-barplot.png "Retrieve objects concurrently barplot")
 
@@ -206,19 +215,20 @@ In this benchmark we evaluate how long it takes to extract and return a memory s
 
 ``` ini
 
-BenchmarkDotNet=v0.10.3.0, OS=Microsoft Windows NT 6.2.9200.0
+BenchmarkDotNet=v0.10.9, OS=Windows 10 Redstone 1 (10.0.14393)
 Processor=AMD A10 Extreme Edition Radeon R8, 4C+8G, ProcessorCount=4
-Frequency=1949466 Hz, Resolution=512.9610 ns, Timer=TSC
-  [Host]    : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
-  RyuJitX64 : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+Frequency=1949467 Hz, Resolution=512.9607 ns, Timer=TSC
+.NET Core SDK=2.0.0
+  [Host]    : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+  RyuJitX64 : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
 
 Job=RyuJitX64  Jit=RyuJit  Platform=X64  
 
 ```
- |                        Method |          Mean |     StdDev | Scaled | Scaled-StdDev |  Gen 0 | Allocated |
- |------------------------------ |-------------- |----------- |------- |-------------- |------- |---------- |
- |              MemoryStreamPool |   173.8324 ns |  5.5788 ns |   1.00 |          0.00 |      - |       0 B |
- | RecyclableMemoryStreamManager | 3,406.0877 ns | 88.6058 ns |  19.61 |          0.76 | 0.7796 |     448 B |
+ |                        Method |       Mean |     Error |    StdDev | Scaled | ScaledSD |  Gen 0 | Allocated |
+ |------------------------------ |-----------:|----------:|----------:|-------:|---------:|-------:|----------:|
+ |              MemoryStreamPool |   360.4 ns |  7.187 ns |  14.68 ns |   1.00 |     0.00 | 0.1216 |      64 B |
+ | RecyclableMemoryStreamManager | 4,207.3 ns | 85.152 ns | 251.07 ns |  11.69 |     0.84 | 0.8469 |     448 B |
 
 ![](http://pomma89.altervista.org/objectpool/perf/MemoryStreamPooling-barplot.png "Memory stream pooling barplot")
 
@@ -227,5 +237,3 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
 
 I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
-
-Development of this project is sponsored by [Finsa SpA](https://www.finsa.it), my current employer.
