@@ -27,21 +27,59 @@ using System.Runtime.CompilerServices;
 namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
 {
     /// <summary>
+    ///   Helper for getting object pool adapters.
+    /// </summary>
+    public static class ObjectPoolAdapter
+    {
+        /// <summary>
+        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
+        ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+        /// </summary>
+        /// <typeparam name="T">The type of the resource.</typeparam>
+        /// <param name="objectPool">The object pool that needs to be adapted.</param>
+        /// <returns>An adapter for given object pool.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="objectPool"/> is null.</exception>
+        /// <remarks>
+        ///   This adapter should be used for types that do _not_ extend <see cref="PooledObject"/> class.
+        /// </remarks>
+        public static Microsoft.Extensions.ObjectPool.ObjectPool<T> Create<T>(IObjectPool<PooledObjectWrapper<T>> objectPool)
+            where T : class => new ObjectPoolAdapter<T>(objectPool);
+
+        /// <summary>
+        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
+        ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+        /// </summary>
+        /// <typeparam name="T">The type of the resource.</typeparam>
+        /// <param name="objectPool">The object pool that needs to be adapted.</param>
+        /// <returns>An adapter for given object pool.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="objectPool"/> is null.</exception>
+        /// <remarks>
+        ///   This adapter should be used for types that extend <see cref="PooledObject"/> class.
+        /// </remarks>
+        public static Microsoft.Extensions.ObjectPool.ObjectPool<T> CreateForPooledObject<T>(IObjectPool<T> objectPool)
+            where T : PooledObject => new ObjectPoolAdapterForPooledObject<T>(objectPool);
+    }
+
+    /// <summary>
     ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
     ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
     /// </summary>
-    /// <typeparam name="TRes">The type of the resource.</typeparam>
-    public sealed class ObjectPoolAdapter<TRes> : Microsoft.Extensions.ObjectPool.ObjectPool<TRes>
-        where TRes : class
+    /// <typeparam name="T">The type of the resource.</typeparam>
+    /// <remarks>
+    ///   This adapter should be used for types that do _not_ extend <see cref="PooledObject"/> class.
+    /// </remarks>
+    public sealed class ObjectPoolAdapter<T> : Microsoft.Extensions.ObjectPool.ObjectPool<T>
+        where T : class
     {
-        private readonly ConditionalWeakTable<TRes, PooledObjectWrapper<TRes>> _wrapperMap = new ConditionalWeakTable<TRes, PooledObjectWrapper<TRes>>();
-        private readonly IObjectPool<PooledObjectWrapper<TRes>> _adaptedObjectPool;
+        private readonly ConditionalWeakTable<T, PooledObjectWrapper<T>> _wrapperMap = new ConditionalWeakTable<T, PooledObjectWrapper<T>>();
+        private readonly IObjectPool<PooledObjectWrapper<T>> _adaptedObjectPool;
 
         /// <summary>
         ///   Adapts given object pool.
         /// </summary>
         /// <param name="objectPool">The object pool that needs to be adapted.</param>
-        public ObjectPoolAdapter(IObjectPool<PooledObjectWrapper<TRes>> objectPool)
+        /// <exception cref="ArgumentNullException"><paramref name="objectPool"/> is null.</exception>
+        public ObjectPoolAdapter(IObjectPool<PooledObjectWrapper<T>> objectPool)
         {
             _adaptedObjectPool = objectPool ?? throw new ArgumentNullException(nameof(objectPool));
         }
@@ -50,7 +88,7 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
         ///   Retrieves an object from the pool.
         /// </summary>
         /// <returns>An object from the pool.</returns>
-        public override TRes Get()
+        public override T Get()
         {
             var pooledObject = _adaptedObjectPool.GetObject();
             _wrapperMap.GetValue(pooledObject.InternalResource, _ => pooledObject);
@@ -61,12 +99,48 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
         ///   Returns given object to the pool.
         /// </summary>
         /// <param name="obj">The object that should return to the pool.</param>
-        public override void Return(TRes obj)
+        public override void Return(T obj)
         {
             if (_wrapperMap.TryGetValue(obj, out var pooledObject))
             {
                 pooledObject?.Dispose();
             }
         }
+    }
+
+    /// <summary>
+    ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
+    ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+    /// </summary>
+    /// <typeparam name="T">The type of the resource.</typeparam>
+    /// <remarks>
+    ///   This adapter should be used for types that extend <see cref="PooledObject"/> class.
+    /// </remarks>
+    public sealed class ObjectPoolAdapterForPooledObject<T> : Microsoft.Extensions.ObjectPool.ObjectPool<T>
+        where T : PooledObject
+    {
+        private readonly IObjectPool<T> _adaptedObjectPool;
+
+        /// <summary>
+        ///   Adapts given object pool.
+        /// </summary>
+        /// <param name="objectPool">The object pool that needs to be adapted.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="objectPool"/> is null.</exception>
+        public ObjectPoolAdapterForPooledObject(IObjectPool<T> objectPool)
+        {
+            _adaptedObjectPool = objectPool ?? throw new ArgumentNullException(nameof(objectPool));
+        }
+
+        /// <summary>
+        ///   Retrieves an object from the pool.
+        /// </summary>
+        /// <returns>An object from the pool.</returns>
+        public override T Get() => _adaptedObjectPool.GetObject();
+
+        /// <summary>
+        ///   Returns given object to the pool.
+        /// </summary>
+        /// <param name="obj">The object that should return to the pool.</param>
+        public override void Return(T obj) => obj?.Dispose();
     }
 }
