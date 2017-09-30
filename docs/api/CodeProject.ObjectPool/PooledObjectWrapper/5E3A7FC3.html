@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
-        <title>CodeProject.ObjectPool - API - ObjectPoolAdapter&lt;T&gt;.ObjectPoolAdapter(IObjectPool&lt;T&gt;) Constructor</title>
+        <title>CodeProject.ObjectPool - API - PooledObjectWrapper.Create&lt;T&gt;(T) Method</title>
         <link href="/ObjectPool/assets/css/mermaid.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/highlight.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/bootstrap/bootstrap.css" rel="stylesheet">
@@ -75,6 +75,7 @@
                     	
 	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
 <p><a href="#Syntax">Syntax</a></p>
+<p><a href="#TypeParameters">Type Parameters</a></p>
 <p><a href="#Parameters">Parameters</a></p>
 <p><a href="#ReturnValue">Return Value</a></p>
 <hr class="infobar-hidden">
@@ -135,15 +136,12 @@
                     <ul class="sidebar-menu">
                         
 			<li class="header">Namespace</li>
-		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></li>
+		<li><a href="/ObjectPool/api/CodeProject.ObjectPool">CodeProject<wbr>.ObjectPool</a></li>
 		<li class="header">Type</li>
-		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;T&gt;<wbr></a></li>
+		<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper">PooledObjectWrapper</a></li>
 		<li role="separator" class="divider"></li>
-			<li class="header">Constructors</li>
-				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/C4E819C8">ObjectPoolAdapter<wbr>(IObjectPool<wbr>&lt;T&gt;<wbr>)<wbr></a></li>
 			<li class="header">Method Members</li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/FE9D92C7">Get<wbr>()<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/000B13E7">Return<wbr>(T)<wbr></a></li>
+				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper/5E3A7FC3">Create<wbr>&lt;T&gt;<wbr><wbr>(T)<wbr></a></li>
 
 
                     </ul>
@@ -157,15 +155,15 @@
 
 
 <section class="content-header">
-			<h3><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;T&gt;<wbr></a>.</h3>
-	<h1>ObjectPoolAdapter<wbr>(IObjectPool<wbr>&lt;T&gt;<wbr>)<wbr> <small>Constructor</small></h1>
+			<h3><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper">PooledObjectWrapper</a>.</h3>
+	<h1>Create<wbr>&lt;T&gt;<wbr><wbr>(T)<wbr> <small>Method</small></h1>
 </section>
 <section class="content">
 	
 	
 		<h1 id="Summary">Summary</h1>
 	<div class="lead">
-      Adapts given object pool.
+      Wraps a given resource so that it can be put in the pool.
     </div>
 
 		<div class="panel panel-default">
@@ -173,21 +171,38 @@
 				<dl class="dl-horizontal">	
 						
 						<dt>Namespace</dt>
-						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></dd>
+						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool">CodeProject<wbr>.ObjectPool</a></dd>
 					
 						<dt>Containing Type</dt>
-						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;T&gt;<wbr></a></dd>		
+						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper">PooledObjectWrapper</a></dd>		
 					
 				</dl>
   			</div>
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public ObjectPoolAdapter(IObjectPool&lt;T&gt; objectPool)</code></pre>
+	<pre><code>public static PooledObjectWrapper&lt;T&gt; Create&lt;T&gt;(T resource) where T : class</code></pre>
 
 
 
 
+	<h1 id="TypeParameters">Type Parameters</h1>
+	<div class="box">
+		<div class="box-body no-padding table-responsive">
+			<table class="table table-striped table-hover two-cols">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+					<tbody><tr id="typeparam-T">
+						<td>T</td>
+						<td>The type of the resource.</td>
+					</tr>
+			</tbody></table>
+		</div>
+	</div>	
 
 	<h1 id="Parameters">Parameters</h1>
 	<div class="box">
@@ -201,9 +216,9 @@
 					</tr>
 				</thead>
 					<tbody><tr>
-						<td>objectPool</td>
-						<td><a href="/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1">IObjectPool<wbr>&lt;T&gt;<wbr></a></td>
-						<td>The object pool that needs to be adapted.</td>
+						<td>resource</td>
+						<td>T</td>
+						<td>The resource to be wrapped.</td>
 					</tr>
 			</tbody></table>
 		</div>
@@ -220,8 +235,8 @@
 					</tr>
 				</thead>
 				<tbody><tr>
-					<td>void</td>
-					<td></td>
+					<td><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper_1">PooledObjectWrapper<wbr>&lt;T&gt;<wbr></a></td>
+					<td>A wrapper for given resource.</td>
 				</tr>
 			</tbody></table>
 		</div>

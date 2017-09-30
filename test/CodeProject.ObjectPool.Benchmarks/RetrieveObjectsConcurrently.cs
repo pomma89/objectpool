@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
+using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
 using System;
 using System.Threading.Tasks;
 
@@ -32,8 +33,9 @@ namespace CodeProject.ObjectPool.Benchmarks
     {
         private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
         private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
-        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
         private readonly Original.ObjectPool<MyOriginalResource> _originalObjectPool = new Original.ObjectPool<MyOriginalResource>(0, 21, () => new MyOriginalResource { Value = DateTime.UtcNow.ToString() });
+        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
+        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _adaptedMicrosoftObjectPool = new ObjectPoolAdapter<MyResource>(new ObjectPool<PooledObjectWrapper<MyResource>>(21, () => PooledObjectWrapper.Create(new MyResource { Value = DateTime.UtcNow.ToString() })));
 
         private sealed class MyResource : PooledObject
         {
@@ -80,6 +82,16 @@ namespace CodeProject.ObjectPool.Benchmarks
         });
 
         [Benchmark]
+        public ParallelLoopResult Original() => Parallel.For(0, Count, _ =>
+        {
+            string str;
+            using (var x = _originalObjectPool.GetObject())
+            {
+                str = x.Value;
+            }
+        });
+
+        [Benchmark]
         public ParallelLoopResult Microsoft() => Parallel.For(0, Count, _ =>
         {
             MyResource res = null;
@@ -99,12 +111,21 @@ namespace CodeProject.ObjectPool.Benchmarks
         });
 
         [Benchmark]
-        public ParallelLoopResult Original() => Parallel.For(0, Count, _ =>
+        public ParallelLoopResult AdaptedMicrosoft() => Parallel.For(0, Count, _ =>
         {
+            MyResource res = null;
             string str;
-            using (var x = _originalObjectPool.GetObject())
+            try
             {
-                str = x.Value;
+                res = _adaptedMicrosoftObjectPool.Get();
+                str = res.Value;
+            }
+            finally
+            {
+                if (res != null)
+                {
+                    _adaptedMicrosoftObjectPool.Return(res);
+                }
             }
         });
     }

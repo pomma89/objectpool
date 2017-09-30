@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
 {
@@ -29,17 +30,18 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
     ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
     ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public sealed class ObjectPoolAdapter<T> : Microsoft.Extensions.ObjectPool.ObjectPool<T>
-        where T : PooledObject
+    /// <typeparam name="TRes">The type of the resource.</typeparam>
+    public sealed class ObjectPoolAdapter<TRes> : Microsoft.Extensions.ObjectPool.ObjectPool<TRes>
+        where TRes : class
     {
-        private readonly IObjectPool<T> _adaptedObjectPool;
+        private readonly ConditionalWeakTable<TRes, PooledObjectWrapper<TRes>> _wrapperMap = new ConditionalWeakTable<TRes, PooledObjectWrapper<TRes>>();
+        private readonly IObjectPool<PooledObjectWrapper<TRes>> _adaptedObjectPool;
 
         /// <summary>
         ///   Adapts given object pool.
         /// </summary>
         /// <param name="objectPool">The object pool that needs to be adapted.</param>
-        public ObjectPoolAdapter(IObjectPool<T> objectPool)
+        public ObjectPoolAdapter(IObjectPool<PooledObjectWrapper<TRes>> objectPool)
         {
             _adaptedObjectPool = objectPool ?? throw new ArgumentNullException(nameof(objectPool));
         }
@@ -48,12 +50,23 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
         ///   Retrieves an object from the pool.
         /// </summary>
         /// <returns>An object from the pool.</returns>
-        public override T Get() => _adaptedObjectPool.GetObject();
+        public override TRes Get()
+        {
+            var pooledObject = _adaptedObjectPool.GetObject();
+            _wrapperMap.GetValue(pooledObject.InternalResource, _ => pooledObject);
+            return pooledObject.InternalResource;
+        }
 
         /// <summary>
         ///   Returns given object to the pool.
         /// </summary>
         /// <param name="obj">The object that should return to the pool.</param>
-        public override void Return(T obj) => obj?.Dispose();
+        public override void Return(TRes obj)
+        {
+            if (_wrapperMap.TryGetValue(obj, out var pooledObject))
+            {
+                pooledObject?.Dispose();
+            }
+        }
     }
 }
