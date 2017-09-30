@@ -37,7 +37,7 @@ namespace CodeProject.ObjectPool.UnitTests.MicrosoftExtensionsAdapter
         public void ObjectPoolAdapter_GetAndReturnObject_SameInstance()
         {
             // Arrange
-            var pool = ObjectPoolAdapter.Create(new ObjectPool<PooledObjectWrapper<List<int>>>());
+            var pool = ObjectPoolAdapter.Create(new ObjectPool<PooledObjectWrapper<List<int>>>(() => PooledObjectWrapper.Create(new List<int>())));
 
             var list1 = pool.Get();
             pool.Return(list1);
@@ -55,14 +55,14 @@ namespace CodeProject.ObjectPool.UnitTests.MicrosoftExtensionsAdapter
             // Arrange
             var pool = ObjectPoolAdapter.CreateForPooledObject(new ObjectPool<MyPooledObject>());
 
-            var pooledObject = pool.Get();
-            pool.Return(pooledObject);
+            var pooledObject1 = pool.Get();
+            pool.Return(pooledObject1);
 
             // Act
-            var list2 = pool.Get();
+            var pooledObject2 = pool.Get();
 
             // Assert
-            pooledObject.ShouldBe(list2);
+            pooledObject1.ShouldBe(pooledObject2);
         }
     }
 }
