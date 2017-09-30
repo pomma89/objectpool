@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
-        <title>CodeProject.ObjectPool - API - ObjectPoolAdapter&lt;TRes&gt; Class</title>
+        <title>CodeProject.ObjectPool - API - ObjectPoolAdapter&lt;T&gt; Class</title>
         <link href="/ObjectPool/assets/css/mermaid.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/highlight.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/bootstrap/bootstrap.css" rel="stylesheet">
@@ -75,6 +75,7 @@
                     	
 	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
 <p><a href="#Syntax">Syntax</a></p>
+<p><a href="#Remarks">Remarks</a></p>
 <p><a href="#TypeParameters">Type Parameters</a></p>
 <p><a href="#Constructors">Constructors</a></p>
 <p><a href="#Methods">Methods</a></p>
@@ -139,7 +140,9 @@
 		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></li>
 		<li role="separator" class="divider"></li>
 			<li class="header">Class Types</li>
-				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;TRes&gt;<wbr></a></li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter">ObjectPoolAdapter</a></li>
+				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;T&gt;<wbr></a></li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1">Object<wbr>Pool<wbr>Adapter<wbr>For<wbr>Pooled<wbr>Object<wbr>&lt;T&gt;<wbr></a></li>
 
 
                     </ul>
@@ -153,7 +156,7 @@
 
 
 <section class="content-header">
-	<h1>ObjectPoolAdapter<wbr>&lt;TRes&gt;<wbr> <small>Class</small></h1>
+	<h1>ObjectPoolAdapter<wbr>&lt;T&gt;<wbr> <small>Class</small></h1>
 </section>
 <section class="content">
 	
@@ -188,7 +191,7 @@
 						<div class="mermaid">
 							graph TD
 	Base0["Extensions.ObjectPool.ObjectPool&lt;&gt;"]--&gt;Type
-	Type["ObjectPoolAdapter&lt;TRes&gt;"]
+	Type["ObjectPoolAdapter&lt;T&gt;"]
 class Type type-node
 
 						</div>
@@ -198,10 +201,13 @@ class Type type-node
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public sealed class ObjectPoolAdapter&lt;TRes&gt; : Extensions.ObjectPool.ObjectPool&lt;TRes&gt; 
-    where TRes : class</code></pre>
+	<pre><code>public sealed class ObjectPoolAdapter&lt;T&gt; : Extensions.ObjectPool.ObjectPool&lt;T&gt; where T : class</code></pre>
 
 
+	<h1 id="Remarks">Remarks</h1>
+	<div>
+      This adapter should be used for types that do _not_ extend <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject">PooledObject</a></code> class.
+    </div>
 
 
 	<h1 id="TypeParameters">Type Parameters</h1>
@@ -214,8 +220,8 @@ class Type type-node
 						<th>Description</th>
 					</tr>
 				</thead>
-					<tbody><tr id="typeparam-TRes">
-						<td>TRes</td>
+					<tbody><tr id="typeparam-T">
+						<td>T</td>
 						<td>The type of the resource.</td>
 					</tr>
 			</tbody></table>
@@ -234,7 +240,7 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/075639F2">ObjectPoolAdapter<wbr>(IObjectPool<wbr>&lt;<wbr>Pooled<wbr>Object<wbr>Wrapper<wbr>&lt;TRes&gt;<wbr>&gt;<wbr>)<wbr></a></td>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/075639F2">ObjectPoolAdapter<wbr>(IObjectPool<wbr>&lt;<wbr>Pooled<wbr>Object<wbr>Wrapper<wbr>&lt;T&gt;<wbr>&gt;<wbr>)<wbr></a></td>
 									<td>
       Adapts given object pool.
     </td>
@@ -260,7 +266,7 @@ class Type type-node
 						</thead>
 							<tbody><tr>
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/FE9D92C7">Get<wbr>()<wbr></a></td>
-								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1#typeparam-TRes">TRes</a></td>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1#typeparam-T">T</a></td>
 								<td>
 									<div>
       Retrieves an object from the pool.
@@ -268,7 +274,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/000B13E7">Return<wbr>(TRes)<wbr></a></td>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1/000B13E7">Return<wbr>(T)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>

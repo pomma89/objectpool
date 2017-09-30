@@ -139,14 +139,14 @@
 			<li class="header">Namespace</li>
 		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized">CodeProject<wbr>.ObjectPool<wbr>.Specialized</a></li>
 		<li role="separator" class="divider"></li>
-			<li class="header">Interface Types</li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IMemoryStreamPool">IMemoryStreamPool</a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool">IStringBuilderPool</a></li>
 			<li class="header">Class Types</li>
 				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool">MemoryStreamPool</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledMemoryStream">PooledMemoryStream</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledStringBuilder">PooledStringBuilder</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool">StringBuilderPool</a></li>
+			<li class="header">Interface Types</li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IMemoryStreamPool">IMemoryStreamPool</a></li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool">IStringBuilderPool</a></li>
 
 
                     </ul>
@@ -168,7 +168,7 @@
 		<h1 id="Summary">Summary</h1>
 	<div class="lead">
       An <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1">IObjectPool&lt;T&gt;</a></code> ready to be used.
-      <code class="cs">System.IO.MemoryStream</code> management can be further configured using the
+      <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> management can be further configured using the
       <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/D76F7810">MinimumMemoryStreamCapacity</a></code> and <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/A3099D76">MaximumMemoryStreamCapacity</a></code> properties.
     </div>
 
@@ -338,7 +338,7 @@ class Type type-node
 								<td>int</td>
 								<td>
 									<div>
-      Maximum capacity a <code class="cs">System.IO.MemoryStream</code> might have in order to be able to return
+      Maximum capacity a <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> might have in order to be able to return
       to pool. Defaults to <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/992CE177">DefaultMaximumMemoryStreamCapacity</a></code>.
     </div>
 								</td>
@@ -359,7 +359,7 @@ class Type type-node
 								<td>int</td>
 								<td>
 									<div>
-      Minimum capacity a <code class="cs">System.IO.MemoryStream</code> should have when created and this is the
+      Minimum capacity a <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> should have when created and this is the
       minimum capacity of all streams stored in the pool. Defaults to <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/ED4A0411">DefaultMinimumMemoryStreamCapacity</a></code>.
     </div>
 								</td>

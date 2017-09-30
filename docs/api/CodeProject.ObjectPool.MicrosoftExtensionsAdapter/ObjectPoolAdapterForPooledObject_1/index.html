@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/ObjectPool/assets/img/favicon.ico" type="image/x-icon">
-        <title>CodeProject.ObjectPool - API - PooledObject.Dispose() Method</title>
+        <title>CodeProject.ObjectPool - API - ObjectPoolAdapterForPooledObject&lt;T&gt; Class</title>
         <link href="/ObjectPool/assets/css/mermaid.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/highlight.css" rel="stylesheet">
         <link href="/ObjectPool/assets/css/bootstrap/bootstrap.css" rel="stylesheet">
@@ -75,7 +75,10 @@
                     	
 	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
 <p><a href="#Syntax">Syntax</a></p>
-<p><a href="#ReturnValue">Return Value</a></p>
+<p><a href="#Remarks">Remarks</a></p>
+<p><a href="#TypeParameters">Type Parameters</a></p>
+<p><a href="#Constructors">Constructors</a></p>
+<p><a href="#Methods">Methods</a></p>
 <hr class="infobar-hidden">
 </div>
 
@@ -134,22 +137,12 @@
                     <ul class="sidebar-menu">
                         
 			<li class="header">Namespace</li>
-		<li><a href="/ObjectPool/api/CodeProject.ObjectPool">CodeProject<wbr>.ObjectPool</a></li>
-		<li class="header">Type</li>
-		<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject">PooledObject</a></li>
+		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></li>
 		<li role="separator" class="divider"></li>
-			<li class="header">Property Members</li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/8021ED74">OnReleaseResources</a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/746202B3">OnResetState</a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/D687134F">OnValidateObject</a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/8A3BBBBB">PooledObjectInfo</a></li>
-			<li class="header">Method Members</li>
-				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/85048E65">Dispose<wbr>()<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/24B634FB">Equals<wbr>(PooledObject)<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/4BF86D03">Equals<wbr>(object)<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/2DACDE1C">~PooledObject<wbr>()<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/034D498B">GetHashCode<wbr>()<wbr></a></li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject/15351221">ToString<wbr>()<wbr></a></li>
+			<li class="header">Class Types</li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter">ObjectPoolAdapter</a></li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1">ObjectPoolAdapter<wbr>&lt;T&gt;<wbr></a></li>
+				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1">Object<wbr>Pool<wbr>Adapter<wbr>For<wbr>Pooled<wbr>Object<wbr>&lt;T&gt;<wbr></a></li>
 
 
                     </ul>
@@ -163,56 +156,138 @@
 
 
 <section class="content-header">
-			<h3><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject">PooledObject</a>.</h3>
-	<h1>Dispose<wbr>()<wbr> <small>Method</small></h1>
+	<h1>Object<wbr>Pool<wbr>Adapter<wbr>For<wbr>Pooled<wbr>Object<wbr>&lt;T&gt;<wbr> <small>Class</small></h1>
 </section>
 <section class="content">
 	
 	
 		<h1 id="Summary">Summary</h1>
 	<div class="lead">
-      See <code class="cs">System.IDisposable</code> docs.
+      Adapts an <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1">IObjectPool&lt;T&gt;</a></code> implementation to
+      <code class="cs">Microsoft.Extensions.ObjectPool.ObjectPool&lt;T&gt;</code> abstract class.
     </div>
 
 		<div class="panel panel-default">
-  			<div class="panel-body">	
-				<dl class="dl-horizontal">	
-						
-						<dt>Namespace</dt>
-						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool">CodeProject<wbr>.ObjectPool</a></dd>
-					
-						<dt>Containing Type</dt>
-						<dd><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject">PooledObject</a></dd>		
-					
-				</dl>
+  			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6">
+						<dl class="dl-horizontal">		
+
+								<dt>Namespace</dt>
+								<dd><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></dd>
+											
+							
+								<dt>Base Types</dt>
+								<dd>
+									<ul class="list-unstyled">										
+											<li>Extensions<wbr>.ObjectPool<wbr>.ObjectPool<wbr>&lt;&gt;<wbr></li>								
+									</ul>
+								</dd>				
+							
+							
+						</dl>
+					</div>		
+					<div class="col-md-6">
+						<div class="mermaid">
+							graph TD
+	Base0["Extensions.ObjectPool.ObjectPool&lt;&gt;"]--&gt;Type
+	Type["ObjectPoolAdapterForPooledObject&lt;T&gt;"]
+class Type type-node
+
+						</div>
+					</div>
+				</div>
   			</div>
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public void Dispose()</code></pre>
+	<pre><code>public sealed class ObjectPoolAdapterForPooledObject&lt;T&gt; : Extensions.ObjectPool.ObjectPool&lt;T&gt; 
+    where T : PooledObject</code></pre>
 
 
+	<h1 id="Remarks">Remarks</h1>
+	<div>
+      This adapter should be used for types that extend <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/PooledObject">PooledObject</a></code> class.
+    </div>
 
 
-
-
-	<h1 id="ReturnValue">Return Value</h1>
+	<h1 id="TypeParameters">Type Parameters</h1>
 	<div class="box">
 		<div class="box-body no-padding table-responsive">
 			<table class="table table-striped table-hover two-cols">
 				<thead>
 					<tr>
-						<th>Type</th>
+						<th>Name</th>
 						<th>Description</th>
 					</tr>
 				</thead>
-				<tbody><tr>
-					<td>void</td>
-					<td></td>
-				</tr>
+					<tbody><tr id="typeparam-T">
+						<td>T</td>
+						<td>The type of the resource.</td>
+					</tr>
 			</tbody></table>
 		</div>
 	</div>	
+
+
+			<h1 id="Constructors">Constructors</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover two-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+									<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1/B7ECA3DF">Object<wbr>Pool<wbr>Adapter<wbr>For<wbr>Pooled<wbr>Object<wbr>(IObjectPool<wbr>&lt;T&gt;<wbr>)<wbr></a></td>
+									<td>
+      Adapts given object pool.
+    </td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
+
+
+
+
+			<h1 id="Methods">Methods</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover three-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1/62E00DD1">Get<wbr>()<wbr></a></td>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1#typeparam-T">T</a></td>
+								<td>
+									<div>
+      Retrieves an object from the pool.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1/D5B1E35E">Return<wbr>(T)<wbr></a></td>
+								<td>void</td>
+								<td>
+									<div>
+      Returns given object to the pool.
+    </div>
+								</td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
+
 
 
 	

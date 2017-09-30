@@ -137,14 +137,14 @@
 			<li class="header">Namespace</li>
 		<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized">CodeProject<wbr>.ObjectPool<wbr>.Specialized</a></li>
 		<li role="separator" class="divider"></li>
-			<li class="header">Interface Types</li>
-				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IMemoryStreamPool">IMemoryStreamPool</a></li>
-				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool">IStringBuilderPool</a></li>
 			<li class="header">Class Types</li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool">MemoryStreamPool</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledMemoryStream">PooledMemoryStream</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledStringBuilder">PooledStringBuilder</a></li>
 				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool">StringBuilderPool</a></li>
+			<li class="header">Interface Types</li>
+				<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IMemoryStreamPool">IMemoryStreamPool</a></li>
+				<li class="selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool">IStringBuilderPool</a></li>
 
 
                     </ul>
@@ -165,7 +165,7 @@
 	
 		<h1 id="Summary">Summary</h1>
 	<div class="lead">
-      An object pool specialized in <code class="cs"><a href="/ObjectPool">StringBuilder</a></code> management.
+      An object pool specialized in <code class="cs">System.Text.StringBuilder</code> management.
     </div>
 
 		<div class="panel panel-default">
@@ -237,7 +237,7 @@ class Type type-node
 								<td>int</td>
 								<td>
 									<div>
-      Maximum capacity a <code class="cs"><a href="/ObjectPool">StringBuilder</a></code> might have in order to be able to return
+      Maximum capacity a <code class="cs">System.Text.StringBuilder</code> might have in order to be able to return
       to pool. Defaults to <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool/521E9FD1">DefaultMaximumStringBuilderCapacity</a></code>.
     </div>
 								</td>
@@ -247,7 +247,7 @@ class Type type-node
 								<td>int</td>
 								<td>
 									<div>
-      Minimum capacity a <code class="cs"><a href="/ObjectPool">StringBuilder</a></code> should have when created and this is the
+      Minimum capacity a <code class="cs">System.Text.StringBuilder</code> should have when created and this is the
       minimum capacity of all builders stored in the pool. Defaults to <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool/114E9186">DefaultMinimumStringBuilderCapacity</a></code>.
     </div>
 								</td>
