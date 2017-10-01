@@ -3,7 +3,7 @@
 
 *A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the [Code Project article of Ofir Makmal](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET).*
 
-## Summary ##
+## Summary
 
 * Latest release version: `v3.2.1`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/ObjectPool.svg?branch=master)](https://travis-ci.org/pomma89/ObjectPool)
@@ -16,7 +16,7 @@
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
     + [CodeProject.ObjectPool.MicrosoftExtensionsAdapter](https://nuget.org/packages/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/)
 
-## Introduction ##
+## Introduction
 
 Library is production ready and it is successfully working in real life systems.
 
@@ -27,7 +27,6 @@ Of course, all modified source code is freely available in this repository.
 Many thanks to Ofir Makmal for his great work.
 
 Quick and dirty example:
-
 
 ```cs
 /// <summary>
@@ -79,6 +78,23 @@ internal static class Program
         Thread.Sleep(TimeSpan.FromSeconds(4));
         Console.WriteLine($"Timed pool size after 4 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 0
 
+        // Adapts a timed pool to Microsoft Extensions abstraction.
+        var mPool = ObjectPoolAdapter.CreateForPooledObject(timedPool);
+
+        // Sample usage of Microsoft pool.
+        var mResource = mPool.Get();
+        Debug.Assert(mResource is ExpensiveResource);
+        mPool.Return(mResource);
+
+        // Adapts a new pool to Microsoft Extensions abstraction. This example shows how to adapt
+        // when object type does not extend PooledObject.
+        var mPool2 = ObjectPoolAdapter.Create(new ObjectPool<PooledObjectWrapper<MemoryStream>>(() => PooledObjectWrapper.Create(new MemoryStream())));
+
+        // Sample usage of second Microsoft pool.
+        var mResource2 = mPool2.Get();
+        Debug.Assert(mResource2 is MemoryStream);
+        mPool2.Return(mResource2);
+
         Console.Read();
     }
 
@@ -128,11 +144,11 @@ internal sealed class ExternalExpensiveResource
 }
 ```
 
-## Benchmarks ##
+## Benchmarks
 
 All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) library.
 
-### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveOneObject.cs) ###
+### [Retrieve one object](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveOneObject.cs)
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using a single thread. We compare four implementations:
 
@@ -164,7 +180,7 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
 
 ![](http://pomma89.altervista.org/objectpool/perf/RetrieveOneObject-barplot.png "Retrieve one object barplot")
 
-### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs) ###
+### [Retrieve objects concurrently](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/RetrieveObjectsConcurrently.cs)
 
 In this benchmark we evaluate how long it takes to extract and return an object stored into the pool, using `Count` threads. We compare four implementations:
 
@@ -206,7 +222,7 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
 
 ![](http://pomma89.altervista.org/objectpool/perf/RetrieveObjectsConcurrently-barplot.png "Retrieve objects concurrently barplot")
 
-### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/MemoryStreamPooling.cs) ###
+### [Memory stream pooling](https://github.com/pomma89/ObjectPool/blob/master/test/CodeProject.ObjectPool.Benchmarks/MemoryStreamPooling.cs)
 
 In this benchmark we evaluate how long it takes to extract and return a memory stream stored into the pool, using a single thread. We compare two implementations:
 
@@ -232,7 +248,7 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
 
 ![](http://pomma89.altervista.org/objectpool/perf/MemoryStreamPooling-barplot.png "Memory stream pooling barplot")
 
-## About this repository and its maintainer ##
+## About this repository and its maintainer
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
 
