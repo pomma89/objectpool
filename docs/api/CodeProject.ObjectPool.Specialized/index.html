@@ -143,6 +143,7 @@
 				<ul class="treeview-menu">
 						<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Core">CodeProject<wbr>.ObjectPool<wbr>.Core</a></li>
 			<li><a href="/ObjectPool/api/CodeProject.ObjectPool.Logging">CodeProject<wbr>.ObjectPool<wbr>.Logging</a></li>
+			<li><a href="/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter">CodeProject<wbr>.ObjectPool<wbr>.<wbr>Microsoft<wbr>Extensions<wbr>Adapter</a></li>
 			<li class=" selected"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized">CodeProject<wbr>.ObjectPool<wbr>.Specialized</a></li>
 </ul></li></ul></li>			<li><a href="/ObjectPool/api/global">global</a></li>
       
@@ -179,14 +180,14 @@
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool">MemoryStreamPool</a></td>
 									<td>
       An <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1">IObjectPool&lt;T&gt;</a></code> ready to be used.
-      <code class="cs">System.IO.MemoryStream</code> management can be further configured using the
+      <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> management can be further configured using the
       <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/D76F7810">MinimumMemoryStreamCapacity</a></code> and <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool/A3099D76">MaximumMemoryStreamCapacity</a></code> properties.
     </td>
 							</tr>
 							<tr>
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledMemoryStream">PooledMemoryStream</a></td>
 									<td>
-      Pooled object prepared to work with <code class="cs">System.IO.MemoryStream</code> instances.
+      Pooled object prepared to work with <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> instances.
     </td>
 							</tr>
 							<tr>
@@ -199,7 +200,7 @@
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool">StringBuilderPool</a></td>
 									<td>
       An <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1">IObjectPool&lt;T&gt;</a></code> ready to be used.
-      <code class="cs"><a href="/ObjectPool">StringBuilder</a></code> management can be further configured using the
+      <code class="cs">System.Text.StringBuilder</code> management can be further configured using the
       <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool/F9DE04DD">MinimumStringBuilderCapacity</a></code> and <code class="cs"><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool/BA8E0A8A">MaximumStringBuilderCapacity</a></code> properties.
     </td>
 							</tr>
@@ -220,13 +221,13 @@
 							<tbody><tr>
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IMemoryStreamPool">IMemoryStreamPool</a></td>
 									<td>
-      An object pool specialized in <code class="cs">System.IO.MemoryStream</code> management.
+      An object pool specialized in <code class="cs"><a href="/ObjectPool">MemoryStream</a></code> management.
     </td>
 							</tr>
 							<tr>
 								<td><a href="/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool">IStringBuilderPool</a></td>
 									<td>
-      An object pool specialized in <code class="cs"><a href="/ObjectPool">StringBuilder</a></code> management.
+      An object pool specialized in <code class="cs">System.Text.StringBuilder</code> management.
     </td>
 							</tr>
 					</tbody></table>

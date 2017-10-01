@@ -14,8 +14,24 @@ using System;
 namespace CodeProject.ObjectPool
 {
     /// <summary>
+    ///   Helper class for building pooled object wrappers.
+    /// </summary>
+    public static class PooledObjectWrapper
+    {
+        /// <summary>
+        ///   Wraps a given resource so that it can be put in the pool.
+        /// </summary>
+        /// <typeparam name="T">The type of the resource.</typeparam>
+        /// <param name="resource">The resource to be wrapped.</param>
+        /// <exception cref="ArgumentNullException">Given resource is null.</exception>
+        /// <returns>A wrapper for given resource.</returns>
+        public static PooledObjectWrapper<T> Create<T>(T resource) where T : class => new PooledObjectWrapper<T>(resource);
+    }
+
+    /// <summary>
     ///   PooledObject wrapper, for classes which cannot inherit from that class.
     /// </summary>
+    /// <typeparam name="T">The type of the resource.</typeparam>
 #if HAS_SERIALIZABLE
     [Serializable]
 #endif

@@ -6,5 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />
+    <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
   </ItemGroup>
 </Project>
