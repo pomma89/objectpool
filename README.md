@@ -1,20 +1,33 @@
-![](http://pomma89.altervista.org/objectpool/logo-64.png "Object Pool Logo") Object Pool
-=============================================================================================================================
+# ![](http://pomma89.altervista.org/objectpool/logo-64.png "Object Pool Logo") Object Pool
 
 *A generic, concurrent, portable and flexible Object Pool for the .NET Framework, completely based on the [Code Project article of Ofir Makmal](http://www.codeproject.com/Articles/535735/Implementing-a-Generic-Object-Pool-in-NET).*
 
 ## Summary
 
-* Latest release version: `v3.2.1`
+* Latest release version: `v3.2.2`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/ObjectPool.svg?branch=master)](https://travis-ci.org/pomma89/ObjectPool)
 * Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/cgldtxe3p9v7nf0i/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool/branch/master)
-* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: 
-    + [HTML](http://pomma89.altervista.org/objectpool/doc/html/index.html)
-    + [CHM](http://pomma89.altervista.org/objectpool/doc/refman.chm)
-    + [PDF](http://pomma89.altervista.org/objectpool/doc/refman.pdf)
+* [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/ObjectPool/api/](https://pomma89.github.io/ObjectPool/api/)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
     + [CodeProject.ObjectPool.MicrosoftExtensionsAdapter](https://nuget.org/packages/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/)
+
+### How to build
+
+#### Windows
+
+Clone the project, go to the root and run PowerShell script `build.ps1`. In order for it to work, you need:
+
+* At least Windows 10 Fall Creators Update
+* At least Visual Studio 2017 Update 4
+* .NET Framework 4.7.1 Developer Pack
+* .NET Core 2.0 SDK
+
+#### Linux
+
+Clone the project, go to the root and run Bash script `build.sh`. In order for it to work, you need:
+
+* TODO, still need to make it building reliably.
 
 ## Introduction
 
@@ -253,3 +266,7 @@ Job=RyuJitX64  Jit=RyuJit  Platform=X64
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
 
 I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
+
+However, if this project helps you, then you might offer me an hot cup of coffee:
+
+[![Donate](http://pomma89.altervista.org/buy-me-a-coffee.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ELJWKEYS9QGKA)

@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.2.2 (2017-10-28)
+
+* Added support for .NET Framework 4.7.1.
+
 ### v3.2.1 (2017-09-30)
 
 * Added an adapter for Microsoft.Extensions.ObjectPool.

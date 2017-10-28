@@ -34,70 +34,6 @@ var searchModule = function() {
 
     a({
         id:0,
-        title:"Logger",
-        content:"Logger",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:1,
-        title:"TimedObjectPool",
-        content:"TimedObjectPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:2,
-        title:"ILogProvider",
-        content:"ILogProvider",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:3,
-        title:"MemoryStreamPool",
-        content:"MemoryStreamPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:4,
-        title:"PooledMemoryStream",
-        content:"PooledMemoryStream",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:5,
-        title:"PooledObjectValidationContext",
-        content:"PooledObjectValidationContext",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:6,
-        title:"PooledStringBuilder",
-        content:"PooledStringBuilder",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:7,
-        title:"IEvictionTimer",
-        content:"IEvictionTimer",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:8,
         title:"StringBuilderPool",
         content:"StringBuilderPool",
         description:'',
@@ -105,23 +41,7 @@ var searchModule = function() {
     });
 
     a({
-        id:9,
-        title:"IObjectPool",
-        content:"IObjectPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:10,
-        title:"ObjectPoolAdapterForPooledObject",
-        content:"ObjectPoolAdapterForPooledObject",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:11,
+        id:1,
         title:"PooledObject",
         content:"PooledObject",
         description:'',
@@ -129,7 +49,7 @@ var searchModule = function() {
     });
 
     a({
-        id:12,
+        id:2,
         title:"ObjectPoolDiagnostics",
         content:"ObjectPoolDiagnostics",
         description:'',
@@ -137,79 +57,23 @@ var searchModule = function() {
     });
 
     a({
-        id:13,
-        title:"ObjectPool",
-        content:"ObjectPool",
+        id:3,
+        title:"PooledObjectValidationContext",
+        content:"PooledObjectValidationContext",
         description:'',
         tags:''
     });
 
     a({
-        id:14,
-        title:"ObjectPool",
-        content:"ObjectPool",
+        id:4,
+        title:"IEvictionTimer",
+        content:"IEvictionTimer",
         description:'',
         tags:''
     });
 
     a({
-        id:15,
-        title:"PooledObjectWrapper",
-        content:"PooledObjectWrapper",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:16,
-        title:"ObjectPoolAdapter",
-        content:"ObjectPoolAdapter",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:17,
-        title:"PooledObjectBuffer",
-        content:"PooledObjectBuffer",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:18,
-        title:"ObjectPoolAdapter",
-        content:"ObjectPoolAdapter",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:19,
-        title:"LogProvider",
-        content:"LogProvider",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:20,
-        title:"IParameterizedObjectPool",
-        content:"IParameterizedObjectPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:21,
-        title:"IMemoryStreamPool",
-        content:"IMemoryStreamPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:22,
+        id:5,
         title:"LogLevel",
         content:"LogLevel",
         description:'',
@@ -217,39 +81,23 @@ var searchModule = function() {
     });
 
     a({
-        id:23,
-        title:"PooledObjectWrapper",
-        content:"PooledObjectWrapper",
+        id:6,
+        title:"IParameterizedObjectPool",
+        content:"IParameterizedObjectPool",
         description:'',
         tags:''
     });
 
     a({
-        id:24,
-        title:"PooledObjectState",
-        content:"PooledObjectState",
+        id:7,
+        title:"IMemoryStreamPool",
+        content:"IMemoryStreamPool",
         description:'',
         tags:''
     });
 
     a({
-        id:25,
-        title:"ITimedObjectPool",
-        content:"ITimedObjectPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:26,
-        title:"ParameterizedObjectPool",
-        content:"ParameterizedObjectPool",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:27,
+        id:8,
         title:"EvictionSettings",
         content:"EvictionSettings",
         description:'',
@@ -257,23 +105,15 @@ var searchModule = function() {
     });
 
     a({
-        id:28,
-        title:"PooledObjectInfo",
-        content:"PooledObjectInfo",
+        id:9,
+        title:"LogProvider",
+        content:"LogProvider",
         description:'',
         tags:''
     });
 
     a({
-        id:29,
-        title:"PooledObjectDirection",
-        content:"PooledObjectDirection",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:30,
+        id:10,
         title:"EvictionTimer",
         content:"EvictionTimer",
         description:'',
@@ -281,76 +121,176 @@ var searchModule = function() {
     });
 
     a({
-        id:31,
+        id:11,
+        title:"ObjectPoolAdapterForPooledObject",
+        content:"ObjectPoolAdapterForPooledObject",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:12,
+        title:"PooledObjectState",
+        content:"PooledObjectState",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:13,
+        title:"TimedObjectPool",
+        content:"TimedObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:14,
+        title:"IObjectPool",
+        content:"IObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:15,
+        title:"PooledObjectBuffer",
+        content:"PooledObjectBuffer",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:16,
+        title:"PooledObjectDirection",
+        content:"PooledObjectDirection",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:17,
+        title:"PooledMemoryStream",
+        content:"PooledMemoryStream",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:18,
+        title:"ParameterizedObjectPool",
+        content:"ParameterizedObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:19,
+        title:"MemoryStreamPool",
+        content:"MemoryStreamPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:20,
+        title:"ITimedObjectPool",
+        content:"ITimedObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:21,
+        title:"PooledObjectInfo",
+        content:"PooledObjectInfo",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:22,
+        title:"ObjectPool",
+        content:"ObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:23,
+        title:"ObjectPoolAdapter",
+        content:"ObjectPoolAdapter",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:24,
+        title:"ObjectPoolAdapter",
+        content:"ObjectPoolAdapter",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:25,
+        title:"PooledObjectWrapper",
+        content:"PooledObjectWrapper",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:26,
+        title:"Logger",
+        content:"Logger",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:27,
+        title:"ObjectPool",
+        content:"ObjectPool",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:28,
         title:"IStringBuilderPool",
         content:"IStringBuilderPool",
         description:'',
         tags:''
     });
 
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/Logger',
-        title:"Logger",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/TimedObjectPool_1',
-        title:"TimedObjectPool<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/ILogProvider',
+    a({
+        id:29,
         title:"ILogProvider",
-        description:""
+        content:"ILogProvider",
+        description:'',
+        tags:''
     });
 
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool',
-        title:"MemoryStreamPool",
-        description:""
+    a({
+        id:30,
+        title:"PooledObjectWrapper",
+        content:"PooledObjectWrapper",
+        description:'',
+        tags:''
     });
 
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledMemoryStream',
-        title:"PooledMemoryStream",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectValidationContext',
-        title:"PooledObjectValidationContext",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledStringBuilder',
+    a({
+        id:31,
         title:"PooledStringBuilder",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/IEvictionTimer',
-        title:"IEvictionTimer",
-        description:""
+        content:"PooledStringBuilder",
+        description:'',
+        tags:''
     });
 
     y({
         url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/StringBuilderPool',
         title:"StringBuilderPool",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1',
-        title:"IObjectPool<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1',
-        title:"ObjectPoolAdapterForPooledObject<T>",
         description:""
     });
 
@@ -367,44 +307,20 @@ var searchModule = function() {
     });
 
     y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/ObjectPool',
-        title:"ObjectPool",
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectValidationContext',
+        title:"PooledObjectValidationContext",
         description:""
     });
 
     y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/ObjectPool_1',
-        title:"ObjectPool<T>",
+        url:'/ObjectPool/api/CodeProject.ObjectPool/IEvictionTimer',
+        title:"IEvictionTimer",
         description:""
     });
 
     y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper_1',
-        title:"PooledObjectWrapper<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1',
-        title:"ObjectPoolAdapter<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectBuffer_1',
-        title:"PooledObjectBuffer<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter',
-        title:"ObjectPoolAdapter",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/LogProvider',
-        title:"LogProvider",
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/LogLevel',
+        title:"LogLevel",
         description:""
     });
 
@@ -421,50 +337,14 @@ var searchModule = function() {
     });
 
     y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/LogLevel',
-        title:"LogLevel",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper',
-        title:"PooledObjectWrapper",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectState',
-        title:"PooledObjectState",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/ITimedObjectPool_1',
-        title:"ITimedObjectPool<T>",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool/ParameterizedObjectPool_2',
-        title:"ParameterizedObjectPool<TKey, TValue>",
-        description:""
-    });
-
-    y({
         url:'/ObjectPool/api/CodeProject.ObjectPool/EvictionSettings',
         title:"EvictionSettings",
         description:""
     });
 
     y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectInfo',
-        title:"PooledObjectInfo",
-        description:""
-    });
-
-    y({
-        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectDirection',
-        title:"PooledObjectDirection",
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/LogProvider',
+        title:"LogProvider",
         description:""
     });
 
@@ -475,8 +355,128 @@ var searchModule = function() {
     });
 
     y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapterForPooledObject_1',
+        title:"ObjectPoolAdapterForPooledObject<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectState',
+        title:"PooledObjectState",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/TimedObjectPool_1',
+        title:"TimedObjectPool<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/IObjectPool_1',
+        title:"IObjectPool<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectBuffer_1',
+        title:"PooledObjectBuffer<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectDirection',
+        title:"PooledObjectDirection",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledMemoryStream',
+        title:"PooledMemoryStream",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/ParameterizedObjectPool_2',
+        title:"ParameterizedObjectPool<TKey, TValue>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/MemoryStreamPool',
+        title:"MemoryStreamPool",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/ITimedObjectPool_1',
+        title:"ITimedObjectPool<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Core/PooledObjectInfo',
+        title:"PooledObjectInfo",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/ObjectPool_1',
+        title:"ObjectPool<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter_1',
+        title:"ObjectPoolAdapter<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/ObjectPoolAdapter',
+        title:"ObjectPoolAdapter",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper_1',
+        title:"PooledObjectWrapper<T>",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/Logger',
+        title:"Logger",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/ObjectPool',
+        title:"ObjectPool",
+        description:""
+    });
+
+    y({
         url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/IStringBuilderPool',
         title:"IStringBuilderPool",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Logging/ILogProvider',
+        title:"ILogProvider",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool/PooledObjectWrapper',
+        title:"PooledObjectWrapper",
+        description:""
+    });
+
+    y({
+        url:'/ObjectPool/api/CodeProject.ObjectPool.Specialized/PooledStringBuilder',
+        title:"PooledStringBuilder",
         description:""
     });
 
