@@ -2,11 +2,15 @@
   <PropertyGroup>
     <AssemblyName>CodeProject.ObjectPool.MicrosoftExtensionsAdapter</AssemblyName>
     <AssemblyTitle>Generic and concurrent Object Pool - Adapter for Microsoft Extensions</AssemblyTitle>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net471</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <!-- Temp fix required to build .NET 4.7.1 and .NET STD 2.0 together -->
+    <_HasReferenceToSystemRuntime>true</_HasReferenceToSystemRuntime>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
