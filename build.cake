@@ -191,10 +191,10 @@ private void Docs()
 {
     if (IsRunningOnWindows())
     {
-		Wyam(new WyamSettings()
-		{
-			InputPaths = new DirectoryPath[] { Directory("./pages") },
-			OutputPath = Directory("./docs")
-		});
+        Wyam(new WyamSettings()
+        {
+            InputPaths = new DirectoryPath[] { Directory("./pages") },
+            OutputPath = Directory("./docs")
+        });
     }
 }
