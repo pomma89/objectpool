@@ -1,7 +1,9 @@
 <Project>
   <PropertyGroup>
-    <VersionPrefix>3.2.2</VersionPrefix>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <Version>3.2.2</Version>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <FileVersion>3.2.2.0</FileVersion>
+    <InformationalVersion>3.2.2+6</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">

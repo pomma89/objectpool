@@ -1,6 +1,6 @@
-#addin "nuget:?package=Cake.Wyam"
-#tool "nuget:?package=NUnit.ConsoleRunner"
-#tool "nuget:?package=Wyam"
+#addin "nuget:?package=Cake.Wyam&version=1.0.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=Wyam&version=1.0.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -33,8 +33,15 @@ Task("Restore")
     Restore();
 });
 
-Task("Build-Debug")
+Task("Version")
     .IsDependentOn("Restore")
+    .Does(() =>
+{
+    Version();
+});
+
+Task("Build-Debug")
+    .IsDependentOn("Version")
     .Does(() => 
 {
     Build("Debug");
@@ -54,8 +61,15 @@ Task("Pack-Release")
     Pack("Release");
 });
 
-Task("Test-Debug")
+Task("Docs")
     .IsDependentOn("Pack-Release")
+    .Does(() =>
+{
+    Docs();
+});
+
+Task("Test-Debug")
+    .IsDependentOn("Docs")
     .Does(() =>
 {
     Test("Debug");
@@ -68,19 +82,12 @@ Task("Test-Release")
     Test("Release");
 });
 
-Task("Docs")
-    .IsDependentOn("Test-Release")
-    .Does(() =>
-{
-    Docs();
-});
-
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Docs");
+    .IsDependentOn("Test-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -107,6 +114,35 @@ private void Restore()
             settings.ToolPath = new FilePath(MSBuildLinuxPath());
         }
     });
+}
+
+private void Version()
+{
+    var versionInfo = GitVersion();
+    var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0";
+    var nuGetVersion = versionInfo.NuGetVersion;
+    var assemblyVersion =  versionInfo.Major + ".0.0.0";
+    var fileVersion = versionInfo.MajorMinorPatch + "." + buildVersion;
+    var informationalVersion = versionInfo.FullSemVer;
+
+    Information("BuildVersion: " + buildVersion);
+    Information("Version: " + nuGetVersion);
+    Information("AssemblyVersion: " + assemblyVersion);
+    Information("FileVersion: " + fileVersion);
+    Information("InformationalVersion: " + informationalVersion);
+    
+    if (AppVeyor.IsRunningOnAppVeyor)
+    {
+        AppVeyor.UpdateBuildVersion(informationalVersion + ".build." + buildVersion);
+    }	
+    
+    Information("Updating Directory.Build.props...");
+
+    var dbp = File("./Directory.Build.props");
+    XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/InformationalVersion", informationalVersion);
 }
 
 private void Build(string cfg)
