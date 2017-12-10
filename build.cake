@@ -138,7 +138,7 @@ private void Version()
     
     Information("Updating Directory.Build.props...");
 
-    var dbp = File("./Directory.Build.props");
+    var dbp = File("./src/Directory.Build.props");
     XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
