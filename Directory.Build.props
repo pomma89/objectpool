@@ -1,9 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project>
   <PropertyGroup>
-    <Version>3.2.2</Version>
-    <AssemblyVersion>6.0.0.0</AssemblyVersion>
-    <FileVersion>3.2.2.0</FileVersion>
-    <InformationalVersion>3.2.2+6</InformationalVersion>
+    <Version>3.2.3</Version>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.2.3.0</FileVersion>
+    <InformationalVersion>3.2.3+0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
