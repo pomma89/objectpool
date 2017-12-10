@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <DebugType>embedded</DebugType>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.6.0" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Test" Version="2.6.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.6.0" />
+  </ItemGroup>
+</Project>
