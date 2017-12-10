@@ -158,6 +158,9 @@ private void Build(string cfg)
         settings.SetConfiguration(cfg);
         settings.SetMaxCpuCount(0);
         settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("rebuild");
+        settings.WithProperty("SourceLinkCreate", new[] { "true" });
+        settings.WithProperty("SourceLinkTest", new[] { "true" });
         if (!IsRunningOnWindows())
         { 
             // Hack for Linux bug - Missing MSBuild path.
@@ -209,8 +212,6 @@ private void Pack(string cfg)
             settings.SetMaxCpuCount(0);
             settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
-            settings.WithProperty("IncludeSource", new[] { "true" });
-            settings.WithProperty("IncludeSymbols", new[] { "true" });
             if (!IsRunningOnWindows())
             { 
                 // Hack for Linux bug - Missing MSBuild path.
