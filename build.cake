@@ -1,6 +1,6 @@
-#addin "nuget:?package=Cake.Wyam&version=1.0.0"
+#addin "nuget:?package=Cake.Wyam&version=1.1.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=Wyam&version=1.0.0"
+#tool "nuget:?package=Wyam&version=1.1.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -231,7 +231,8 @@ private void Docs()
         Wyam(new WyamSettings()
         {
             InputPaths = new DirectoryPath[] { Directory("./pages") },
-            OutputPath = Directory("./docs")
+            OutputPath = Directory("./docs"),
+            UpdatePackages = true
         });
     }
 }
