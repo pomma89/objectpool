@@ -17,3 +17,8 @@ before_script:
 script:
   - git fetch --unshallow
   - ./build.sh
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
