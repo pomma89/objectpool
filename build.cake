@@ -179,18 +179,18 @@ private void Test(string cfg)
     const string flags = "--noheader --noresult --stoponerror";
     const string errMsg = " - Unit test failure - ";
 
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+    foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
     {
         if (StartProcess(netExe, flags) != 0)
         {
             throw new Exception(cfg + errMsg + netExe);
         }
-    });
-
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+    }
+    
+    foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
     {
         DotNetCoreExecute(netCoreDll, flags);
-    });
+    }
 }
 
 private void Pack(string cfg)

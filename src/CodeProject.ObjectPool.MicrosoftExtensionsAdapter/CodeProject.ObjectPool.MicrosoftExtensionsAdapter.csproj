@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>CodeProject.ObjectPool.MicrosoftExtensionsAdapter</AssemblyName>
     <AssemblyTitle>Generic and concurrent Object Pool - Adapter for Microsoft Extensions</AssemblyTitle>
-    <TargetFrameworks>netstandard2.0;net461;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>

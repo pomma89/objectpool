@@ -1,12 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;net40;net45;net461;net471</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;net40;net45;net461</TargetFrameworks>
     <OutputType>exe</OutputType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <!-- Temp fix required to build .NET 4.7.1 and .NET STD 2.0 together -->
-    <_HasReferenceToSystemRuntime>true</_HasReferenceToSystemRuntime>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,16 +48,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);HAS_EXTENSIONS</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />

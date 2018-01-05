@@ -58,8 +58,4 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <DefineConstants>$(DefineConstants);NET46;HAS_SERIALIZABLE</DefineConstants>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);NET47;HAS_SERIALIZABLE</DefineConstants>
-  </PropertyGroup>
 </Project>
