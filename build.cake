@@ -1,6 +1,6 @@
-#addin "nuget:?package=Cake.Wyam&version=1.1.0"
+#addin "nuget:?package=Cake.Wyam&version=1.2.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=Wyam&version=1.1.0"
+#tool "nuget:?package=Wyam&version=1.2.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -42,21 +42,21 @@ Task("Version")
 
 Task("Build-Debug")
     .IsDependentOn("Version")
-    .Does(() => 
+    .Does(() =>
 {
     Build("Debug");
 });
 
 Task("Build-Release")
     .IsDependentOn("Build-Debug")
-    .Does(() => 
+    .Does(() =>
 {
     Build("Release");
 });
 
 Task("Pack-Release")
     .IsDependentOn("Build-Release")
-    .Does(() => 
+    .Does(() =>
 {
     Pack("Release");
 });
@@ -109,7 +109,7 @@ private void Restore()
         settings.SetVerbosity(Verbosity.Quiet);
         settings.WithTarget("restore");
         if (!IsRunningOnWindows())
-        { 
+        {
             // Hack for Linux bug - Missing MSBuild path.
             settings.ToolPath = new FilePath(MSBuildLinuxPath());
         }
@@ -130,12 +130,12 @@ private void Version()
     Information("AssemblyVersion: " + assemblyVersion);
     Information("FileVersion: " + fileVersion);
     Information("InformationalVersion: " + informationalVersion);
-    
+
     if (AppVeyor.IsRunningOnAppVeyor)
     {
         AppVeyor.UpdateBuildVersion(informationalVersion + ".build." + buildVersion);
-    }	
-    
+    }
+
     Information("Updating Directory.Build.props...");
 
     var dbp = File("./src/Directory.Build.props");
@@ -162,7 +162,7 @@ private void Build(string cfg)
         settings.WithProperty("SourceLinkCreate", new[] { "true" });
         settings.WithProperty("SourceLinkTest", new[] { "true" });
         if (!IsRunningOnWindows())
-        { 
+        {
             // Hack for Linux bug - Missing MSBuild path.
             settings.ToolPath = new FilePath(MSBuildLinuxPath());
         }
@@ -171,7 +171,7 @@ private void Build(string cfg)
 
 private void Test(string cfg)
 {
-    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings 
+    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings
     //{
     //    NoResults = true
     //});
@@ -186,7 +186,7 @@ private void Test(string cfg)
             throw new Exception(cfg + errMsg + netExe);
         }
     }
-    
+
     foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
     {
         DotNetCoreExecute(netCoreDll, flags);
@@ -213,7 +213,7 @@ private void Pack(string cfg)
             settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
             if (!IsRunningOnWindows())
-            { 
+            {
                 // Hack for Linux bug - Missing MSBuild path.
                 settings.ToolPath = new FilePath(MSBuildLinuxPath());
             }
