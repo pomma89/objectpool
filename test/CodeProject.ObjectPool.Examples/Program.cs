@@ -21,7 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading;
 
 namespace CodeProject.ObjectPool.Examples
@@ -74,6 +77,23 @@ namespace CodeProject.ObjectPool.Examples
             Console.WriteLine($"Timed pool size after 0 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 1
             Thread.Sleep(TimeSpan.FromSeconds(4));
             Console.WriteLine($"Timed pool size after 4 seconds: {timedPool.ObjectsInPoolCount}"); // Should be 0
+
+            // Adapts a timed pool to Microsoft Extensions abstraction.
+            var mPool = ObjectPoolAdapter.CreateForPooledObject(timedPool);
+
+            // Sample usage of Microsoft pool.
+            var mResource = mPool.Get();
+            Debug.Assert(mResource is ExpensiveResource);
+            mPool.Return(mResource);
+
+            // Adapts a new pool to Microsoft Extensions abstraction. This example shows how to adapt
+            // when object type does not extend PooledObject.
+            var mPool2 = ObjectPoolAdapter.Create(new ObjectPool<PooledObjectWrapper<MemoryStream>>(() => PooledObjectWrapper.Create(new MemoryStream())));
+
+            // Sample usage of second Microsoft pool.
+            var mResource2 = mPool2.Get();
+            Debug.Assert(mResource2 is MemoryStream);
+            mPool2.Return(mResource2);
 
             Console.Read();
         }

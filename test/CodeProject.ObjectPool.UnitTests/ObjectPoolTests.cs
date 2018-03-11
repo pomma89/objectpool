@@ -27,7 +27,7 @@ using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
 using Shouldly;
 
-#if !(NET35 || NET40)
+#if !NET40
 
 using System.Threading.Tasks;
 
@@ -77,7 +77,7 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
-#if !(NET35 || NET40)
+#if !NET40
 
         [TestCase(1)]
         [TestCase(5)]

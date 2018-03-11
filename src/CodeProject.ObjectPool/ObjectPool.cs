@@ -293,14 +293,14 @@ namespace CodeProject.ObjectPool
         #region Protected Methods
 
         /// <summary>
+        ///   Used to schedule an async validation and eviction job.
+        /// </summary>
+        private readonly IEvictionTimer _evictionTimer;
+
+        /// <summary>
         ///   Keeps track of last pooled object ID.
         /// </summary>
         private int _lastPooledObjectId;
-
-        /// <summary>
-        ///   Used to schedule an async validation and eviction job.
-        /// </summary>
-        private IEvictionTimer _evictionTimer;
 
         /// <summary>
         ///   Stores the ticket returned by

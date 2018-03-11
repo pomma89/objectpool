@@ -1,4 +1,6 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.6.1
+#addin "nuget:?package=Cake.Wyam&version=1.2.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=Wyam&version=1.2.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -10,8 +12,9 @@ var target = Argument("target", "Default");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-var solutionFile = "./ObjectPool.sln";
-var artifactsDir = "./artifacts";
+private string SolutionFile() { return "./ObjectPool.sln"; }
+private string ArtifactsDir() { return "./artifacts"; }
+private string MSBuildLinuxPath() { return @"/usr/lib/mono/msbuild/15.0/bin/MSBuild.dll"; }
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -20,39 +23,53 @@ var artifactsDir = "./artifacts";
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectory(artifactsDir);
+    CleanDirectory(ArtifactsDir());
 });
 
 Task("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreRestore();
+    Restore();
+});
+
+Task("Version")
+    .IsDependentOn("Restore")
+    .Does(() =>
+{
+    Version();
 });
 
 Task("Build-Debug")
-    .IsDependentOn("Restore")
-    .Does(() => 
+    .IsDependentOn("Version")
+    .Does(() =>
 {
     Build("Debug");
 });
 
 Task("Build-Release")
     .IsDependentOn("Build-Debug")
-    .Does(() => 
+    .Does(() =>
 {
     Build("Release");
 });
 
 Task("Pack-Release")
     .IsDependentOn("Build-Release")
-    .Does(() => 
+    .Does(() =>
 {
     Pack("Release");
 });
 
-Task("Test-Debug")
+Task("Docs")
     .IsDependentOn("Pack-Release")
+    .Does(() =>
+{
+    Docs();
+});
+
+Task("Test-Debug")
+    .IsDependentOn("Docs")
     .Does(() =>
 {
     Test("Debug");
@@ -82,27 +99,79 @@ RunTarget(target);
 // HELPERS
 //////////////////////////////////////////////////////////////////////
 
+private void Restore()
+{
+    //DotNetCoreRestore();
+
+    MSBuild(SolutionFile(), settings =>
+    {
+        settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("restore");
+        if (!IsRunningOnWindows())
+        {
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
+    });
+}
+
+private void Version()
+{
+    var versionInfo = GitVersion();
+    var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0";
+    var nuGetVersion = versionInfo.NuGetVersion;
+    var assemblyVersion =  versionInfo.Major + ".0.0.0";
+    var fileVersion = versionInfo.MajorMinorPatch + "." + buildVersion;
+    var informationalVersion = versionInfo.FullSemVer;
+
+    Information("BuildVersion: " + buildVersion);
+    Information("Version: " + nuGetVersion);
+    Information("AssemblyVersion: " + assemblyVersion);
+    Information("FileVersion: " + fileVersion);
+    Information("InformationalVersion: " + informationalVersion);
+
+    if (AppVeyor.IsRunningOnAppVeyor)
+    {
+        AppVeyor.UpdateBuildVersion(informationalVersion + ".build." + buildVersion);
+    }
+
+    Information("Updating Directory.Build.props...");
+
+    var dbp = File("./src/Directory.Build.props");
+    XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
+    XmlPoke(dbp, "/Project/PropertyGroup/InformationalVersion", informationalVersion);
+}
+
 private void Build(string cfg)
 {
-    //foreach(var project in GetFiles("./**/*.csproj"))
+    //DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
     //{
-    //    DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings
-    //    {
-    //        Configuration = cfg,
-    //        NoIncremental = true
-    //    });
-    //}
-    
-    MSBuild(solutionFile, settings =>
+    //    Configuration = cfg,
+    //    NoIncremental = true
+    //});
+
+    MSBuild(SolutionFile(), settings =>
     {
         settings.SetConfiguration(cfg);
         settings.SetMaxCpuCount(0);
+        settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("rebuild");
+        settings.WithProperty("SourceLinkCreate", new[] { "true" });
+        settings.WithProperty("SourceLinkTest", new[] { "true" });
+        if (!IsRunningOnWindows())
+        {
+            // Hack for Linux bug - Missing MSBuild path.
+            settings.ToolPath = new FilePath(MSBuildLinuxPath());
+        }
     });
 }
 
 private void Test(string cfg)
 {
-    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings 
+    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings
     //{
     //    NoResults = true
     //});
@@ -110,18 +179,18 @@ private void Test(string cfg)
     const string flags = "--noheader --noresult --stoponerror";
     const string errMsg = " - Unit test failure - ";
 
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+    foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
     {
         if (StartProcess(netExe, flags) != 0)
         {
             throw new Exception(cfg + errMsg + netExe);
         }
-    });
+    }
 
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+    foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
     {
         DotNetCoreExecute(netCoreDll, flags);
-    });
+    }
 }
 
 private void Pack(string cfg)
@@ -131,19 +200,39 @@ private void Pack(string cfg)
         //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         //{
         //    Configuration = cfg,
-        //    OutputDirectory = artifactsDir,
-        //    NoBuild = true
+        //    OutputDirectory = ArtifactsDir(),
+        //    NoBuild = true,
+        //    IncludeSource = true,
+        //    IncludeSymbols = true
         //});
 
         MSBuild(project, settings =>
         {
             settings.SetConfiguration(cfg);
             settings.SetMaxCpuCount(0);
+            settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
-            settings.WithProperty("IncludeSymbols", new[] { "true" });
+            if (!IsRunningOnWindows())
+            {
+                // Hack for Linux bug - Missing MSBuild path.
+                settings.ToolPath = new FilePath(MSBuildLinuxPath());
+            }
         });
 
         var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
-        MoveFiles(GetFiles(packDir + "/*.nupkg"), artifactsDir);
+        MoveFiles(GetFiles(packDir + "/*.nupkg"), ArtifactsDir());
     });
+}
+
+private void Docs()
+{
+    if (IsRunningOnWindows())
+    {
+        Wyam(new WyamSettings()
+        {
+            InputPaths = new DirectoryPath[] { Directory("./pages") },
+            OutputPath = Directory("./docs"),
+            UpdatePackages = true
+        });
+    }
 }

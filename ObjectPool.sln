@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{4C2B7C0C-7CDD-4125-B57A-88E168D24190}"
 	ProjectSection(SolutionItems) = preProject
+		.appveyor.yml = .appveyor.yml
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
+		.travis.yml = .travis.yml
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
+		config.wyam = config.wyam
 		LICENSE.htm = LICENSE.htm
 		NuGet.Config = NuGet.Config
 		pomma89.snk = pomma89.snk
@@ -27,8 +29,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logo", "logo", "{3939E662-6
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{750142DD-9B82-47CB-A2D5-71E4950843D2}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{69DFB95F-7861-4E90-ABC1-33F75FBE67AF}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeProject.ObjectPool", "src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj", "{1EB57169-091A-4B53-9ED1-8B0D015E8B0A}"
 EndProject
@@ -42,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{DA3DC42C
 	ProjectSection(SolutionItems) = preProject
 		tools\packages.config = tools\packages.config
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeProject.ObjectPool.MicrosoftExtensionsAdapter", "src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj", "{1B2704CE-B3C5-4566-A932-C339E6BDD1CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +75,10 @@ Global
 		{362C2E4A-3EE7-41BE-A233-70649B258439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{362C2E4A-3EE7-41BE-A233-70649B258439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{362C2E4A-3EE7-41BE-A233-70649B258439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B2704CE-B3C5-4566-A932-C339E6BDD1CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B2704CE-B3C5-4566-A932-C339E6BDD1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B2704CE-B3C5-4566-A932-C339E6BDD1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B2704CE-B3C5-4566-A932-C339E6BDD1CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,5 +89,9 @@ Global
 		{9C66B27C-8424-4D2E-A033-612776D59202} = {69DFB95F-7861-4E90-ABC1-33F75FBE67AF}
 		{362C2E4A-3EE7-41BE-A233-70649B258439} = {69DFB95F-7861-4E90-ABC1-33F75FBE67AF}
 		{DA3DC42C-80E7-4559-9737-F13BE6F4565C} = {4C2B7C0C-7CDD-4125-B57A-88E168D24190}
+		{1B2704CE-B3C5-4566-A932-C339E6BDD1CC} = {750142DD-9B82-47CB-A2D5-71E4950843D2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C81698D-E18E-4669-B9D3-7FEFA57C794D}
 	EndGlobalSection
 EndGlobal

@@ -36,8 +36,6 @@
 // Define LIBLOG_PROVIDERS_ONLY if your library provides its own logging API and you just want to use
 // the LibLog providers internally to provide built in support for popular logging frameworks.
 
-#if !NET35
-
 #pragma warning disable 1591
 
 using System.Diagnostics.CodeAnalysis;
@@ -901,7 +899,7 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
         {
             private readonly dynamic _logger;
 
-            private static Func<string, object, string, Exception, object> _logEventInfoFact;
+            private static readonly Func<string, object, string, Exception, object> _logEventInfoFact;
 
             private static readonly object _levelTrace;
             private static readonly object _levelDebug;
@@ -1302,7 +1300,7 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
             private readonly Func<object, object, bool> _isEnabledForDelegate;
             private readonly Action<object, object> _logDelegate;
             private readonly Func<object, Type, object, string, Exception, object> _createLoggingEvent;
-            private Action<object, string, object> _loggingEventPropertySetter;
+            private readonly Action<object, string, object> _loggingEventPropertySetter;
 
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ILogger")]
             internal Log4NetLogger(dynamic logger)
@@ -2349,5 +2347,3 @@ namespace CodeProject.ObjectPool.Logging.LogProviders
         }
     }
 }
-
-#endif

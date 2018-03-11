@@ -40,7 +40,7 @@ namespace CodeProject.ObjectPool.Core
     public sealed class PooledObjectBuffer<T> : IEnumerable<T>
         where T : PooledObject
     {
-#if (NET35 || NET40)
+#if NET40
         private const MethodImplOptions TryInline = default(MethodImplOptions);
 #else
         private const MethodImplOptions TryInline = MethodImplOptions.AggressiveInlining;

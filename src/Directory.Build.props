@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project>
+  <PropertyGroup>
+    <Version>3.2.3</Version>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.2.3.0</FileVersion>
+    <InformationalVersion>3.2.3+0</InformationalVersion>
+    <DebugType>embedded</DebugType>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Authors>Ofir Makmal &lt;ofir.makmal@gmail.com&gt;;Alessio Parma &lt;alessio.parma@gmail.com&gt;</Authors>
+    <Copyright>Copyright (c) 2013 Ofir Makmal &lt;ofir.makmal@gmail.com&gt;</Copyright>
+    <PackageReleaseNotes>https://github.com/pomma89/ObjectPool/releases</PackageReleaseNotes>
+    <PackageIconUrl>http://pomma89.altervista.org/objectpool/logo-128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/pomma89/ObjectPool</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.codeproject.com/info/cpol10.aspx</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/pomma89/ObjectPool</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.7.3" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Test" Version="2.7.3" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.7.3" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
+    <DefineConstants>$(DefineConstants);NETSTD10;LIBLOG_PORTABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.2' ">
+    <DefineConstants>$(DefineConstants);NETSTD12;LIBLOG_PORTABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTD13;LIBLOG_PORTABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <DefineConstants>$(DefineConstants);NETSTD20</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <DefineConstants>$(DefineConstants);NET40;HAS_SERIALIZABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45;HAS_SERIALIZABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <DefineConstants>$(DefineConstants);NET46;HAS_SERIALIZABLE</DefineConstants>
+  </PropertyGroup>
+</Project>

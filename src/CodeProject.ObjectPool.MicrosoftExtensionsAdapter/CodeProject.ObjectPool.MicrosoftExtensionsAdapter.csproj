@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>CodeProject.ObjectPool.MicrosoftExtensionsAdapter</AssemblyName>
+    <AssemblyTitle>Generic and concurrent Object Pool - Adapter for Microsoft Extensions</AssemblyTitle>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <PackageId>CodeProject.ObjectPool.MicrosoftExtensionsAdapter</PackageId>
+    <Title>Generic and concurrent Object Pool - Adapter for Microsoft Extensions</Title>
+    <Summary>A generic, concurrent, portable and flexible Object Pool for the .NET Framework.</Summary>
+    <Description>$(Summary) This package contains an adapter for Microsoft.Extensions.ObjectPool abstraction.</Description>
+    <PackageTags>codeproject;object;pool;microsoft;extensions;adapter</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.0.0" />
+  </ItemGroup>
+</Project>

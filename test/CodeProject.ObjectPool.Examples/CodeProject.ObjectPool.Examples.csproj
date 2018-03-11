@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OutputType>exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />
+    <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
   </ItemGroup>
 </Project>

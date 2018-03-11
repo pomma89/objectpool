@@ -168,6 +168,9 @@ App_Data/*.ldf
 artifacts
 tools
 
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts
+
 #############
 ## Windows detritus
 #############

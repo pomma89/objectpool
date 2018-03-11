@@ -1,0 +1,10 @@
+#recipe Docs
+
+// Customize your settings and add new ones here
+Settings[Keys.CleanOutputPath] = true;
+Settings[Keys.Host] = "pomma89.github.io";
+Settings[Keys.LinkRoot] = "/ObjectPool";
+Settings[Keys.LinksUseHttps] = true;
+Settings[DocsKeys.Title] = "CodeProject.ObjectPool";
+
+// Add any pipeline customizations here
