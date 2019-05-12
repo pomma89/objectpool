@@ -11,6 +11,7 @@
 using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Logging;
 using System;
+using System.Linq;
 
 namespace CodeProject.ObjectPool
 {
@@ -52,7 +53,9 @@ namespace CodeProject.ObjectPool
             {
                 try
                 {
-                    return OnValidateObject(validationContext);
+                    return OnValidateObject.GetInvocationList()
+                        .Cast<Func<PooledObjectValidationContext, bool>>()
+                        .All(validationDelegate => validationDelegate(validationContext));
                 }
                 catch (Exception ex)
                 {
