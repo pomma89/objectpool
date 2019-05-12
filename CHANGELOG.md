@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.2.3 (2019-05-12)
+
+* Fixed how OnValidateObject delegates are invoked (issue #9).
+
 ### v3.2.2 (2017-10-28)
 
 * Added support for .NET Framework 4.7.1.
