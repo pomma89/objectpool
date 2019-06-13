@@ -149,12 +149,15 @@ namespace CodeProject.ObjectPool
         private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
             // Only when the object is reserved it can be readded to the pool.
-            if (PooledObjectInfo.State == PooledObjectState.Disposed || PooledObjectInfo.State == PooledObjectState.Available)
+            if (PooledObjectInfo == null || 
+                PooledObjectInfo.State == PooledObjectState.Disposed || 
+                PooledObjectInfo.State == PooledObjectState.Available)
             {
                 return;
             }
-            // If there is any case that the re-adding to the pool failes, release the resources and
-            // set the internal Disposed flag to true
+
+            // If there is any case that the re-adding to the pool fails, release the resources and
+            // set the internal Disposed flag to true.
             try
             {
                 // Notifying the pool that this object is ready for re-adding to the pool.
