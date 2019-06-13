@@ -1,5 +1,9 @@
 # Changelog for CodeProject.ObjectPool #
 
+### v3.2.4 (2019-06-13)
+
+* Fixed an exception in PooledObject finalizer (issue #10).
+
 ### v3.2.3 (2019-05-12)
 
 * Fixed how OnValidateObject delegates are invoked (issue #9).
