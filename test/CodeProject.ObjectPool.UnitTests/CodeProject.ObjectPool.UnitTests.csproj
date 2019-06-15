@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;net40;net45;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;net40;net452;net461;net472</TargetFrameworks>
     <OutputType>exe</OutputType>
   </PropertyGroup>
 
@@ -48,6 +48,16 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <DefineConstants>$(DefineConstants);HAS_EXTENSIONS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool.MicrosoftExtensionsAdapter\CodeProject.ObjectPool.MicrosoftExtensionsAdapter.csproj" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />

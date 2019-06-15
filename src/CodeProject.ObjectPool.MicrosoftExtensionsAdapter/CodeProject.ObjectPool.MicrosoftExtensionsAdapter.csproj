@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>CodeProject.ObjectPool.MicrosoftExtensionsAdapter</AssemblyName>
     <AssemblyTitle>Generic and concurrent Object Pool - Adapter for Microsoft Extensions</AssemblyTitle>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 

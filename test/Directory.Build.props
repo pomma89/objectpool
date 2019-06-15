@@ -21,11 +21,15 @@
     <DefineConstants>$(DefineConstants);NET40;HAS_SERIALIZABLE</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
     <DefineConstants>$(DefineConstants);NET45;HAS_SERIALIZABLE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <DefineConstants>$(DefineConstants);NET46;HAS_SERIALIZABLE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <DefineConstants>$(DefineConstants);NET47;HAS_SERIALIZABLE</DefineConstants>
   </PropertyGroup>
 </Project>
