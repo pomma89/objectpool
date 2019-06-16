@@ -22,10 +22,16 @@ namespace CodeProject.ObjectPool
         where T : PooledObject
     {
         /// <summary>
+        ///   Gets the async Factory method that will be used for creating new objects with
+        ///   async/await pattern.
+        /// </summary>
+        Func<Task<T>> AsyncFactoryMethod { get; }
+
+        /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
         ///   data about how the pool operates. By default, however, an object pool records anything,
-        ///   in order to be most efficient; in any case, you can enable it through the
-        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
+        ///   in order to be most efficient; in any case, you can enable it through the <see
+        ///   cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         ObjectPoolDiagnostics Diagnostics { get; set; }
 
@@ -33,11 +39,6 @@ namespace CodeProject.ObjectPool
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
         Func<T> FactoryMethod { get; }
-
-        /// <summary>
-        ///   Gets the async Factory method that will be used for creating new objects with async/await pattern.
-        /// </summary>
-        Func<Task<T>> AsyncFactoryMethod { get; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in

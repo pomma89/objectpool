@@ -137,6 +137,12 @@ namespace CodeProject.ObjectPool
         #region Public Properties
 
         /// <summary>
+        ///   Gets the async Factory method that will be used for creating new objects with
+        ///   async/await pattern.
+        /// </summary>
+        public Func<Task<T>> AsyncFactoryMethod { get; protected set; }
+
+        /// <summary>
         ///   Gets the Diagnostics class for the current Object Pool, whose goal is to record data
         ///   about how the pool operates. By default, however, an object pool records anything; you
         ///   have to enable it through the <see cref="ObjectPoolDiagnostics.Enabled"/> property.
@@ -147,11 +153,6 @@ namespace CodeProject.ObjectPool
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
         public Func<T> FactoryMethod { get; protected set; }
-
-        /// <summary>
-        ///   Gets the async Factory method that will be used for creating new objects with async/await pattern.
-        /// </summary>
-        public Func<Task<T>> AsyncFactoryMethod { get; protected set; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -253,6 +254,10 @@ namespace CodeProject.ObjectPool
             }
         }
 
+        /// <summary>
+        ///   Gets a monitored object from the pool.
+        /// </summary>
+        /// <returns>A monitored object from the pool.</returns>
         public Task<T> GetObjectAsync()
         {
             throw new NotImplementedException();
@@ -318,16 +323,15 @@ namespace CodeProject.ObjectPool
         private readonly IEvictionTimer _evictionTimer;
 
         /// <summary>
+        ///   Stores the ticket returned by <see cref="IEvictionTimer.Schedule(Action, TimeSpan,
+        ///   TimeSpan)"/>, in order to be able to cancel the scheduled eviction action, if needed.
+        /// </summary>
+        private Guid _evictionActionTicket;
+
+        /// <summary>
         ///   Keeps track of last pooled object ID.
         /// </summary>
         private int _lastPooledObjectId;
-
-        /// <summary>
-        ///   Stores the ticket returned by
-        ///   <see cref="IEvictionTimer.Schedule(Action, TimeSpan, TimeSpan)"/>, in order to be able
-        ///   to cancel the scheduled eviction action, if needed.
-        /// </summary>
-        private Guid _evictionActionTicket;
 
         /// <summary>
         ///   Creates a new pooled object, initializing its info.

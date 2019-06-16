@@ -31,10 +31,15 @@ namespace CodeProject.ObjectPool
         private ObjectPoolDiagnostics _diagnostics;
 
         /// <summary>
+        ///   Backing field for <see cref="MaximumPoolSize"/>.
+        /// </summary>
+        private int _maximumPoolSize;
+
+        /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
         ///   data about how the pool operates. By default, however, an object pool records anything,
-        ///   in order to be most efficient; in any case, you can enable it through the
-        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
+        ///   in order to be most efficient; in any case, you can enable it through the <see
+        ///   cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         public ObjectPoolDiagnostics Diagnostics
         {
@@ -53,9 +58,14 @@ namespace CodeProject.ObjectPool
         }
 
         /// <summary>
-        ///   Backing field for <see cref="MaximumPoolSize"/>.
+        ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        private int _maximumPoolSize;
+        public Func<TKey, TValue> FactoryMethod { get; private set; }
+
+        /// <summary>
+        ///   Gets the count of the keys currently handled by the pool.
+        /// </summary>
+        public int KeysInPoolCount => _pools.Count;
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -73,16 +83,6 @@ namespace CodeProject.ObjectPool
                 _maximumPoolSize = value;
             }
         }
-
-        /// <summary>
-        ///   Gets the Factory method that will be used for creating new objects.
-        /// </summary>
-        public Func<TKey, TValue> FactoryMethod { get; private set; }
-
-        /// <summary>
-        ///   Gets the count of the keys currently handled by the pool.
-        /// </summary>
-        public int KeysInPoolCount => _pools.Count;
 
         #endregion Public Properties
 
@@ -164,44 +164,7 @@ namespace CodeProject.ObjectPool
 
         #region Low-level Pooling
 
-#if (NETSTD10 || NETSTD12)
-        private readonly System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>> _pools = new System.Collections.Generic.Dictionary<TKey, ObjectPool<TValue>>();
-#else
         private readonly System.Collections.Hashtable _pools = new System.Collections.Hashtable();
-#endif
-
-        private void ClearPools()
-        {
-            // Safe copy of the current pools.
-            var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
-
-            // Clear the main pool.
-            lock (_pools)
-            {
-                _pools.Clear();
-            }
-
-            // Then clear each pool, taking it from the safe copy.
-            foreach (var innerPool in innerPools)
-            {
-                innerPool.Clear();
-            }
-        }
-
-        private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
-        {
-#if (NETSTD10 || NETSTD12)
-            // Dictionary requires locking even for readers.
-            lock (_pools)
-            {
-                return _pools.TryGetValue(key, out objectPool);
-            }
-#else
-            // Hashtable requires no locking for readers.
-            objectPool = _pools[key] as ObjectPool<TValue>;
-            return objectPool != null;
-#endif
-        }
 
         private ObjectPool<TValue> AddPool(TKey key)
         {
@@ -223,6 +186,31 @@ namespace CodeProject.ObjectPool
                 }
                 return objectPool;
             }
+        }
+
+        private void ClearPools()
+        {
+            // Safe copy of the current pools.
+            var innerPools = _pools.Values.Cast<ObjectPool<TValue>>().ToArray();
+
+            // Clear the main pool.
+            lock (_pools)
+            {
+                _pools.Clear();
+            }
+
+            // Then clear each pool, taking it from the safe copy.
+            foreach (var innerPool in innerPools)
+            {
+                innerPool.Clear();
+            }
+        }
+
+        private bool TryGetPool(TKey key, out ObjectPool<TValue> objectPool)
+        {
+            // Hashtable requires no locking for readers.
+            objectPool = _pools[key] as ObjectPool<TValue>;
+            return objectPool != null;
         }
 
         #endregion Low-level Pooling
