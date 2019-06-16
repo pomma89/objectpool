@@ -10,6 +10,7 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace CodeProject.ObjectPool
 {
@@ -17,7 +18,7 @@ namespace CodeProject.ObjectPool
     ///   Describes all methods available on Object Pools.
     /// </summary>
     /// <typeparam name="T">The type of the objects stored in the pool.</typeparam>
-    public interface IObjectPool<out T>
+    public interface IObjectPool<T>
         where T : PooledObject
     {
         /// <summary>
@@ -32,6 +33,11 @@ namespace CodeProject.ObjectPool
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
         Func<T> FactoryMethod { get; }
+
+        /// <summary>
+        ///   Gets the async Factory method that will be used for creating new objects with async/await pattern.
+        /// </summary>
+        Func<Task<T>> AsyncFactoryMethod { get; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -54,5 +60,11 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <returns>A monitored object from the pool.</returns>
         T GetObject();
+
+        /// <summary>
+        ///   Gets a monitored object from the pool.
+        /// </summary>
+        /// <returns>A monitored object from the pool.</returns>
+        Task<T> GetObjectAsync();
     }
 }

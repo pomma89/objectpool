@@ -22,13 +22,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.7.3" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Test" Version="2.7.3" PrivateAssets="All" />
+    <PackageReference Include="HellBrick.Diagnostics" Version="3.3.0" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" PrivateAssets="All" />
+    <PackageReference Include="SourceLink.Test" Version="2.8.3" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.7.3" />
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.3" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">

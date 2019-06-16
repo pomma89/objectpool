@@ -16,6 +16,10 @@
     <PackageTags>codeproject;object;pool;concurrent;generic;threadsafe;portable;netstandard;stringbuilder;memorystream</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LibLog" Version="5.0.6" PrivateAssets="All" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
   </ItemGroup>

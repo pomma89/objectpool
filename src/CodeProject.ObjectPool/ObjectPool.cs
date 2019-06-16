@@ -12,6 +12,7 @@ using CodeProject.ObjectPool.Core;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CodeProject.ObjectPool
 {
@@ -109,7 +110,16 @@ namespace CodeProject.ObjectPool
             // Throws an exception if the type does not have default constructor - on purpose! We
             // could have added a generic constraint with new (), but we did not want to limit the
             // user and force a parameterless constructor.
-            FactoryMethod = factoryMethod ?? Activator.CreateInstance<T>;
+            if (factoryMethod != null)
+            {
+                FactoryMethod = factoryMethod;
+                AsyncFactoryMethod = (() => Task.FromResult(factoryMethod()));
+            }
+            else
+            {
+                FactoryMethod = (() => Activator.CreateInstance<T>());
+                AsyncFactoryMethod = (() => Task.FromResult(Activator.CreateInstance<T>()));
+            }
 
             // Max pool size.
             MaximumPoolSize = maximumPoolSize;
@@ -137,6 +147,11 @@ namespace CodeProject.ObjectPool
         ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
         public Func<T> FactoryMethod { get; protected set; }
+
+        /// <summary>
+        ///   Gets the async Factory method that will be used for creating new objects with async/await pattern.
+        /// </summary>
+        public Func<Task<T>> AsyncFactoryMethod { get; protected set; }
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -236,6 +251,11 @@ namespace CodeProject.ObjectPool
                 pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
                 return pooledObject;
             }
+        }
+
+        public Task<T> GetObjectAsync()
+        {
+            throw new NotImplementedException();
         }
 
         void IObjectPoolHandle.ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
