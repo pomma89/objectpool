@@ -6,30 +6,11 @@
 
 ## Summary
 
-* Latest release version: `v3.2.2`
-* Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/ObjectPool.svg?branch=master)](https://travis-ci.org/pomma89/ObjectPool)
-* Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/cgldtxe3p9v7nf0i/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/objectpool/branch/master)
-* [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/ObjectPool/api/](https://pomma89.github.io/ObjectPool/api/)
+* Build status on [GitLab](https://gitlab.com/pomma89/kvlite/pipelines): [![pipeline status](https://gitlab.com/pomma89/object-pool/badges/master/pipeline.svg)](https://gitlab.com/pomma89/object-pool/commits/master)
+* [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.gitlab.io/object-pool/api/](https://pomma89.gitlab.io/object-pool/api/)
 * [NuGet](https://www.nuget.org) package(s):
     + [CodeProject.ObjectPool](https://nuget.org/packages/CodeProject.ObjectPool/)
     + [CodeProject.ObjectPool.MicrosoftExtensionsAdapter](https://nuget.org/packages/CodeProject.ObjectPool.MicrosoftExtensionsAdapter/)
-
-### How to build
-
-#### Windows
-
-Clone the project, go to the root and run PowerShell script `build.ps1`. In order for it to work, you need:
-
-* At least Windows 10 Fall Creators Update
-* At least Visual Studio 2017 Update 4
-* .NET Framework 4.7.1 Developer Pack
-* .NET Core 2.0 SDK
-
-#### Linux
-
-Clone the project, go to the root and run Bash script `build.sh`. In order for it to work, you need:
-
-* TODO, still need to make it building reliably.
 
 ## Introduction
 
