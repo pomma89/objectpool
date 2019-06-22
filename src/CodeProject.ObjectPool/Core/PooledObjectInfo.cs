@@ -54,10 +54,20 @@ namespace CodeProject.ObjectPool.Core
         internal IObjectPoolHandle Handle { get; set; }
 
         /// <summary>
-        ///   Returns a string that represents the current object.
+        ///   Compares to pooled objects info by <see cref="Id"/>.
         /// </summary>
-        /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{nameof(Id)}: {Id}, {nameof(Payload)}: {Payload}";
+        /// <param name="left">Left object.</param>
+        /// <param name="right">Right object.</param>
+        /// <returns>True if given pooled objects info are not equal, false otherwise.</returns>
+        public static bool operator !=(PooledObjectInfo left, PooledObjectInfo right) => !Equals(left, right);
+
+        /// <summary>
+        ///   Compares to pooled objects info by <see cref="Id"/>.
+        /// </summary>
+        /// <param name="left">Left object.</param>
+        /// <param name="right">Right object.</param>
+        /// <returns>True if given pooled objects info are equal, false otherwise.</returns>
+        public static bool operator ==(PooledObjectInfo left, PooledObjectInfo right) => Equals(left, right);
 
         /// <summary>
         ///   Indicates whether the current object is equal to another object of the same type.
@@ -78,8 +88,8 @@ namespace CodeProject.ObjectPool.Core
         ///   Determines whether the specified <see cref="object"/> is equal to the current <see cref="PooledObjectInfo"/>.
         /// </summary>
         /// <returns>
-        ///   true if the specified <see cref="object"/> is equal to the current
-        ///   <see cref="PooledObjectInfo"/>; otherwise, false.
+        ///   true if the specified <see cref="object"/> is equal to the current <see
+        ///   cref="PooledObjectInfo"/>; otherwise, false.
         /// </returns>
         /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="PooledObjectInfo"/>.</param>
         public override bool Equals(object obj)
@@ -97,19 +107,9 @@ namespace CodeProject.ObjectPool.Core
         public override int GetHashCode() => Id;
 
         /// <summary>
-        ///   Compares to pooled objects info by <see cref="Id"/>.
+        ///   Returns a string that represents the current object.
         /// </summary>
-        /// <param name="left">Left object.</param>
-        /// <param name="right">Right object.</param>
-        /// <returns>True if given pooled objects info are equal, false otherwise.</returns>
-        public static bool operator ==(PooledObjectInfo left, PooledObjectInfo right) => Equals(left, right);
-
-        /// <summary>
-        ///   Compares to pooled objects info by <see cref="Id"/>.
-        /// </summary>
-        /// <param name="left">Left object.</param>
-        /// <param name="right">Right object.</param>
-        /// <returns>True if given pooled objects info are not equal, false otherwise.</returns>
-        public static bool operator !=(PooledObjectInfo left, PooledObjectInfo right) => !Equals(left, right);
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"{nameof(Id)}: {Id}, {nameof(Payload)}: {Payload}";
     }
 }

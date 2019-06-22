@@ -21,13 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !NETSTD10
-
-using CodeProject.ObjectPool.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using CodeProject.ObjectPool.Logging;
 
 namespace CodeProject.ObjectPool
 {
@@ -47,6 +45,27 @@ namespace CodeProject.ObjectPool
         ~EvictionTimer()
         {
             Dispose(false);
+        }
+
+        /// <summary>
+        ///   Cancels a scheduled evicton action using a ticket returned by <see
+        ///   cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
+        /// </summary>
+        /// <param name="actionTicket">
+        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action,
+        ///   TimeSpan, TimeSpan)"/>.
+        /// </param>
+        public void Cancel(Guid actionTicket)
+        {
+            ThrowIfDisposed();
+            lock (_actionMap)
+            {
+                if (_actionMap.TryGetValue(actionTicket, out var timer))
+                {
+                    _actionMap.Remove(actionTicket);
+                    timer.Dispose();
+                }
+            }
         }
 
         /// <summary>
@@ -71,48 +90,24 @@ namespace CodeProject.ObjectPool
         public Guid Schedule(Action action, TimeSpan delay, TimeSpan period)
         {
             ThrowIfDisposed();
+
             if (action == null)
             {
                 return Guid.Empty;
             }
+
             lock (_actionMap)
             {
-                TimerCallback timerCallback = _ =>
+                void timerCallback(object _)
                 {
                     Log.Debug("Begin scheduled evictor");
                     action();
                     Log.Debug("End scheduled evictor");
-                };
-                var actionTicket = Guid.NewGuid();
-                _actionMap[actionTicket] = new Timer(timerCallback, null, delay, period);
-                return actionTicket;
-            }
-        }
-
-        /// <summary>
-        ///   Cancels a scheduled evicton action using a ticket returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
-        /// </summary>
-        /// <param name="actionTicket">
-        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
-        /// </param>
-        public void Cancel(Guid actionTicket)
-        {
-            ThrowIfDisposed();
-            lock (_actionMap)
-            {
-                if (_actionMap.TryGetValue(actionTicket, out Timer timer))
-                {
-                    _actionMap.Remove(actionTicket);
-                    timer.Dispose();
                 }
-            }
-        }
 
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
+                var actionTicket = Guid.NewGuid();
+                _actionMap[actionTicket] = new Timer(_ => timerCallback(_), null, delay, period);
+                return actionTicket;
             }
         }
 
@@ -131,60 +126,20 @@ namespace CodeProject.ObjectPool
                 {
                     var timers = _actionMap.Values.ToArray() ?? Enumerable.Empty<Timer>();
                     _actionMap.Clear();
-                    foreach (Timer t in timers)
+                    foreach (var t in timers)
                     {
                         t.Dispose();
                     }
                 }
             }
         }
-    }
-}
 
-#else
-
-using System;
-
-namespace CodeProject.ObjectPool
-{
-    /// <summary>
-    ///   Dummy implementation of <see cref="IEvictionTimer"/>, .NET Standard 1.0 does not implement
-    ///   System.Timer class.
-    /// </summary>
-    public sealed class EvictionTimer : IEvictionTimer, IDisposable
-    {
-        /// <summary>
-        ///   Performs application-defined tasks associated with freeing, releasing, or resetting
-        ///   unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        private void ThrowIfDisposed()
         {
-            // Do nothing.
-        }
-
-        /// <summary>
-        ///   Schedules an eviction action.
-        /// </summary>
-        /// <param name="action">Eviction action.</param>
-        /// <param name="delay">Start delay.</param>
-        /// <param name="period">Schedule period.</param>
-        /// <returns>
-        ///   A ticket which identifies the scheduled eviction action, it can be used to cancel the
-        ///   scheduled action via <see cref="Cancel(Guid)"/> method.
-        /// </returns>
-        public Guid Schedule(Action action, TimeSpan delay, TimeSpan period) => Guid.NewGuid();
-
-        /// <summary>
-        ///   Cancels a scheduled evicton action using a ticket returned by <see cref="Schedule(Action,TimeSpan,TimeSpan)"/>.
-        /// </summary>
-        /// <param name="actionTicket">
-        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action,TimeSpan,TimeSpan)"/>.
-        /// </param>
-        public void Cancel(Guid actionTicket)
-        {
-            // Do nothing.
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
         }
     }
 }
-
-#endif

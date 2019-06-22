@@ -33,17 +33,6 @@ namespace CodeProject.ObjectPool.Benchmarks
 {
     public static class Program
     {
-        public class Config : ManualConfig
-        {
-            public Config()
-            {
-                Add(Job.RyuJitX64);
-                Add(PlainExporter.Default, MarkdownExporter.GitHub, CsvExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
-                Add(new MemoryDiagnoser());
-                Add(EnvironmentAnalyser.Default);
-            }
-        }
-
         public static void Main(string[] args)
         {
             new BenchmarkSwitcher(new[]
@@ -52,6 +41,17 @@ namespace CodeProject.ObjectPool.Benchmarks
                 typeof(RetrieveOneObject),
                 typeof(RetrieveObjectsConcurrently)
             }).Run(args);
+        }
+
+        public class Config : ManualConfig
+        {
+            public Config()
+            {
+                Add(Job.RyuJitX64);
+                Add(PlainExporter.Default, MarkdownExporter.GitHub, CsvExporter.Default, CsvMeasurementsExporter.Default, RPlotExporter.Default);
+                Add(MemoryDiagnoser.Default);
+                Add(EnvironmentAnalyser.Default);
+            }
         }
     }
 }

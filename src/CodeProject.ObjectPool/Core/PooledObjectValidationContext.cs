@@ -29,6 +29,11 @@ namespace CodeProject.ObjectPool.Core
     public sealed class PooledObjectValidationContext
     {
         /// <summary>
+        ///   Whether an object is going out of the pool or into the pool.
+        /// </summary>
+        public PooledObjectDirection Direction { get; private set; }
+
+        /// <summary>
         ///   The pooled object which has to be validated.
         /// </summary>
         public PooledObject PooledObject { get; private set; }
@@ -37,11 +42,6 @@ namespace CodeProject.ObjectPool.Core
         ///   Info about the pooled object which has to be validated.
         /// </summary>
         public PooledObjectInfo PooledObjectInfo => PooledObject.PooledObjectInfo;
-
-        /// <summary>
-        ///   Whether an object is going out of the pool or into the pool.
-        /// </summary>
-        public PooledObjectDirection Direction { get; private set; }
 
         /// <summary>
         ///   Used when an object is returning to the pool.

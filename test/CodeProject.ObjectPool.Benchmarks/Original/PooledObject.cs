@@ -21,16 +21,16 @@ namespace Original
         #region Internal Properties
 
         /// <summary>
-        ///   Internal Action that is initialized by the pool while creating the object, this allow
-        ///   that object to re-add itself back to the pool.
-        /// </summary>
-        internal Action<PooledObject, bool> ReturnToPool { get; set; }
-
-        /// <summary>
         ///   Internal flag that is being managed by the pool to describe the object state - primary
         ///   used to void cases where the resources are being releases twice.
         /// </summary>
         internal bool Disposed { get; set; }
+
+        /// <summary>
+        ///   Internal Action that is initialized by the pool while creating the object, this allow
+        ///   that object to re-add itself back to the pool.
+        /// </summary>
+        internal Action<PooledObject, bool> ReturnToPool { get; set; }
 
         #endregion Internal Properties
 
@@ -43,7 +43,7 @@ namespace Original
         /// <returns></returns>
         internal bool ReleaseResources()
         {
-            bool successFlag = true;
+            var successFlag = true;
 
             try
             {
@@ -64,7 +64,7 @@ namespace Original
         /// <returns></returns>
         internal bool ResetState()
         {
-            bool successFlag = true;
+            var successFlag = true;
 
             try
             {
@@ -83,22 +83,34 @@ namespace Original
         #region Virtual Template Methods - extending resource and state management
 
         /// <summary>
-        ///   Reset the object state to allow this object to be re-used by other parts of the application.
-        /// </summary>
-        protected virtual void OnResetState()
-        {
-        }
-
-        /// <summary>
         ///   Releases the object's resources
         /// </summary>
         protected virtual void OnReleaseResources()
         {
         }
 
+        /// <summary>
+        ///   Reset the object state to allow this object to be re-used by other parts of the application.
+        /// </summary>
+        protected virtual void OnResetState()
+        {
+        }
+
         #endregion Virtual Template Methods - extending resource and state management
 
         #region Returning object to pool - Dispose and Finalizer
+
+        ~PooledObject()
+        {
+            // Resurrecting the object
+            HandleReAddingToPool(true);
+        }
+
+        public void Dispose()
+        {
+            // Returning to pool
+            ThreadPool.QueueUserWorkItem(new WaitCallback((o) => HandleReAddingToPool(false)));
+        }
 
         private void HandleReAddingToPool(bool reRegisterForFinalization)
         {
@@ -119,28 +131,11 @@ namespace Original
             }
         }
 
-        ~PooledObject()
-        {
-            // Resurrecting the object
-            HandleReAddingToPool(true);
-        }
-
-        public void Dispose()
-        {
-            // Returning to pool
-            ThreadPool.QueueUserWorkItem(new WaitCallback((o) => HandleReAddingToPool(false)));
-        }
-
         #endregion Returning object to pool - Dispose and Finalizer
     }
 
     public class PooledObjectWrapper<T> : PooledObject
     {
-        public Action<T> WrapperReleaseResourcesAction { get; set; }
-        public Action<T> WrapperResetStateAction { get; set; }
-
-        public T InternalResource { get; private set; }
-
         public PooledObjectWrapper(T resource)
         {
             if (resource == null)
@@ -151,6 +146,12 @@ namespace Original
             // Setting the internal resource
             InternalResource = resource;
         }
+
+        public T InternalResource { get; private set; }
+
+        public Action<T> WrapperReleaseResourcesAction { get; set; }
+
+        public Action<T> WrapperResetStateAction { get; set; }
 
         protected override void OnReleaseResources()
         {

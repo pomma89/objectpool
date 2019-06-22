@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generic Object Pool Implementation
  *
  * Implemented by Ofir Makmal, 28/1/2013
@@ -49,20 +49,10 @@ namespace CodeProject.ObjectPool.Core
         public bool Enabled { get; set; }
 
         /// <summary>
-        ///   Gets the total count of live instances, both in the pool and in use.
-        /// </summary>
-        public long TotalLiveInstancesCount => _totalInstancesCreated - _totalInstancesDestroyed;
-
-        /// <summary>
         ///   Gets the count of object reset failures occured while the pool tried to re-add the
         ///   object into the pool.
         /// </summary>
         public long ObjectResetFailedCount => _objectResetFailedCount;
-
-        /// <summary>
-        ///   Gets the total count of object that has been picked up by the GC, and returned to pool.
-        /// </summary>
-        public long ReturnedToPoolByResurrectionCount => _returnedToPoolByResurrectionCount;
 
         /// <summary>
         ///   Gets the total count of successful accesses. The pool had a spare object to provide to
@@ -77,6 +67,22 @@ namespace CodeProject.ObjectPool.Core
         public long PoolObjectMissCount => _poolObjectMissCount;
 
         /// <summary>
+        ///   Gets the number of objects been destroyed because the pool was full at the time of
+        ///   returning the object to the pool.
+        /// </summary>
+        public long PoolOverflowCount => _poolOverflowCount;
+
+        /// <summary>
+        ///   Gets the total count of object that has been picked up by the GC, and returned to pool.
+        /// </summary>
+        public long ReturnedToPoolByResurrectionCount => _returnedToPoolByResurrectionCount;
+
+        /// <summary>
+        ///   Gets the total count of objects that been successfully returned to the pool.
+        /// </summary>
+        public long ReturnedToPoolCount => _returnedToPoolCount;
+
+        /// <summary>
         ///   Gets the total number of pooled objected created.
         /// </summary>
         public long TotalInstancesCreated => _totalInstancesCreated;
@@ -87,19 +93,24 @@ namespace CodeProject.ObjectPool.Core
         public long TotalInstancesDestroyed => _totalInstancesDestroyed;
 
         /// <summary>
-        ///   Gets the number of objects been destroyed because the pool was full at the time of
-        ///   returning the object to the pool.
+        ///   Gets the total count of live instances, both in the pool and in use.
         /// </summary>
-        public long PoolOverflowCount => _poolOverflowCount;
-
-        /// <summary>
-        ///   Gets the total count of objects that been successfully returned to the pool.
-        /// </summary>
-        public long ReturnedToPoolCount => _returnedToPoolCount;
+        public long TotalLiveInstancesCount => _totalInstancesCreated - _totalInstancesDestroyed;
 
         #endregion Public Properties and backing fields
 
         #region Protected Methods for incrementing the counters
+
+        /// <summary>
+        ///   Increments the count of objects returned to pool by resurrection.
+        /// </summary>
+        protected internal virtual void IncrementObjectResurrectionCount()
+        {
+            if (Enabled)
+            {
+                Interlocked.Increment(ref _returnedToPoolByResurrectionCount);
+            }
+        }
 
         /// <summary>
         ///   Increments the objects created count.
@@ -164,17 +175,6 @@ namespace CodeProject.ObjectPool.Core
             if (Enabled)
             {
                 Interlocked.Increment(ref _objectResetFailedCount);
-            }
-        }
-
-        /// <summary>
-        ///   Increments the count of objects returned to pool by resurrection.
-        /// </summary>
-        protected internal virtual void IncrementObjectResurrectionCount()
-        {
-            if (Enabled)
-            {
-                Interlocked.Increment(ref _returnedToPoolByResurrectionCount);
             }
         }
 

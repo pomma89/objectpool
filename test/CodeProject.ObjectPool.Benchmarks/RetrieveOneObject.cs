@@ -21,71 +21,37 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using BenchmarkDotNet.Attributes;
 using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
-using System;
 
 namespace CodeProject.ObjectPool.Benchmarks
 {
     [Config(typeof(Program.Config))]
     public class RetrieveOneObject
     {
-        private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
-        private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
-        private readonly Original.ObjectPool<MyOriginalResource> _originalObjectPool = new Original.ObjectPool<MyOriginalResource>(0, 21, () => new MyOriginalResource { Value = DateTime.UtcNow.ToString() });
-        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
         private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _adaptedMicrosoftObjectPool = ObjectPoolAdapter.CreateForPooledObject(new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() }));
-
-        private sealed class MyResource : PooledObject
-        {
-            public string Value { get; set; }
-
-            public sealed class Policy : Microsoft.Extensions.ObjectPool.IPooledObjectPolicy<MyResource>
-            {
-#pragma warning disable CC0022 // Should dispose object
-
-                public MyResource Create() => new MyResource { Value = DateTime.UtcNow.ToString() };
-
-#pragma warning restore CC0022 // Should dispose object
-
-                public bool Return(MyResource obj) => true;
-            }
-        }
-
-        private sealed class MyOriginalResource : Original.PooledObject
-        {
-            public string Value { get; set; }
-        }
-
-        [Benchmark(Baseline = true)]
-        public string Simple()
-        {
-            string str;
-            using (var x = _objectPool.GetObject())
-            {
-                str = x.Value;
-            }
-            return str;
-        }
+        private readonly Microsoft.Extensions.ObjectPool.ObjectPool<MyResource> _microsoftObjectPool = new Microsoft.Extensions.ObjectPool.DefaultObjectPoolProvider().Create(new MyResource.Policy());
+        private readonly ObjectPool<MyResource> _objectPool = new ObjectPool<MyResource>(21, () => new MyResource { Value = DateTime.UtcNow.ToString() });
+        private readonly Original.ObjectPool<MyOriginalResource> _originalObjectPool = new Original.ObjectPool<MyOriginalResource>(0, 21, () => new MyOriginalResource { Value = DateTime.UtcNow.ToString() });
+        private readonly ParameterizedObjectPool<int, MyResource> _paramObjectPool = new ParameterizedObjectPool<int, MyResource>(21, x => new MyResource { Value = (DateTime.UtcNow + "#" + x) });
 
         [Benchmark]
-        public string Parameterized()
+        public string AdaptedMicrosoft()
         {
+            MyResource res = null;
             string str;
-            using (var x = _paramObjectPool.GetObject(21))
+            try
             {
-                str = x.Value;
+                res = _adaptedMicrosoftObjectPool.Get();
+                str = res.Value;
             }
-            return str;
-        }
-
-        [Benchmark]
-        public string Original()
-        {
-            string str;
-            using (var x = _originalObjectPool.GetObject())
+            finally
             {
-                str = x.Value;
+                if (res != null)
+                {
+                    _adaptedMicrosoftObjectPool.Return(res);
+                }
             }
             return str;
         }
@@ -111,23 +77,57 @@ namespace CodeProject.ObjectPool.Benchmarks
         }
 
         [Benchmark]
-        public string AdaptedMicrosoft()
+        public string Original()
         {
-            MyResource res = null;
             string str;
-            try
+            using (var x = _originalObjectPool.GetObject())
             {
-                res = _adaptedMicrosoftObjectPool.Get();
-                str = res.Value;
-            }
-            finally
-            {
-                if (res != null)
-                {
-                    _adaptedMicrosoftObjectPool.Return(res);
-                }
+                str = x.Value;
             }
             return str;
+        }
+
+        [Benchmark]
+        public string Parameterized()
+        {
+            string str;
+            using (var x = _paramObjectPool.GetObject(21))
+            {
+                str = x.Value;
+            }
+            return str;
+        }
+
+        [Benchmark(Baseline = true)]
+        public string Simple()
+        {
+            string str;
+            using (var x = _objectPool.GetObject())
+            {
+                str = x.Value;
+            }
+            return str;
+        }
+
+        private sealed class MyOriginalResource : Original.PooledObject
+        {
+            public string Value { get; set; }
+        }
+
+        private sealed class MyResource : PooledObject
+        {
+            public string Value { get; set; }
+
+            public sealed class Policy : Microsoft.Extensions.ObjectPool.IPooledObjectPolicy<MyResource>
+            {
+#pragma warning disable CC0022 // Should dispose object
+
+                public MyResource Create() => new MyResource { Value = DateTime.UtcNow.ToString() };
+
+#pragma warning restore CC0022 // Should dispose object
+
+                public bool Return(MyResource obj) => true;
+            }
         }
     }
 }

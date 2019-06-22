@@ -40,11 +40,7 @@ namespace CodeProject.ObjectPool.Core
     public sealed class PooledObjectBuffer<T> : IEnumerable<T>
         where T : PooledObject
     {
-#if NET40
-        private const MethodImplOptions TryInline = default(MethodImplOptions);
-#else
         private const MethodImplOptions TryInline = MethodImplOptions.AggressiveInlining;
-#endif
 
         /// <summary>
         ///   Used as default value for <see cref="_pooledObjects"/>.
@@ -101,46 +97,6 @@ namespace CodeProject.ObjectPool.Core
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
-        ///   Tries to dequeue an object from the buffer.
-        /// </summary>
-        /// <param name="pooledObject">Output pooled object.</param>
-        /// <returns>True if <paramref name="pooledObject"/> has a value, false otherwise.</returns>
-        [MethodImpl(TryInline)]
-        public bool TryDequeue(out T pooledObject)
-        {
-            for (var i = 0; i < _pooledObjects.Length; i++)
-            {
-                var item = _pooledObjects[i];
-                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
-                {
-                    pooledObject = item;
-                    return true;
-                }
-            }
-            pooledObject = null;
-            return false;
-        }
-
-        /// <summary>
-        ///   Tries to enqueue given object into the buffer.
-        /// </summary>
-        /// <param name="pooledObject">Input pooled object.</param>
-        /// <returns>True if there was enough space to enqueue given object, false otherwise.</returns>
-        [MethodImpl(TryInline)]
-        public bool TryEnqueue(T pooledObject)
-        {
-            for (var i = 0; i < _pooledObjects.Length; i++)
-            {
-                ref var item = ref _pooledObjects[i];
-                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         ///   Resizes the buffer so that it fits to given capacity. If new capacity is smaller than
         ///   current capacity, then exceeding items are returned.
         /// </summary>
@@ -184,6 +140,46 @@ namespace CodeProject.ObjectPool.Core
 
             Array.Resize(ref _pooledObjects, newCapacity);
             return exceedingItems;
+        }
+
+        /// <summary>
+        ///   Tries to dequeue an object from the buffer.
+        /// </summary>
+        /// <param name="pooledObject">Output pooled object.</param>
+        /// <returns>True if <paramref name="pooledObject"/> has a value, false otherwise.</returns>
+        [MethodImpl(TryInline)]
+        public bool TryDequeue(out T pooledObject)
+        {
+            for (var i = 0; i < _pooledObjects.Length; i++)
+            {
+                var item = _pooledObjects[i];
+                if (item != null && Interlocked.CompareExchange(ref _pooledObjects[i], null, item) == item)
+                {
+                    pooledObject = item;
+                    return true;
+                }
+            }
+            pooledObject = null;
+            return false;
+        }
+
+        /// <summary>
+        ///   Tries to enqueue given object into the buffer.
+        /// </summary>
+        /// <param name="pooledObject">Input pooled object.</param>
+        /// <returns>True if there was enough space to enqueue given object, false otherwise.</returns>
+        [MethodImpl(TryInline)]
+        public bool TryEnqueue(T pooledObject)
+        {
+            for (var i = 0; i < _pooledObjects.Length; i++)
+            {
+                ref var item = ref _pooledObjects[i];
+                if (item == null && Interlocked.CompareExchange(ref item, pooledObject, null) == null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

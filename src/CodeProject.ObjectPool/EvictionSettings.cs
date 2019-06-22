@@ -36,14 +36,14 @@ namespace CodeProject.ObjectPool
         public static EvictionSettings Default { get; } = new EvictionSettings();
 
         /// <summary>
-        ///   Whether eviction is enabled or not. By default, eviction is not enabled.
-        /// </summary>
-        public bool Enabled { get; set; } = false;
-
-        /// <summary>
         ///   The delay specified when an eviction job is scheduled. Default value is <see cref="TimeSpan.Zero"/>.
         /// </summary>
         public TimeSpan Delay { get; set; } = TimeSpan.Zero;
+
+        /// <summary>
+        ///   Whether eviction is enabled or not. By default, eviction is not enabled.
+        /// </summary>
+        public bool Enabled { get; set; } = false;
 
         /// <summary>
         ///   How frequent should be the eviction job. Default value is one minute.

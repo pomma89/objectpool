@@ -21,15 +21,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.IO;
 using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Specialized;
 using Newtonsoft.Json;
 using NLipsum.Core;
 using NUnit.Framework;
 using Shouldly;
-using System;
-using System.IO;
-using System.Text;
 
 namespace CodeProject.ObjectPool.UnitTests.Specialized
 {
@@ -37,6 +35,24 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
     internal sealed class MemoryStreamPoolTests
     {
         private IMemoryStreamPool _memoryStreamPool;
+
+        [Test]
+        public void IdPropertyShouldNotChangeUsageAfterUsage()
+        {
+            // First usage.
+            int id;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                id = pms.PooledObjectInfo.Id;
+                id.ShouldNotBe(0);
+            }
+
+            // Second usage is the same, pool uses a sort of stack, not a proper queue.
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.PooledObjectInfo.Id.ShouldBe(id);
+            }
+        }
 
         [SetUp]
         public void SetUp()
@@ -47,6 +63,190 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             {
                 Enabled = true
             };
+        }
+
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
+        public void ShouldAllowCommonUsingPattern_ManyTimesWithJsonReaderAndWriter(int count)
+        {
+            var jsonSerializer = new JsonSerializer();
+
+            for (var i = 1; i <= count; ++i)
+            {
+                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
+                using (var sw = new StreamWriter(ms))
+                using (var jw = new JsonTextWriter(sw))
+                {
+                    var text = LipsumGenerator.Generate((i % 10) + 1);
+
+                    jsonSerializer.Serialize(jw, text);
+                    jw.Flush();
+
+                    ms.Position = 0L;
+                    using (var sr = new StreamReader(ms))
+                    using (var jr = new JsonTextReader(sr))
+                    {
+                        jsonSerializer.Deserialize<string>(jr).ShouldBe(text);
+                    }
+                }
+            }
+        }
+
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
+        public void ShouldAllowCommonUsingPattern_ManyTimesWithStringReaderAndWriter(int count)
+        {
+            for (var i = 1; i <= count; ++i)
+            {
+                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
+                using (var sw = new StreamWriter(ms))
+                {
+                    var text = LipsumGenerator.Generate((i % 10) + 1);
+
+                    sw.Write(text);
+                    sw.Flush();
+
+                    ms.Position = 0L;
+                    using (var sr = new StreamReader(ms))
+                    {
+                        sr.ReadToEnd().ShouldBe(text);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
+        {
+            int initialId;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialId = pms.PooledObjectInfo.Id;
+            }
+
+            initialId.ShouldBeGreaterThan(0);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.PooledObjectInfo.Id.ShouldBeGreaterThan(initialId);
+            }
+        }
+
+        [Test]
+        public void ShouldClearPoolWhenMinCapacityIsIncreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity * 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
+        {
+            int initialId;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialId = pms.PooledObjectInfo.Id;
+            }
+
+            initialId.ShouldBeGreaterThan(0);
+
+            _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.PooledObjectInfo.Id.ShouldBe(initialId);
+            }
+        }
+
+        [Test]
+        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
+        {
+            int initialCapacity;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                initialCapacity = pms.MemoryStream.Capacity;
+            }
+
+            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
+
+            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity / 2;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+                pms.MemoryStream.Capacity.ShouldBe(initialCapacity);
+            }
+        }
+
+        [Test]
+        public void ShouldNotReturnToPoolWhenStreamIsLarge()
+        {
+            var text = LipsumGenerator.Generate(1000);
+
+            string result;
+            using (var pms = _memoryStreamPool.GetObject())
+            {
+#pragma warning disable CC0022 // Should dispose object
+                var sw = new StreamWriter(pms.MemoryStream);
+                sw.Write(text);
+                sw.Write(text);
+                sw.Flush();
+
+                pms.MemoryStream.Position = 0L;
+
+                var sr = new StreamReader(pms.MemoryStream);
+                result = sr.ReadToEnd();
+#pragma warning restore CC0022 // Should dispose object
+
+                pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
+            }
+
+            result.ShouldBe(text + text);
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void ShouldNotReturnToPoolWhenStreamIsLargeAndStreamIsManuallyDisposed()
+        {
+            var text = LipsumGenerator.Generate(1000);
+
+            string result;
+#pragma warning disable CC0022 // Should dispose object
+            var pms = _memoryStreamPool.GetObject();
+
+            var sw = new StreamWriter(pms.MemoryStream);
+            sw.Write(text);
+            sw.Write(text);
+            sw.Flush();
+
+            pms.MemoryStream.Position = 0L;
+
+            var sr = new StreamReader(pms.MemoryStream);
+            result = sr.ReadToEnd();
+
+            pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
+            pms.MemoryStream.Dispose();
+#pragma warning restore CC0022 // Should dispose object
+
+            result.ShouldBe(text + text);
+
+            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
+            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
         }
 
         [TestCase("a&b")]
@@ -203,208 +403,6 @@ namespace CodeProject.ObjectPool.UnitTests.Specialized
             _memoryStreamPool.ObjectsInPoolCount.ShouldBe(1);
             _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(2);
             _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(0);
-        }
-
-        [Test]
-        public void ShouldNotReturnToPoolWhenStreamIsLarge()
-        {
-            var text = LipsumGenerator.Generate(1000);
-
-            string result;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-#pragma warning disable CC0022 // Should dispose object
-                var sw = new StreamWriter(pms.MemoryStream);
-                sw.Write(text);
-                sw.Write(text);
-                sw.Flush();
-
-                pms.MemoryStream.Position = 0L;
-
-                var sr = new StreamReader(pms.MemoryStream);
-                result = sr.ReadToEnd();
-#pragma warning restore CC0022 // Should dispose object
-
-                pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
-            }
-
-            result.ShouldBe(text + text);
-
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
-            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
-        }
-
-        [Test]
-        public void ShouldNotReturnToPoolWhenStreamIsLargeAndStreamIsManuallyDisposed()
-        {
-            var text = LipsumGenerator.Generate(1000);
-
-            string result;
-#pragma warning disable CC0022 // Should dispose object
-            var pms = _memoryStreamPool.GetObject();
-
-            var sw = new StreamWriter(pms.MemoryStream);
-            sw.Write(text);
-            sw.Write(text);
-            sw.Flush();
-
-            pms.MemoryStream.Position = 0L;
-
-            var sr = new StreamReader(pms.MemoryStream);
-            result = sr.ReadToEnd();
-
-            pms.MemoryStream.Capacity.ShouldBeGreaterThan(_memoryStreamPool.MaximumMemoryStreamCapacity);
-            pms.MemoryStream.Dispose();
-#pragma warning restore CC0022 // Should dispose object
-
-            result.ShouldBe(text + text);
-
-            _memoryStreamPool.ObjectsInPoolCount.ShouldBe(0);
-            _memoryStreamPool.Diagnostics.ReturnedToPoolCount.ShouldBe(0);
-            _memoryStreamPool.Diagnostics.ObjectResetFailedCount.ShouldBe(1);
-        }
-
-        [Test]
-        public void IdPropertyShouldNotChangeUsageAfterUsage()
-        {
-            // First usage.
-            int id;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                id = pms.PooledObjectInfo.Id;
-                id.ShouldNotBe(0);
-            }
-
-            // Second usage is the same, pool uses a sort of stack, not a proper queue.
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.PooledObjectInfo.Id.ShouldBe(id);
-            }
-        }
-
-        [Test]
-        public void ShouldNotClearPoolWhenMinCapacityIsDecreased()
-        {
-            int initialCapacity;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                initialCapacity = pms.MemoryStream.Capacity;
-            }
-
-            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
-
-            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity / 2;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.MemoryStream.Capacity.ShouldBe(initialCapacity);
-            }
-        }
-
-        [Test]
-        public void ShouldClearPoolWhenMinCapacityIsIncreased()
-        {
-            int initialCapacity;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                initialCapacity = pms.MemoryStream.Capacity;
-            }
-
-            initialCapacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
-
-            _memoryStreamPool.MinimumMemoryStreamCapacity = initialCapacity * 2;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.MemoryStream.Capacity.ShouldBe(_memoryStreamPool.MinimumMemoryStreamCapacity);
-            }
-        }
-
-        [Test]
-        public void ShouldNotClearPoolWhenMaxCapacityIsIncreased()
-        {
-            int initialId;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                initialId = pms.PooledObjectInfo.Id;
-            }
-
-            initialId.ShouldBeGreaterThan(0);
-
-            _memoryStreamPool.MaximumMemoryStreamCapacity *= 2;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.PooledObjectInfo.Id.ShouldBe(initialId);
-            }
-        }
-
-        [Test]
-        public void ShouldClearPoolWhenMaxCapacityIsDecreased()
-        {
-            int initialId;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                initialId = pms.PooledObjectInfo.Id;
-            }
-
-            initialId.ShouldBeGreaterThan(0);
-
-            _memoryStreamPool.MaximumMemoryStreamCapacity /= 2;
-            using (var pms = _memoryStreamPool.GetObject())
-            {
-                pms.PooledObjectInfo.Id.ShouldBeGreaterThan(initialId);
-            }
-        }
-
-        [TestCase(10)]
-        [TestCase(100)]
-        [TestCase(1000)]
-        public void ShouldAllowCommonUsingPattern_ManyTimesWithStringReaderAndWriter(int count)
-        {
-            for (var i = 1; i <= count; ++i)
-            {
-                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
-                using (var sw = new StreamWriter(ms))
-                {
-                    var text = LipsumGenerator.Generate((i % 10) + 1);
-
-                    sw.Write(text);
-                    sw.Flush();
-
-                    ms.Position = 0L;
-                    using (var sr = new StreamReader(ms))
-                    {
-                        sr.ReadToEnd().ShouldBe(text);
-                    }
-                }
-            }
-        }
-
-        [TestCase(10)]
-        [TestCase(100)]
-        [TestCase(1000)]
-        public void ShouldAllowCommonUsingPattern_ManyTimesWithJsonReaderAndWriter(int count)
-        {
-            var jsonSerializer = new JsonSerializer();
-
-            for (var i = 1; i <= count; ++i)
-            {
-                using (var ms = _memoryStreamPool.GetObject().MemoryStream)
-                using (var sw = new StreamWriter(ms))
-                using (var jw = new JsonTextWriter(sw))
-                {
-                    var text = LipsumGenerator.Generate((i % 10) + 1);
-
-                    jsonSerializer.Serialize(jw, text);
-                    jw.Flush();
-
-                    ms.Position = 0L;
-                    using (var sr = new StreamReader(ms))
-                    using (var jr = new JsonTextReader(sr))
-                    {
-                        jsonSerializer.Deserialize<string>(jr).ShouldBe(text);
-                    }
-                }
-            }
         }
     }
 }

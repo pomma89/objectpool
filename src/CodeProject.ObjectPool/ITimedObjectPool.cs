@@ -32,7 +32,7 @@ namespace CodeProject.ObjectPool
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    public interface ITimedObjectPool<out T> : IObjectPool<T>
+    public interface ITimedObjectPool<T> : IObjectPool<T>
         where T : PooledObject
     {
         /// <summary>

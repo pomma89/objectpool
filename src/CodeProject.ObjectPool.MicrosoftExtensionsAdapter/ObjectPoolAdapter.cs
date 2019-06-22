@@ -32,8 +32,8 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
     public static class ObjectPoolAdapter
     {
         /// <summary>
-        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
-        ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to <see
+        ///   cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
         /// </summary>
         /// <typeparam name="T">The type of the resource.</typeparam>
         /// <param name="objectPool">The object pool that needs to be adapted.</param>
@@ -46,8 +46,8 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
             where T : class => new ObjectPoolAdapter<T>(objectPool);
 
         /// <summary>
-        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
-        ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+        ///   Adapts an <see cref="IObjectPool{T}"/> implementation to <see
+        ///   cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
         /// </summary>
         /// <typeparam name="T">The type of the resource.</typeparam>
         /// <param name="objectPool">The object pool that needs to be adapted.</param>
@@ -61,8 +61,8 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
     }
 
     /// <summary>
-    ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
-    ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+    ///   Adapts an <see cref="IObjectPool{T}"/> implementation to <see
+    ///   cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
     /// </summary>
     /// <typeparam name="T">The type of the resource.</typeparam>
     /// <remarks>
@@ -71,8 +71,8 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
     public sealed class ObjectPoolAdapter<T> : Microsoft.Extensions.ObjectPool.ObjectPool<T>
         where T : class
     {
-        private readonly ConditionalWeakTable<T, PooledObjectWrapper<T>> _wrapperMap = new ConditionalWeakTable<T, PooledObjectWrapper<T>>();
         private readonly IObjectPool<PooledObjectWrapper<T>> _adaptedObjectPool;
+        private readonly ConditionalWeakTable<T, PooledObjectWrapper<T>> _wrapperMap = new ConditionalWeakTable<T, PooledObjectWrapper<T>>();
 
         /// <summary>
         ///   Adapts given object pool.
@@ -109,8 +109,8 @@ namespace CodeProject.ObjectPool.MicrosoftExtensionsAdapter
     }
 
     /// <summary>
-    ///   Adapts an <see cref="IObjectPool{T}"/> implementation to
-    ///   <see cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
+    ///   Adapts an <see cref="IObjectPool{T}"/> implementation to <see
+    ///   cref="Microsoft.Extensions.ObjectPool.ObjectPool{T}"/> abstract class.
     /// </summary>
     /// <typeparam name="T">The type of the resource.</typeparam>
     /// <remarks>

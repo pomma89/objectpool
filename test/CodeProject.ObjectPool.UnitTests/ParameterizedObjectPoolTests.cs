@@ -21,68 +21,15 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool;
-using NUnit.Framework;
 using System;
-
-#if !NET40
-
 using System.Threading.Tasks;
-
-#endif
+using NUnit.Framework;
 
 namespace CodeProject.ObjectPool.UnitTests
 {
     [TestFixture]
     internal sealed class ParameterizedObjectPoolTests
     {
-        [TestCase(0)]
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(maxSize));
-        }
-
-        [TestCase(0)]
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
-        }
-
-#if !NET40
-
-        [TestCase(1)]
-        [TestCase(5)]
-        [TestCase(10)]
-        [TestCase(50)]
-        [TestCase(100)]
-        public async Task ShouldSimplyWork(int maxSize)
-        {
-            const int keyCount = 4;
-            var pool = new ParameterizedObjectPool<int, MyPooledObject>(maxSize);
-            var objectCount = maxSize * keyCount;
-            var objects = new MyPooledObject[objectCount];
-            Parallel.For(0, objectCount, i =>
-            {
-                objects[i] = pool.GetObject(i % keyCount);
-            });
-            Parallel.For(0, objectCount, i =>
-            {
-                objects[i].Dispose();
-            });
-
-            await Task.Delay(1000);
-
-            Assert.AreEqual(keyCount, pool.KeysInPoolCount);
-        }
-
-#endif
-
         [Test]
         public void ShouldChangePoolLimitsIfCorrect()
         {
@@ -136,6 +83,49 @@ namespace CodeProject.ObjectPool.UnitTests
             }
 
             Assert.That(1, Is.EqualTo(pool.KeysInPoolCount));
+        }
+
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public async Task ShouldSimplyWork(int maxSize)
+        {
+            const int keyCount = 4;
+            var pool = new ParameterizedObjectPool<int, MyPooledObject>(maxSize);
+            var objectCount = maxSize * keyCount;
+            var objects = new MyPooledObject[objectCount];
+            Parallel.For(0, objectCount, i =>
+            {
+                objects[i] = pool.GetObject(i % keyCount);
+            });
+            Parallel.For(0, objectCount, i =>
+            {
+                objects[i].Dispose();
+            });
+
+            await Task.Delay(1000);
+
+            Assert.AreEqual(keyCount, pool.KeysInPoolCount);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject>(maxSize));
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ParameterizedObjectPool<int, MyPooledObject> { MaximumPoolSize = maxSize });
         }
     }
 }

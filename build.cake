@@ -1,20 +1,19 @@
-#addin "nuget:?package=Cake.Wyam&version=1.2.0"
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=Wyam&version=1.2.0"
+#addin "nuget:?package=Cake.Wyam&version=2.2.4"
+#tool "nuget:?package=Wyam&version=2.2.4"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
-var target = Argument("target", "Default");
+var target = Argument("target", "Test");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-private string SolutionFile() { return "./ObjectPool.sln"; }
+private string SolutionFile() { return "./object-pool.sln"; }
 private string ArtifactsDir() { return "./artifacts"; }
-private string MSBuildLinuxPath() { return @"/usr/lib/mono/msbuild/15.0/bin/MSBuild.dll"; }
+private string NuGetFeed()    { return "https://www.myget.org/F/pomma89/api/v3/index.json"; }
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -26,32 +25,32 @@ Task("Clean")
     CleanDirectory(ArtifactsDir());
 });
 
-Task("Restore")
-    .IsDependentOn("Clean")
-    .Does(() =>
-{
-    Restore();
-});
-
-Task("Version")
-    .IsDependentOn("Restore")
-    .Does(() =>
-{
-    Version();
-});
-
 Task("Build-Debug")
-    .IsDependentOn("Version")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
     Build("Debug");
 });
 
 Task("Build-Release")
-    .IsDependentOn("Build-Debug")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
     Build("Release");
+});
+
+Task("Test-Debug")
+    .IsDependentOn("Build-Debug")
+    .Does(() =>
+{
+    Test("Debug");
+});
+
+Task("Test-Release")
+    .IsDependentOn("Build-Release")
+    .Does(() =>
+{
+    Test("Release");
 });
 
 Task("Pack-Release")
@@ -61,33 +60,26 @@ Task("Pack-Release")
     Pack("Release");
 });
 
+//////////////////////////////////////////////////////////////////////
+// TASK TARGETS
+//////////////////////////////////////////////////////////////////////
+
+Task("Test")
+    .IsDependentOn("Test-Debug")
+    .IsDependentOn("Test-Release");
+
 Task("Docs")
-    .IsDependentOn("Pack-Release")
     .Does(() =>
 {
     Docs();
 });
 
-Task("Test-Debug")
-    .IsDependentOn("Docs")
+Task("Push")
+    .IsDependentOn("Pack-Release")
     .Does(() =>
 {
-    Test("Debug");
+    Push();
 });
-
-Task("Test-Release")
-    .IsDependentOn("Test-Debug")
-    .Does(() =>
-{
-    Test("Release");
-});
-
-//////////////////////////////////////////////////////////////////////
-// TASK TARGETS
-//////////////////////////////////////////////////////////////////////
-
-Task("Default")
-    .IsDependentOn("Test-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -99,140 +91,58 @@ RunTarget(target);
 // HELPERS
 //////////////////////////////////////////////////////////////////////
 
-private void Restore()
-{
-    //DotNetCoreRestore();
-
-    MSBuild(SolutionFile(), settings =>
-    {
-        settings.SetMaxCpuCount(0);
-        settings.SetVerbosity(Verbosity.Quiet);
-        settings.WithTarget("restore");
-        if (!IsRunningOnWindows())
-        {
-            // Hack for Linux bug - Missing MSBuild path.
-            settings.ToolPath = new FilePath(MSBuildLinuxPath());
-        }
-    });
-}
-
-private void Version()
-{
-    var versionInfo = GitVersion();
-    var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0";
-    var nuGetVersion = versionInfo.NuGetVersion;
-    var assemblyVersion =  versionInfo.Major + ".0.0.0";
-    var fileVersion = versionInfo.MajorMinorPatch + "." + buildVersion;
-    var informationalVersion = versionInfo.FullSemVer;
-
-    Information("BuildVersion: " + buildVersion);
-    Information("Version: " + nuGetVersion);
-    Information("AssemblyVersion: " + assemblyVersion);
-    Information("FileVersion: " + fileVersion);
-    Information("InformationalVersion: " + informationalVersion);
-
-    if (AppVeyor.IsRunningOnAppVeyor)
-    {
-        AppVeyor.UpdateBuildVersion(informationalVersion + ".build." + buildVersion);
-    }
-
-    Information("Updating Directory.Build.props...");
-
-    var dbp = File("./src/Directory.Build.props");
-    XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
-    XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
-    XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
-    XmlPoke(dbp, "/Project/PropertyGroup/InformationalVersion", informationalVersion);
-}
-
 private void Build(string cfg)
 {
-    //DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
-    //{
-    //    Configuration = cfg,
-    //    NoIncremental = true
-    //});
-
-    MSBuild(SolutionFile(), settings =>
+    DotNetCoreBuild(SolutionFile(), new DotNetCoreBuildSettings
     {
-        settings.SetConfiguration(cfg);
-        settings.SetMaxCpuCount(0);
-        settings.SetVerbosity(Verbosity.Quiet);
-        settings.WithTarget("rebuild");
-        settings.WithProperty("SourceLinkCreate", new[] { "true" });
-        settings.WithProperty("SourceLinkTest", new[] { "true" });
-        if (!IsRunningOnWindows())
-        {
-            // Hack for Linux bug - Missing MSBuild path.
-            settings.ToolPath = new FilePath(MSBuildLinuxPath());
-        }
+       Configuration = cfg,
+       NoIncremental = true
     });
 }
 
 private void Test(string cfg)
 {
-    //NUnit3("./test/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg), new NUnit3Settings
-    //{
-    //    NoResults = true
-    //});
-
-    const string flags = "--noheader --noresult --stoponerror";
-    const string errMsg = " - Unit test failure - ";
-
-    foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
+    foreach (var project in GetFiles("./test/*.UnitTests/*.UnitTests.csproj"))
     {
-        if (StartProcess(netExe, flags) != 0)
+        DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings
         {
-            throw new Exception(cfg + errMsg + netExe);
-        }
-    }
-
-    foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
-    {
-        DotNetCoreExecute(netCoreDll, flags);
+            Configuration = cfg,
+            NoBuild = true,
+            NoRestore = true,
+            ResultsDirectory = ArtifactsDir()
+        });
     }
 }
 
 private void Pack(string cfg)
 {
-    Parallel.ForEach(GetFiles("./src/**/*.csproj"), project =>
+    foreach (var project in GetFiles("./src/**/*.csproj"))
     {
-        //DotNetCorePack(project.FullPath, new DotNetCorePackSettings
-        //{
-        //    Configuration = cfg,
-        //    OutputDirectory = ArtifactsDir(),
-        //    NoBuild = true,
-        //    IncludeSource = true,
-        //    IncludeSymbols = true
-        //});
-
-        MSBuild(project, settings =>
+        DotNetCorePack(project.FullPath, new DotNetCorePackSettings
         {
-            settings.SetConfiguration(cfg);
-            settings.SetMaxCpuCount(0);
-            settings.SetVerbosity(Verbosity.Quiet);
-            settings.WithTarget("pack");
-            if (!IsRunningOnWindows())
-            {
-                // Hack for Linux bug - Missing MSBuild path.
-                settings.ToolPath = new FilePath(MSBuildLinuxPath());
-            }
+            Configuration = cfg,
+            NoBuild = true,
+            NoRestore = true,
+            OutputDirectory = ArtifactsDir()
         });
-
-        var packDir = project.GetDirectory().Combine("bin").Combine(cfg);
-        MoveFiles(GetFiles(packDir + "/*.nupkg"), ArtifactsDir());
-    });
+    }
 }
 
 private void Docs()
 {
-    if (IsRunningOnWindows())
+    Wyam(new WyamSettings()
     {
-        Wyam(new WyamSettings()
-        {
-            InputPaths = new DirectoryPath[] { Directory("./pages") },
-            OutputPath = Directory("./docs"),
-            UpdatePackages = true
-        });
-    }
+        InputPaths = new DirectoryPath[] { Directory("./pages") },
+        OutputPath = Directory("./docs"),
+        UpdatePackages = true
+    });
+}
+
+private void Push()
+{
+    DotNetCoreNuGetPush(ArtifactsDir() + "/*.nupkg", new DotNetCoreNuGetPushSettings
+    {
+        Source = NuGetFeed(),
+        ApiKey = EnvironmentVariable("MYGET_API_KEY")
+    });
 }

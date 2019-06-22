@@ -8,8 +8,8 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -32,10 +32,7 @@ namespace CodeProject.ObjectPool
     ///   PooledObject wrapper, for classes which cannot inherit from that class.
     /// </summary>
     /// <typeparam name="T">The type of the resource.</typeparam>
-#if HAS_SERIALIZABLE
     [Serializable]
-#endif
-
     public sealed class PooledObjectWrapper<T> : PooledObject where T : class
     {
         /// <summary>

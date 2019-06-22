@@ -21,9 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Core;
 using System.Text;
-
+using CodeProject.ObjectPool.Core;
 using CodeProject.ObjectPool.Logging;
 
 namespace CodeProject.ObjectPool.Specialized
@@ -38,11 +37,6 @@ namespace CodeProject.ObjectPool.Specialized
         private static readonly ILog Log = LogProvider.GetLogger(typeof(PooledStringBuilder));
 
         #endregion Logging
-
-        /// <summary>
-        ///   The string builder.
-        /// </summary>
-        public StringBuilder StringBuilder { get; }
 
         /// <summary>
         ///   Builds a pooled string builder.
@@ -75,6 +69,11 @@ namespace CodeProject.ObjectPool.Specialized
 
             OnReleaseResources += ClearStringBuilder;
         }
+
+        /// <summary>
+        ///   The string builder.
+        /// </summary>
+        public StringBuilder StringBuilder { get; }
 
         /// <summary>
         ///   Returns a string that represents the current object.

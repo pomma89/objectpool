@@ -2,11 +2,7 @@
 
 <Project>
   <PropertyGroup>
-    <Version>3.2.4</Version>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.2.4.0</FileVersion>
-    <InformationalVersion>3.2.4+0</InformationalVersion>
-    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -16,46 +12,23 @@
     <PackageReleaseNotes>https://github.com/pomma89/ObjectPool/releases</PackageReleaseNotes>
     <PackageIconUrl>http://pomma89.altervista.org/objectpool/logo-128.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/pomma89/ObjectPool</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.codeproject.com/info/cpol10.aspx</PackageLicenseUrl>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/pomma89/ObjectPool</RepositoryUrl>
+    <PackageLicenseUrl>https://www.codeproject.com/info/cpol10.aspx</PackageLicenseUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.7.3" PrivateAssets="All" />
-    <PackageReference Include="SourceLink.Test" Version="2.7.3" PrivateAssets="All" />
+  <PropertyGroup Label="SourceLink">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <Reference Include="netstandard" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.7.3" />
+    <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-4" PrivateAssets="All" />
+    <PackageReference Include="HellBrick.Diagnostics" Version="3.3.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
+    <SourceLinkGitLabHosts Include="gitlab.com" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
-    <DefineConstants>$(DefineConstants);NETSTD10;LIBLOG_PORTABLE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.2' ">
-    <DefineConstants>$(DefineConstants);NETSTD12;LIBLOG_PORTABLE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <DefineConstants>$(DefineConstants);NETSTD13;LIBLOG_PORTABLE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <DefineConstants>$(DefineConstants);NETSTD20</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <DefineConstants>$(DefineConstants);NET40;HAS_SERIALIZABLE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);NET45;HAS_SERIALIZABLE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <DefineConstants>$(DefineConstants);NET46;HAS_SERIALIZABLE</DefineConstants>
-  </PropertyGroup>
 </Project>

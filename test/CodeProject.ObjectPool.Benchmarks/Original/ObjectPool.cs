@@ -28,15 +28,21 @@ namespace Original
         {
             #region Public Properties and backing fields
 
-            /// <summary>
-            ///   gets the total count of live instances, both in the pool and in use.
-            /// </summary>
-            public int TotalLiveInstancesCount
-            {
-                get { return _TotalInstancesCreated - _TotalInstancesDestroyed; }
-            }
-
             internal int _ObjectResetFailedCount;
+
+            internal int _PoolObjectHitCount;
+
+            internal int _PoolObjectMissCount;
+
+            internal int _PoolOverflowCount;
+
+            internal int _ReturnedToPoolByRessurectionCount;
+
+            internal int _ReturnedToPoolCount;
+
+            internal int _TotalInstancesCreated;
+
+            internal int _TotalInstancesDestroyed;
 
             /// <summary>
             ///   gets the count of object reset failures occured while the pool tried to re-add the
@@ -47,18 +53,6 @@ namespace Original
                 get { return _ObjectResetFailedCount; }
             }
 
-            internal int _ReturnedToPoolByRessurectionCount;
-
-            /// <summary>
-            ///   gets the total count of object that has been picked up by the GC, and returned to pool.
-            /// </summary>
-            public int ReturnedToPoolByRessurectionCount
-            {
-                get { return _ReturnedToPoolByRessurectionCount; }
-            }
-
-            internal int _PoolObjectHitCount;
-
             /// <summary>
             ///   gets the total count of successful accesses. The pool had a spare object to provide
             ///   to the user without creating it on demand.
@@ -67,8 +61,6 @@ namespace Original
             {
                 get { return _PoolObjectHitCount; }
             }
-
-            internal int _PoolObjectMissCount;
 
             /// <summary>
             ///   gets the total count of unsuccessful accesses. The pool had to create an object in
@@ -80,7 +72,30 @@ namespace Original
                 get { return _PoolObjectMissCount; }
             }
 
-            internal int _TotalInstancesCreated;
+            /// <summary>
+            ///   gets the number of objects been destroyed because the pool was full at the time of
+            ///   returning the object to the pool.
+            /// </summary>
+            public int PoolOverflowCount
+            {
+                get { return _PoolOverflowCount; }
+            }
+
+            /// <summary>
+            ///   gets the total count of object that has been picked up by the GC, and returned to pool.
+            /// </summary>
+            public int ReturnedToPoolByRessurectionCount
+            {
+                get { return _ReturnedToPoolByRessurectionCount; }
+            }
+
+            /// <summary>
+            ///   gets the total count of objects that been successfully returned to the pool
+            /// </summary>
+            public int ReturnedToPoolCount
+            {
+                get { return _ReturnedToPoolCount; }
+            }
 
             /// <summary>
             ///   gets the total number of pooled objected created
@@ -89,8 +104,6 @@ namespace Original
             {
                 get { return _TotalInstancesCreated; }
             }
-
-            internal int _TotalInstancesDestroyed;
 
             /// <summary>
             ///   gets the total number of objects destroyes, both in case of an pool overflow, and
@@ -101,30 +114,22 @@ namespace Original
                 get { return _TotalInstancesDestroyed; }
             }
 
-            internal int _PoolOverflowCount;
-
             /// <summary>
-            ///   gets the number of objects been destroyed because the pool was full at the time of
-            ///   returning the object to the pool.
+            ///   gets the total count of live instances, both in the pool and in use.
             /// </summary>
-            public int PoolOverflowCount
+            public int TotalLiveInstancesCount
             {
-                get { return _PoolOverflowCount; }
-            }
-
-            internal int _ReturnedToPoolCount;
-
-            /// <summary>
-            ///   gets the total count of objects that been successfully returned to the pool
-            /// </summary>
-            public int ReturnedToPoolCount
-            {
-                get { return _ReturnedToPoolCount; }
+                get { return _TotalInstancesCreated - _TotalInstancesDestroyed; }
             }
 
             #endregion Public Properties and backing fields
 
             #region Internal Methods for incrementing the counters
+
+            internal void IncrementObjectRessurectionCount()
+            {
+                Interlocked.Increment(ref _ReturnedToPoolByRessurectionCount);
+            }
 
             internal void IncrementObjectsCreatedCount()
             {
@@ -156,11 +161,6 @@ namespace Original
                 Interlocked.Increment(ref _ObjectResetFailedCount);
             }
 
-            internal void IncrementObjectRessurectionCount()
-            {
-                Interlocked.Increment(ref _ReturnedToPoolByRessurectionCount);
-            }
-
             internal void IncrementReturnedToPoolCount()
             {
                 Interlocked.Increment(ref _ReturnedToPoolCount);
@@ -171,26 +171,34 @@ namespace Original
 
         #region Consts
 
-        private const int DefaultPoolMinimumSize = 5;
         private const int DefaultPoolMaximumSize = 100;
+        private const int DefaultPoolMinimumSize = 5;
 
         #endregion Consts
 
         #region Private Members
 
-        // Pool internal data structure
-        private ConcurrentQueue<T> PooledObjects { get; set; }
+        // Indication flag that states whether Adjusting operating is in progress. The type is Int,
+        // altought it looks like it should be bool - this was done for Interlocked CAS operation (CompareExchange)
+        private int AdjustPoolSizeIsInProgressCASFlag = 0;
 
         // Action to be passed to the pooled objects to allow them to return to the pool
         private Action<PooledObject, bool> ReturnToPoolAction;
 
-        // Indication flag that states whether Adjusting operating is in progress. The type is Int,
-        // altought it looks like it should be bool - this was done for Interlocked CAS operation (CompareExchange)
-        private int AdjustPoolSizeIsInProgressCASFlag = 0; // 0 state false
+        // Pool internal data structure
+        private ConcurrentQueue<T> PooledObjects { get; set; }
+
+        // 0 state false
 
         #endregion Private Members
 
         #region Public Properties
+
+        private Func<T> _FactoryMethod = null;
+
+        private int _MaximumPoolSize;
+
+        private int _MinimumPoolSize;
 
         /// <summary>
         ///   Gets the Diagnostics class for the current Object Pool.
@@ -198,33 +206,13 @@ namespace Original
         public ObjectPoolDiagnostics Diagnostics { get; private set; }
 
         /// <summary>
-        ///   Gets the count of the objects currently in the pool.
+        ///   Gets the Factory method that will be used for creating new objects.
         /// </summary>
-        public int ObjectsInPoolCount
+        public Func<T> FactoryMethod
         {
-            get { return PooledObjects.Count; }
+            get { return _FactoryMethod; }
+            private set { _FactoryMethod = value; }
         }
-
-        private int _MinimumPoolSize;
-
-        /// <summary>
-        ///   Gets or sets the minimum number of objects in the pool.
-        /// </summary>
-        public int MinimumPoolSize
-        {
-            get { return _MinimumPoolSize; }
-            set
-            {
-                // Validating pool limits, exception is thrown if invalid
-                ValidatePoolLimits(value, _MaximumPoolSize);
-
-                _MinimumPoolSize = value;
-
-                AdjustPoolSizeToBounds();
-            }
-        }
-
-        private int _MaximumPoolSize;
 
         /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
@@ -244,15 +232,29 @@ namespace Original
             }
         }
 
-        private Func<T> _FactoryMethod = null;
+        /// <summary>
+        ///   Gets or sets the minimum number of objects in the pool.
+        /// </summary>
+        public int MinimumPoolSize
+        {
+            get { return _MinimumPoolSize; }
+            set
+            {
+                // Validating pool limits, exception is thrown if invalid
+                ValidatePoolLimits(value, _MaximumPoolSize);
+
+                _MinimumPoolSize = value;
+
+                AdjustPoolSizeToBounds();
+            }
+        }
 
         /// <summary>
-        ///   Gets the Factory method that will be used for creating new objects.
+        ///   Gets the count of the objects currently in the pool.
         /// </summary>
-        public Func<T> FactoryMethod
+        public int ObjectsInPoolCount
         {
-            get { return _FactoryMethod; }
-            private set { _FactoryMethod = value; }
+            get { return PooledObjects.Count; }
         }
 
         #endregion Public Properties
@@ -323,24 +325,6 @@ namespace Original
         #endregion C'tor and Initialization code
 
         #region Private Methods
-
-        private void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
-        {
-            if (minimumPoolSize < 0)
-            {
-                throw new ArgumentException("Minimum pool size must be greater or equals to zero.");
-            }
-
-            if (maximumPoolSize < 1)
-            {
-                throw new ArgumentException("Maximum pool size must be greater than zero.");
-            }
-
-            if (minimumPoolSize > maximumPoolSize)
-            {
-                throw new ArgumentException("Maximum pool size must be greater than the maximum pool size.");
-            }
-        }
 
         private void AdjustPoolSizeToBounds()
         {
@@ -417,6 +401,24 @@ namespace Original
             GC.SuppressFinalize(objectToDestroy);
         }
 
+        private void ValidatePoolLimits(int minimumPoolSize, int maximumPoolSize)
+        {
+            if (minimumPoolSize < 0)
+            {
+                throw new ArgumentException("Minimum pool size must be greater or equals to zero.");
+            }
+
+            if (maximumPoolSize < 1)
+            {
+                throw new ArgumentException("Maximum pool size must be greater than zero.");
+            }
+
+            if (minimumPoolSize > maximumPoolSize)
+            {
+                throw new ArgumentException("Maximum pool size must be greater than the maximum pool size.");
+            }
+        }
+
         #endregion Private Methods
 
         #region Pool Operations
@@ -454,7 +456,7 @@ namespace Original
 
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
-            T returnedObject = (T)objectToReturnToPool;
+            var returnedObject = (T)objectToReturnToPool;
 
             // Diagnostics update
             if (reRegisterForFinalization) Diagnostics.IncrementObjectRessurectionCount();
