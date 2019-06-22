@@ -23,37 +23,34 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
 using NUnit.Framework;
 using Shouldly;
-
-#if !NET40
-
-using System.Threading.Tasks;
-
-#endif
 
 namespace CodeProject.ObjectPool.UnitTests
 {
     [TestFixture]
     internal sealed class ObjectPoolTests
     {
-        [TestCase(0)]
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
+        [Test]
+        public void ShouldChangePoolLimitsIfCorrect()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject>(maxSize));
+            var pool = new ObjectPool<MyPooledObject>();
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize, pool.MaximumPoolSize);
+
+            pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
+            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
+
+            pool.MaximumPoolSize = 2;
+            pool.MaximumPoolSize.ShouldBe(2);
         }
 
-        [TestCase(0)]
-        [TestCase(-1)]
-        [TestCase(-5)]
-        [TestCase(-10)]
-        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
+        [Test]
+        public void ShouldEnforceLowerBoundOnPoolConstruction()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize });
+            var pool = new ObjectPool<MyPooledObject>();
+            pool.ObjectsInPoolCount.ShouldBe(0);
         }
 
         [TestCase(1)]
@@ -77,14 +74,33 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
         }
 
-#if !NET40
-
         [TestCase(1)]
         [TestCase(5)]
         [TestCase(10)]
         [TestCase(50)]
         [TestCase(100)]
         public async Task ShouldFillUntilMaximumSize_Async(int maxSize)
+        {
+            var pool = new ObjectPool<MyPooledObject>(maxSize);
+            var objects = new List<MyPooledObject>();
+            for (var i = 0; i < maxSize * 2; ++i)
+            {
+                var obj = await pool.GetObjectAsync();
+                objects.Add(obj);
+            }
+            foreach (var obj in objects)
+            {
+                obj.Dispose();
+            }
+            Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
+        }
+
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public async Task ShouldFillUntilMaximumSize_Parallel(int maxSize)
         {
             var pool = new ObjectPool<MyPooledObject>(maxSize);
             var objectCount = maxSize * 4;
@@ -101,44 +117,6 @@ namespace CodeProject.ObjectPool.UnitTests
             await Task.Delay(1000);
 
             Assert.AreEqual(maxSize, pool.ObjectsInPoolCount);
-        }
-
-#endif
-
-        [Test]
-        public void ShouldNotResetPooledObjectIdsWhenCleared()
-        {
-            var pool = new ObjectPool<MyPooledObject>();
-
-            var poA = pool.GetObject();
-            var poB = pool.GetObject();
-
-            poA.PooledObjectInfo.Id.ShouldBe(1);
-            poB.PooledObjectInfo.Id.ShouldBe(2);
-
-            poA.Dispose();
-            poB.Dispose();
-
-            pool.ObjectsInPoolCount.ShouldBe(2);
-            pool.Clear();
-            pool.ObjectsInPoolCount.ShouldBe(0);
-
-            var poC = pool.GetObject();
-
-            poC.PooledObjectInfo.Id.ShouldBe(3);
-        }
-
-        [Test]
-        public void ShouldChangePoolLimitsIfCorrect()
-        {
-            var pool = new ObjectPool<MyPooledObject>();
-            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize, pool.MaximumPoolSize);
-
-            pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
-            Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
-
-            pool.MaximumPoolSize = 2;
-            pool.MaximumPoolSize.ShouldBe(2);
         }
 
         [Test]
@@ -215,24 +193,101 @@ namespace CodeProject.ObjectPool.UnitTests
         }
 
         [Test]
-        public void ShouldEnforceLowerBoundOnPoolConstruction()
+        public async Task ShouldHandleClearAndThenReachCorrectSizeAtLaterUsage_Async()
         {
             var pool = new ObjectPool<MyPooledObject>();
+
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+
+            pool.Clear();
+
+            // Usage #A
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+
+            // Usages #B
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+
+            // Despite usage #B, count should always be fixed.
+            pool.ObjectsInPoolCount.ShouldBe(1);
+        }
+
+        [Test]
+        public void ShouldNotResetPooledObjectIdsWhenCleared()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            var poA = pool.GetObject();
+            var poB = pool.GetObject();
+
+            poA.PooledObjectInfo.Id.ShouldBe(1);
+            poB.PooledObjectInfo.Id.ShouldBe(2);
+
+            poA.Dispose();
+            poB.Dispose();
+
+            pool.ObjectsInPoolCount.ShouldBe(2);
+            pool.Clear();
             pool.ObjectsInPoolCount.ShouldBe(0);
+
+            var poC = pool.GetObject();
+
+            poC.PooledObjectInfo.Id.ShouldBe(3);
+        }
+
+        [Test]
+        public async Task ShouldNotResetPooledObjectIdsWhenCleared_Async()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            var poA = await pool.GetObjectAsync();
+            var poB = await pool.GetObjectAsync();
+
+            poA.PooledObjectInfo.Id.ShouldBe(1);
+            poB.PooledObjectInfo.Id.ShouldBe(2);
+
+            poA.Dispose();
+            poB.Dispose();
+
+            pool.ObjectsInPoolCount.ShouldBe(2);
+            pool.Clear();
+            pool.ObjectsInPoolCount.ShouldBe(0);
+
+            var poC = await pool.GetObjectAsync();
+
+            poC.PooledObjectInfo.Id.ShouldBe(3);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegative(int maxSize)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject>(maxSize));
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(-5)]
+        [TestCase(-10)]
+        public void ShouldThrowOnMaximumSizeEqualToZeroOrNegativeOnProperty(int maxSize)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
         #region Pooled object state
-
-        [Test]
-        public void PooledObjectStateShouldBecomeReservedWhenRetrievedFromThePool()
-        {
-            var pool = new ObjectPool<MyPooledObject>();
-
-            using (var obj = pool.GetObject())
-            {
-                obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Reserved);
-            }
-        }
 
         [Test]
         public void PooledObjectStateShouldBecomeAvailableWhenReturnedToThePool()
@@ -241,6 +296,19 @@ namespace CodeProject.ObjectPool.UnitTests
 
             MyPooledObject obj;
             using (obj = pool.GetObject())
+            {
+            }
+
+            obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Available);
+        }
+
+        [Test]
+        public async Task PooledObjectStateShouldBecomeAvailableWhenReturnedToThePool_Async()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            MyPooledObject obj;
+            using (obj = await pool.GetObjectAsync())
             {
             }
 
@@ -261,6 +329,44 @@ namespace CodeProject.ObjectPool.UnitTests
 
             obj.Dispose();
             obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Disposed);
+        }
+
+        [Test]
+        public async Task PooledObjectStateShouldBecomeDisposedWhenCannotReturnToThePool_Async()
+        {
+            var pool = new ObjectPool<MyPooledObject>(2);
+
+            var obj = await pool.GetObjectAsync();
+
+            using (var tmp1 = await pool.GetObjectAsync())
+            using (var tmp2 = await pool.GetObjectAsync())
+            {
+            }
+
+            obj.Dispose();
+            obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Disposed);
+        }
+
+        [Test]
+        public void PooledObjectStateShouldBecomeReservedWhenRetrievedFromThePool()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            using (var obj = pool.GetObject())
+            {
+                obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Reserved);
+            }
+        }
+
+        [Test]
+        public async Task PooledObjectStateShouldBecomeReservedWhenRetrievedFromThePool_Async()
+        {
+            var pool = new ObjectPool<MyPooledObject>();
+
+            using (var obj = await pool.GetObjectAsync())
+            {
+                obj.PooledObjectInfo.State.ShouldBe(PooledObjectState.Reserved);
+            }
         }
 
         #endregion Pooled object state

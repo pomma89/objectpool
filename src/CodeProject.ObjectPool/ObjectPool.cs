@@ -328,9 +328,35 @@ namespace CodeProject.ObjectPool
         ///   Gets a monitored object from the pool.
         /// </summary>
         /// <returns>A monitored object from the pool.</returns>
-        public Task<T> GetObjectAsync()
+        public async Task<T> GetObjectAsync()
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                if (PooledObjects.TryDequeue(out var pooledObject))
+                {
+                    // Object found in pool.
+                    if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
+                }
+                else
+                {
+                    // This should not happen normally, but could be happening when there is stress
+                    // on the pool. No available objects in pool, create a new one and return it to
+                    // the caller.
+                    if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
+                    pooledObject = await CreatePooledObjectAsync().ConfigureAwait(false);
+                }
+
+                if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound(pooledObject)))
+                {
+                    DestroyPooledObject(pooledObject);
+                    continue;
+                }
+
+                // Change the state of the pooled object, marking it as reserved. We will mark it as
+                // available as soon as the object will return to the pool.
+                pooledObject.PooledObjectInfo.State = PooledObjectState.Reserved;
+                return pooledObject;
+            }
         }
 
         void IObjectPoolHandle.ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
@@ -430,9 +456,7 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectsCreatedCount();
             }
 
-            var newObject = (AsyncFactoryMethod != null)
-                ? await AsyncFactoryMethod().ConfigureAwait(false)
-                : FactoryMethod();
+            var newObject = await AsyncFactoryMethod().ConfigureAwait(false);
 
             return PrepareNewPooledObject(newObject);
         }
