@@ -74,7 +74,7 @@ namespace CodeProject.ObjectPool
         /// <param name="asyncFactoryMethod">
         ///   The async factory method that will be used to create new objects.
         /// </param>
-        public ObjectPool(Func<Task<T>> asyncFactoryMethod)
+        public ObjectPool(Func<CancellationToken, bool, Task<T>> asyncFactoryMethod)
             : this(ObjectPool.DefaultPoolMaximumSize, null, asyncFactoryMethod, null, null)
         {
         }
@@ -102,7 +102,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<Task<T>> asyncFactoryMethod)
+        public ObjectPool(int maximumPoolSize, Func<CancellationToken, bool, Task<T>> asyncFactoryMethod)
             : this(maximumPoolSize, null, asyncFactoryMethod, null, null)
         {
         }
@@ -147,7 +147,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        public ObjectPool(int maximumPoolSize, Func<Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
+        public ObjectPool(int maximumPoolSize, Func<CancellationToken, bool, Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
             : this(maximumPoolSize, null, asyncFactoryMethod, evictionSettings, evictionTimer)
         {
         }
@@ -167,7 +167,7 @@ namespace CodeProject.ObjectPool
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
-        private ObjectPool(int maximumPoolSize, Func<T> factoryMethod, Func<Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
+        private ObjectPool(int maximumPoolSize, Func<T> factoryMethod, Func<CancellationToken, bool, Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -178,7 +178,7 @@ namespace CodeProject.ObjectPool
             if (factoryMethod != null)
             {
                 FactoryMethod = factoryMethod;
-                AsyncFactoryMethod = (() => Task.FromResult(factoryMethod()));
+                AsyncFactoryMethod = ((x, y) => Task.FromResult(factoryMethod()));
             }
             else if (asyncFactoryMethod != null)
             {
@@ -188,7 +188,7 @@ namespace CodeProject.ObjectPool
             else
             {
                 FactoryMethod = (() => Activator.CreateInstance<T>());
-                AsyncFactoryMethod = (() => Task.FromResult(Activator.CreateInstance<T>()));
+                AsyncFactoryMethod = ((x, y) => Task.FromResult(Activator.CreateInstance<T>()));
             }
 
             // Max pool size.
@@ -210,7 +210,7 @@ namespace CodeProject.ObjectPool
         ///   Gets the async Factory method that will be used for creating new objects with
         ///   async/await pattern.
         /// </summary>
-        public Func<Task<T>> AsyncFactoryMethod { get; protected set; }
+        public Func<CancellationToken, bool, Task<T>> AsyncFactoryMethod { get; protected set; }
 
         /// <summary>
         ///   Gets the Diagnostics class for the current Object Pool, whose goal is to record data
@@ -327,8 +327,14 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets a monitored object from the pool.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="continueOnCapturedContext">
+        ///   Whether async calls should continue on a captured synchronization context.
+        /// </param>
         /// <returns>A monitored object from the pool.</returns>
-        public async Task<T> GetObjectAsync()
+        public async Task<T> GetObjectAsync(
+            CancellationToken cancellationToken = default,
+            bool continueOnCapturedContext = default)
         {
             while (true)
             {
@@ -343,7 +349,8 @@ namespace CodeProject.ObjectPool
                     // on the pool. No available objects in pool, create a new one and return it to
                     // the caller.
                     if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectMissCount();
-                    pooledObject = await CreatePooledObjectAsync().ConfigureAwait(false);
+                    pooledObject = await CreatePooledObjectAsync(cancellationToken, continueOnCapturedContext)
+                        .ConfigureAwait(continueOnCapturedContext);
                 }
 
                 if (!pooledObject.ValidateObject(PooledObjectValidationContext.Outbound(pooledObject)))
@@ -448,15 +455,22 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Creates a new pooled object, initializing its info.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="continueOnCapturedContext">
+        ///   Whether async calls should continue on a captured synchronization context.
+        /// </param>
         /// <returns>A new pooled object.</returns>
-        protected virtual async Task<T> CreatePooledObjectAsync()
+        protected virtual async Task<T> CreatePooledObjectAsync(
+            CancellationToken cancellationToken,
+            bool continueOnCapturedContext)
         {
             if (Diagnostics.Enabled)
             {
                 Diagnostics.IncrementObjectsCreatedCount();
             }
 
-            var newObject = await AsyncFactoryMethod().ConfigureAwait(false);
+            var newObject = await AsyncFactoryMethod(cancellationToken, continueOnCapturedContext)
+                .ConfigureAwait(continueOnCapturedContext);
 
             return PrepareNewPooledObject(newObject);
         }

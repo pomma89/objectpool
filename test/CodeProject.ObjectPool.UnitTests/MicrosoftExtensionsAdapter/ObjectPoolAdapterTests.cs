@@ -23,10 +23,10 @@
 
 #if HAS_MS_EXTENSIONS
 
+using System.Collections.Generic;
 using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
 using NUnit.Framework;
 using Shouldly;
-using System.Collections.Generic;
 
 namespace CodeProject.ObjectPool.UnitTests.MicrosoftExtensionsAdapter
 {

@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
 
@@ -25,7 +26,7 @@ namespace CodeProject.ObjectPool
         ///   Gets the async Factory method that will be used for creating new objects with
         ///   async/await pattern.
         /// </summary>
-        Func<Task<T>> AsyncFactoryMethod { get; }
+        Func<CancellationToken, bool, Task<T>> AsyncFactoryMethod { get; }
 
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
@@ -65,7 +66,13 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets a monitored object from the pool.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="continueOnCapturedContext">
+        ///   Whether async calls should continue on a captured synchronization context.
+        /// </param>
         /// <returns>A monitored object from the pool.</returns>
-        Task<T> GetObjectAsync();
+        Task<T> GetObjectAsync(
+            CancellationToken cancellationToken = default,
+            bool continueOnCapturedContext = default);
     }
 }

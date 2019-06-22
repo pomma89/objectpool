@@ -22,6 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
@@ -135,6 +137,38 @@ namespace CodeProject.ObjectPool
         protected override T CreatePooledObject()
         {
             var pooledObject = base.CreatePooledObject();
+
+            // Register an handler which records the time at which the object returned to the pool.
+            pooledObject.OnResetState += () =>
+            {
+                pooledObject.PooledObjectInfo.Payload = DateTime.UtcNow;
+            };
+
+            // Register an handler which validates pooled objects timeout.
+            pooledObject.OnValidateObject += (ctx) =>
+            {
+                // An item which have been last used before following threshold will be destroyed.
+                var threshold = DateTime.UtcNow - _timeout;
+                return !(ctx.PooledObjectInfo.Payload is DateTime lastUsage && lastUsage < threshold);
+            };
+
+            return pooledObject;
+        }
+
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="continueOnCapturedContext">
+        ///   Whether async calls should continue on a captured synchronization context.
+        /// </param>
+        /// <returns>A new pooled object.</returns>
+        protected override async Task<T> CreatePooledObjectAsync(
+            CancellationToken cancellationToken = default,
+            bool continueOnCapturedContext = default)
+        {
+            var pooledObject = await base.CreatePooledObjectAsync(cancellationToken, continueOnCapturedContext)
+                .ConfigureAwait(continueOnCapturedContext);
 
             // Register an handler which records the time at which the object returned to the pool.
             pooledObject.OnResetState += () =>
