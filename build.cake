@@ -1,5 +1,5 @@
-#addin "nuget:?package=Cake.Wyam&version=2.1.1"
-#tool "nuget:?package=Wyam&version=2.1.1"
+#addin "nuget:?package=Cake.Wyam&version=2.2.4"
+#tool "nuget:?package=Wyam&version=2.2.4"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
