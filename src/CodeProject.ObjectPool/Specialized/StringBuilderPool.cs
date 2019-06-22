@@ -21,24 +21,18 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Core;
+using System;
 using System.Text;
 
 namespace CodeProject.ObjectPool.Specialized
 {
     /// <summary>
-    ///   An <see cref="IObjectPool{PooledStringBuilder}"/> ready to be used.
-    ///   <see cref="StringBuilder"/> management can be further configured using the
-    ///   <see cref="MinimumStringBuilderCapacity"/> and <see cref="MaximumStringBuilderCapacity"/> properties.
+    ///   An <see cref="IObjectPool{PooledStringBuilder}"/> ready to be used. <see
+    ///   cref="StringBuilder"/> management can be further configured using the <see
+    ///   cref="MinimumStringBuilderCapacity"/> and <see cref="MaximumStringBuilderCapacity"/> properties.
     /// </summary>
     public sealed class StringBuilderPool : ObjectPool<PooledStringBuilder>, IStringBuilderPool
     {
-        /// <summary>
-        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
-        ///   instances, defaults to 4096 characters.
-        /// </summary>
-        public const int DefaultMinimumStringBuilderCapacity = 4 * 1024;
-
         /// <summary>
         ///   Default maximum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
         ///   instances, defaults to 524288 characters.
@@ -46,18 +40,15 @@ namespace CodeProject.ObjectPool.Specialized
         public const int DefaultMaximumStringBuilderCapacity = 512 * 1024;
 
         /// <summary>
-        ///   Thread-safe pool instance.
+        ///   Default minimum string builder capacity. Shared by all <see cref="IStringBuilderPool"/>
+        ///   instances, defaults to 4096 characters.
         /// </summary>
-        public static IStringBuilderPool Instance { get; } = new StringBuilderPool();
+        public const int DefaultMinimumStringBuilderCapacity = 4 * 1024;
 
         /// <summary>
-        ///   Builds the specialized pool.
+        ///   Backing field for <see cref="MaximumStringBuilderCapacity"/>.
         /// </summary>
-        public StringBuilderPool()
-            : base(ObjectPool.DefaultPoolMaximumSize, null)
-        {
-            FactoryMethod = () => new PooledStringBuilder(MinimumStringBuilderCapacity);
-        }
+        private int _maximumItemCapacity = DefaultMaximumStringBuilderCapacity;
 
         /// <summary>
         ///   Backing field for <see cref="MinimumStringBuilderCapacity"/>.
@@ -65,27 +56,18 @@ namespace CodeProject.ObjectPool.Specialized
         private int _minimumItemCapacity = DefaultMinimumStringBuilderCapacity;
 
         /// <summary>
-        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
-        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="DefaultMinimumStringBuilderCapacity"/>.
+        ///   Builds the specialized pool.
         /// </summary>
-        public int MinimumStringBuilderCapacity
+        public StringBuilderPool()
+            : base(ObjectPool.DefaultPoolMaximumSize, (Func<PooledStringBuilder>)null)
         {
-            get { return _minimumItemCapacity; }
-            set
-            {
-                var oldValue = _minimumItemCapacity;
-                _minimumItemCapacity = value;
-                if (oldValue < value)
-                {
-                    Clear();
-                }
-            }
+            FactoryMethod = () => new PooledStringBuilder(MinimumStringBuilderCapacity);
         }
 
         /// <summary>
-        ///   Backing field for <see cref="MaximumStringBuilderCapacity"/>.
+        ///   Thread-safe pool instance.
         /// </summary>
-        private int _maximumItemCapacity = DefaultMaximumStringBuilderCapacity;
+        public static IStringBuilderPool Instance { get; } = new StringBuilderPool();
 
         /// <summary>
         ///   Maximum capacity a <see cref="StringBuilder"/> might have in order to be able to return
@@ -99,6 +81,24 @@ namespace CodeProject.ObjectPool.Specialized
                 var oldValue = _maximumItemCapacity;
                 _maximumItemCapacity = value;
                 if (oldValue > value)
+                {
+                    Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        ///   Minimum capacity a <see cref="StringBuilder"/> should have when created and this is the
+        ///   minimum capacity of all builders stored in the pool. Defaults to <see cref="DefaultMinimumStringBuilderCapacity"/>.
+        /// </summary>
+        public int MinimumStringBuilderCapacity
+        {
+            get { return _minimumItemCapacity; }
+            set
+            {
+                var oldValue = _minimumItemCapacity;
+                _minimumItemCapacity = value;
+                if (oldValue < value)
                 {
                     Clear();
                 }

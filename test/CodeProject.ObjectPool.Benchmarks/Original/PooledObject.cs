@@ -43,7 +43,7 @@ namespace Original
         /// <returns></returns>
         internal bool ReleaseResources()
         {
-            bool successFlag = true;
+            var successFlag = true;
 
             try
             {
@@ -64,7 +64,7 @@ namespace Original
         /// <returns></returns>
         internal bool ResetState()
         {
-            bool successFlag = true;
+            var successFlag = true;
 
             try
             {

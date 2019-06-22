@@ -8,11 +8,11 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -43,7 +43,7 @@ namespace CodeProject.ObjectPool
         ///   Initializes a new pool with default settings.
         /// </summary>
         public ObjectPool()
-            : this(ObjectPool.DefaultPoolMaximumSize, null, null, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, null, null, null)
         {
         }
 
@@ -55,7 +55,7 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
         public ObjectPool(int maximumPoolSize)
-            : this(maximumPoolSize, null, null, null)
+            : this(maximumPoolSize, null, null, null, null)
         {
         }
 
@@ -64,7 +64,18 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         public ObjectPool(Func<T> factoryMethod)
-            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod, null, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, factoryMethod, null, null, null)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method.
+        /// </summary>
+        /// <param name="asyncFactoryMethod">
+        ///   The async factory method that will be used to create new objects.
+        /// </param>
+        public ObjectPool(Func<Task<T>> asyncFactoryMethod)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, asyncFactoryMethod, null, null)
         {
         }
 
@@ -77,7 +88,22 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
         public ObjectPool(int maximumPoolSize, Func<T> factoryMethod)
-            : this(maximumPoolSize, factoryMethod, null, null)
+            : this(maximumPoolSize, factoryMethod, null, null, null)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method and maximum size.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="asyncFactoryMethod">
+        ///   The async factory method that will be used to create new objects.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        public ObjectPool(int maximumPoolSize, Func<Task<T>> asyncFactoryMethod)
+            : this(maximumPoolSize, null, asyncFactoryMethod, null, null)
         {
         }
 
@@ -86,7 +112,7 @@ namespace CodeProject.ObjectPool
         /// </summary>
         /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
         public ObjectPool(EvictionSettings evictionSettings)
-            : this(ObjectPool.DefaultPoolMaximumSize, null, evictionSettings, null)
+            : this(ObjectPool.DefaultPoolMaximumSize, null, null, evictionSettings, null)
         {
         }
 
@@ -103,6 +129,45 @@ namespace CodeProject.ObjectPool
         ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
         /// </exception>
         public ObjectPool(int maximumPoolSize, Func<T> factoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
+            : this(maximumPoolSize, factoryMethod, null, evictionSettings, evictionTimer)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method, maximum size, eviction timer and settings.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="asyncFactoryMethod">
+        ///   The async factory method that will be used to create new objects.
+        /// </param>
+        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
+        /// <param name="evictionTimer">
+        ///   The eviction timer used to schedule an async validation and eviction job.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        public ObjectPool(int maximumPoolSize, Func<Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
+            : this(maximumPoolSize, null, asyncFactoryMethod, evictionSettings, evictionTimer)
+        {
+        }
+
+        /// <summary>
+        ///   Initializes a new pool with specified factory method, maximum size, eviction timer and settings.
+        /// </summary>
+        /// <param name="maximumPoolSize">The maximum pool size limit.</param>
+        /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
+        /// <param name="asyncFactoryMethod">
+        ///   The async factory method that will be used to create new objects.
+        /// </param>
+        /// <param name="evictionSettings">Settings for the validation and eviction job.</param>
+        /// <param name="evictionTimer">
+        ///   The eviction timer used to schedule an async validation and eviction job.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
+        /// </exception>
+        private ObjectPool(int maximumPoolSize, Func<T> factoryMethod, Func<Task<T>> asyncFactoryMethod, EvictionSettings evictionSettings, IEvictionTimer evictionTimer)
         {
             // Preconditions
             if (maximumPoolSize <= 0) throw new ArgumentOutOfRangeException(nameof(maximumPoolSize), ErrorMessages.NegativeOrZeroMaximumPoolSize);
@@ -114,6 +179,11 @@ namespace CodeProject.ObjectPool
             {
                 FactoryMethod = factoryMethod;
                 AsyncFactoryMethod = (() => Task.FromResult(factoryMethod()));
+            }
+            else if (asyncFactoryMethod != null)
+            {
+                FactoryMethod = (() => throw new InvalidOperationException(ErrorMessages.AsyncFactoryForSyncGetObject));
+                AsyncFactoryMethod = asyncFactoryMethod;
             }
             else
             {
@@ -213,7 +283,7 @@ namespace CodeProject.ObjectPool
         public void Clear()
         {
             // Destroy all objects, one by one.
-            while (PooledObjects.TryDequeue(out T dequeuedObjectToDestroy))
+            while (PooledObjects.TryDequeue(out var dequeuedObjectToDestroy))
             {
                 DestroyPooledObject(dequeuedObjectToDestroy);
             }
@@ -227,7 +297,7 @@ namespace CodeProject.ObjectPool
         {
             while (true)
             {
-                if (PooledObjects.TryDequeue(out T pooledObject))
+                if (PooledObjects.TryDequeue(out var pooledObject))
                 {
                     // Object found in pool.
                     if (Diagnostics.Enabled) Diagnostics.IncrementPoolObjectHitCount();
@@ -344,20 +414,27 @@ namespace CodeProject.ObjectPool
                 Diagnostics.IncrementObjectsCreatedCount();
             }
 
-            if (FactoryMethod == null)
-            {
-                // A child class has deleted our factory method. Therefore, we can only return null.
-                return null;
-            }
-
             var newObject = FactoryMethod();
 
-            // Setting the 'return to pool' action and other properties in the newly created pooled object.
-            newObject.PooledObjectInfo.Id = Interlocked.Increment(ref _lastPooledObjectId);
-            newObject.PooledObjectInfo.State = PooledObjectState.Available;
-            newObject.PooledObjectInfo.Handle = this;
+            return PrepareNewPooledObject(newObject);
+        }
 
-            return newObject;
+        /// <summary>
+        ///   Creates a new pooled object, initializing its info.
+        /// </summary>
+        /// <returns>A new pooled object.</returns>
+        protected virtual async Task<T> CreatePooledObjectAsync()
+        {
+            if (Diagnostics.Enabled)
+            {
+                Diagnostics.IncrementObjectsCreatedCount();
+            }
+
+            var newObject = (AsyncFactoryMethod != null)
+                ? await AsyncFactoryMethod().ConfigureAwait(false)
+                : FactoryMethod();
+
+            return PrepareNewPooledObject(newObject);
         }
 
         /// <summary>
@@ -420,5 +497,19 @@ namespace CodeProject.ObjectPool
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private T PrepareNewPooledObject(T newObject)
+        {
+            // Sets the "return to pool" action and other properties in the newly created pooled object.
+            newObject.PooledObjectInfo.Id = Interlocked.Increment(ref _lastPooledObjectId);
+            newObject.PooledObjectInfo.State = PooledObjectState.Available;
+            newObject.PooledObjectInfo.Handle = this;
+
+            return newObject;
+        }
+
+        #endregion Private Methods
     }
 }

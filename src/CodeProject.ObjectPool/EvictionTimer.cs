@@ -60,7 +60,7 @@ namespace CodeProject.ObjectPool
             ThrowIfDisposed();
             lock (_actionMap)
             {
-                if (_actionMap.TryGetValue(actionTicket, out Timer timer))
+                if (_actionMap.TryGetValue(actionTicket, out var timer))
                 {
                     _actionMap.Remove(actionTicket);
                     timer.Dispose();
@@ -126,7 +126,7 @@ namespace CodeProject.ObjectPool
                 {
                     var timers = _actionMap.Values.ToArray() ?? Enumerable.Empty<Timer>();
                     _actionMap.Clear();
-                    foreach (Timer t in timers)
+                    foreach (var t in timers)
                     {
                         t.Dispose();
                     }

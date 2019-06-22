@@ -454,7 +454,7 @@ namespace Original
 
         internal void ReturnObjectToPool(PooledObject objectToReturnToPool, bool reRegisterForFinalization)
         {
-            T returnedObject = (T)objectToReturnToPool;
+            var returnedObject = (T)objectToReturnToPool;
 
             // Diagnostics update
             if (reRegisterForFinalization) Diagnostics.IncrementObjectRessurectionCount();
