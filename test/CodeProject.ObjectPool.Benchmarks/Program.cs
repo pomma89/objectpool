@@ -33,6 +33,16 @@ namespace CodeProject.ObjectPool.Benchmarks
 {
     public static class Program
     {
+        public static void Main(string[] args)
+        {
+            new BenchmarkSwitcher(new[]
+            {
+                typeof(MemoryStreamPooling),
+                typeof(RetrieveOneObject),
+                typeof(RetrieveObjectsConcurrently)
+            }).Run(args);
+        }
+
         public class Config : ManualConfig
         {
             public Config()
@@ -42,16 +52,6 @@ namespace CodeProject.ObjectPool.Benchmarks
                 Add(MemoryDiagnoser.Default);
                 Add(EnvironmentAnalyser.Default);
             }
-        }
-
-        public static void Main(string[] args)
-        {
-            new BenchmarkSwitcher(new[]
-            {
-                typeof(MemoryStreamPooling),
-                typeof(RetrieveOneObject),
-                typeof(RetrieveObjectsConcurrently)
-            }).Run(args);
         }
     }
 }

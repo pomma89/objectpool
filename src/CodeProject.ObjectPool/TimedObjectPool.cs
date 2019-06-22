@@ -21,8 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Core;
 using System;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -65,8 +65,8 @@ namespace CodeProject.ObjectPool
         /// <param name="maximumPoolSize">The maximum pool size limit.</param>
         /// <param name="timeout">The timeout of each pooled object.</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
-        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero. <paramref
+        ///   name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
         /// </exception>
         public TimedObjectPool(int maximumPoolSize, TimeSpan timeout)
             : this(maximumPoolSize, null, timeout)
@@ -93,8 +93,8 @@ namespace CodeProject.ObjectPool
         /// <param name="factoryMethod">The factory method that will be used to create new objects.</param>
         /// <param name="timeout">The timeout of each pooled object.</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero.
-        ///   <paramref name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
+        ///   <paramref name="maximumPoolSize"/> is less than or equal to zero. <paramref
+        ///   name="timeout"/> is less than or equal to <see cref="TimeSpan.Zero"/>.
         /// </exception>
         public TimedObjectPool(int maximumPoolSize, Func<T> factoryMethod, TimeSpan timeout)
             : base(maximumPoolSize, factoryMethod, new EvictionSettings { Enabled = true, Delay = timeout, Period = timeout }, null)

@@ -8,10 +8,10 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {

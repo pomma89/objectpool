@@ -8,8 +8,8 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {
@@ -23,8 +23,8 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   Gets or sets the Diagnostics class for the current Object Pool, whose goal is to record
         ///   data about how the pool operates. By default, however, an object pool records anything,
-        ///   in order to be most efficient; in any case, you can enable it through the
-        ///   <see cref="ObjectPoolDiagnostics.Enabled"/> property.
+        ///   in order to be most efficient; in any case, you can enable it through the <see
+        ///   cref="ObjectPoolDiagnostics.Enabled"/> property.
         /// </summary>
         ObjectPoolDiagnostics Diagnostics { get; set; }
 
@@ -34,15 +34,15 @@ namespace CodeProject.ObjectPool
         Func<TKey, TValue> FactoryMethod { get; }
 
         /// <summary>
+        ///   Gets the count of the keys currently handled by the pool.
+        /// </summary>
+        int KeysInPoolCount { get; }
+
+        /// <summary>
         ///   Gets or sets the maximum number of objects that could be available at the same time in
         ///   the pool.
         /// </summary>
         int MaximumPoolSize { get; set; }
-
-        /// <summary>
-        ///   Gets the count of the keys currently handled by the pool.
-        /// </summary>
-        int KeysInPoolCount { get; }
 
         /// <summary>
         ///   Gets an object linked to given key.

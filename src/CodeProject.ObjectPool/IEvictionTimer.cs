@@ -31,6 +31,16 @@ namespace CodeProject.ObjectPool
     public interface IEvictionTimer : IDisposable
     {
         /// <summary>
+        ///   Cancels a scheduled evicton action using a ticket returned by <see
+        ///   cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
+        /// </summary>
+        /// <param name="actionTicket">
+        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action,
+        ///   TimeSpan, TimeSpan)"/>.
+        /// </param>
+        void Cancel(Guid actionTicket);
+
+        /// <summary>
         ///   Schedules an eviction action.
         /// </summary>
         /// <param name="action">Eviction action.</param>
@@ -41,13 +51,5 @@ namespace CodeProject.ObjectPool
         ///   scheduled action via <see cref="Cancel(Guid)"/> method.
         /// </returns>
         Guid Schedule(Action action, TimeSpan delay, TimeSpan period);
-
-        /// <summary>
-        ///   Cancels a scheduled evicton action using a ticket returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
-        /// </summary>
-        /// <param name="actionTicket">
-        ///   An eviction action ticket, which has been returned by <see cref="Schedule(Action, TimeSpan, TimeSpan)"/>.
-        /// </param>
-        void Cancel(Guid actionTicket);
     }
 }

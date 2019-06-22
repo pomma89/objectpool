@@ -8,8 +8,8 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {

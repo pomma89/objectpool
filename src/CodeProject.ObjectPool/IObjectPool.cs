@@ -8,9 +8,9 @@
  *
  */
 
-using CodeProject.ObjectPool.Core;
 using System;
 using System.Threading.Tasks;
+using CodeProject.ObjectPool.Core;
 
 namespace CodeProject.ObjectPool
 {

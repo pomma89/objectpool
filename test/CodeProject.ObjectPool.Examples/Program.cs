@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using CodeProject.ObjectPool.MicrosoftExtensionsAdapter;
 
 namespace CodeProject.ObjectPool.Examples
 {
@@ -34,6 +34,21 @@ namespace CodeProject.ObjectPool.Examples
     /// </summary>
     internal static class Program
     {
+        public static void ExternalResourceReleaseResource(ExternalExpensiveResource resource)
+        {
+            // External Resource release code.
+        }
+
+        public static void ExternalResourceResetState(ExternalExpensiveResource resource)
+        {
+            // External Resource reset state code.
+        }
+
+        private static ExternalExpensiveResource CreateNewResource()
+        {
+            return new ExternalExpensiveResource();
+        }
+
         /// <summary>
         ///   Example usages of ObjectPool.
         /// </summary>
@@ -96,21 +111,6 @@ namespace CodeProject.ObjectPool.Examples
             mPool2.Return(mResource2);
 
             Console.Read();
-        }
-
-        private static ExternalExpensiveResource CreateNewResource()
-        {
-            return new ExternalExpensiveResource();
-        }
-
-        public static void ExternalResourceResetState(ExternalExpensiveResource resource)
-        {
-            // External Resource reset state code.
-        }
-
-        public static void ExternalResourceReleaseResource(ExternalExpensiveResource resource)
-        {
-            // External Resource release code.
         }
     }
 
