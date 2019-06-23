@@ -39,7 +39,7 @@ namespace CodeProject.ObjectPool.UnitTests
             var pool = new ObjectPool<MyPooledObject>();
             Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize, pool.MaximumPoolSize);
 
-            pool.MaximumPoolSize = pool.MaximumPoolSize * 2;
+            pool.MaximumPoolSize *= 2;
             Assert.AreEqual(ObjectPool.DefaultPoolMaximumSize * 2, pool.MaximumPoolSize);
 
             pool.MaximumPoolSize = 2;

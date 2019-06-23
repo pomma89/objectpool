@@ -140,6 +140,31 @@ internal sealed class ExternalExpensiveResource
 }
 ```
 
+### Async support
+
+Starting from v4, Object Pool supports async pooled object initialization.
+Therefore, objects can be retrieved in two ways:
+
+```cs
+obj = pool.GetObject();
+obj = await pool.GetObjectAsync();
+```
+
+Those methods depend on the factory method specified during pool initialization.
+Because making async factories "sync" is usually a problem, which can lead to deadlocks,
+we have the following situation:
+
+| Factory type | `GetObject` | `GeObjectAsync` |
+| ------------ | ------------ | ---------------- |
+| Not specified | OK | OK, uses a result task |
+| Sync | OK | OK, uses a result task |
+| Async | **KO**, throws an exception | OK |
+
+So, to sum it up:
+
+* If a sync factory is specified, both retrieval methods can be used.
+* If an async factory is specified, only the async retrieval can be used.
+
 ## Benchmarks
 
 All benchmarks were implemented and run using the wonderful [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) library.
