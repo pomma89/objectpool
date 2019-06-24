@@ -61,6 +61,10 @@ namespace CodeProject.ObjectPool
         ///   Gets a monitored object from the pool.
         /// </summary>
         /// <returns>A monitored object from the pool.</returns>
+        /// <exception cref="InvalidOperationException">
+        ///   If a custom async factory method has been specified, this exception is thrown in order
+        ///   not to perform a sync-over-async operation, which might lead to deadlocks.
+        /// </exception>
         T GetObject();
 
         /// <summary>

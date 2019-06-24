@@ -287,6 +287,72 @@ namespace CodeProject.ObjectPool.UnitTests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ObjectPool<MyPooledObject> { MaximumPoolSize = maxSize });
         }
 
+        [Test]
+        public void ShouldThrowUsingSpecifiedAsyncFactoryMethod()
+        {
+            var counter = 0;
+            var pool = new ObjectPool<MyPooledObject>((ct, cc) =>
+            {
+                counter++;
+                return Task.FromResult(new MyPooledObject());
+            });
+
+            Should.Throw(() => pool.GetObject(), typeof(InvalidOperationException));
+
+            counter.ShouldBe(0);
+        }
+
+        [Test]
+        public async Task ShouldUseSpecifiedAsyncFactoryMethod_Async()
+        {
+            var counter = 0;
+            var pool = new ObjectPool<MyPooledObject>((ct, cc) =>
+            {
+                counter++;
+                return Task.FromResult(new MyPooledObject());
+            });
+
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+
+            counter.ShouldBe(1);
+        }
+
+        [Test]
+        public void ShouldUseSpecifiedSyncFactoryMethod()
+        {
+            var counter = 0;
+            var pool = new ObjectPool<MyPooledObject>(() =>
+            {
+                counter++;
+                return new MyPooledObject();
+            });
+
+            using (var obj = pool.GetObject())
+            {
+            }
+
+            counter.ShouldBe(1);
+        }
+
+        [Test]
+        public async Task ShouldUseSpecifiedSyncFactoryMethod_Async()
+        {
+            var counter = 0;
+            var pool = new ObjectPool<MyPooledObject>(() =>
+            {
+                counter++;
+                return new MyPooledObject();
+            });
+
+            using (var obj = await pool.GetObjectAsync())
+            {
+            }
+
+            counter.ShouldBe(1);
+        }
+
         #region Pooled object state
 
         [Test]
