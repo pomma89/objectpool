@@ -4,4 +4,4 @@
 
 **Project repository has been moved to GitLab:**
 
-https://gitlab.com/pomma89/object-pool
+https://gitlab.com/pommalabs/codeproject/object-pool
